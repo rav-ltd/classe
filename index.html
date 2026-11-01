@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La classe malaisée — Socio-philosophie du déclassement</title>
     
-    <!-- Meta description standard -->
     <meta name="description" content="Hypertexte interactif et socio-philosophie du déclassement par Raffaele Alberto Ventura.">
 
-    <!-- Balises Open Graph pour Facebook, LinkedIn, WhatsApp -->
+    <!-- Balises Open Graph -->
     <meta property="og:title" content="La classe malaisée — Hypertexte">
     <meta property="og:description" content="Hypertexte interactif et socio-philosophie du déclassement par Raffaele Alberto Ventura.">
     <meta property="og:url" content="https://rav-ltd.github.io/classe/">
@@ -43,7 +42,17 @@
     </style>
 </head>
 <body>
-    <!-- Intégration transparente de l'application Google Apps Script dans un iframe -->
-    <iframe src="https://script.google.com/macros/s/AKfycbzXjrlAwQW1SRBdvISqjXGkfMftBQrsdWScgBmcw4JCDITvMtbyxS59nSHoX3ZoorsGgg/exec" allow="clipboard-write"></iframe>
+    <iframe id="app-iframe" allow="clipboard-write"></iframe>
+
+    <script>
+        // URL di base della Web App di Google Apps Script
+        const baseAppsScriptUrl = "https://script.google.com/macros/s/AKfycbzXjrlAwQW1SRBdvISqjXGkfMftBQrsdWScgBmcw4JCDITvMtbyxS59nSHoX3ZoorsGgg/exec";
+        
+        // Recupera eventuali parametri (es. ?tab=...) presenti nell'URL di GitHub Pages
+        const searchParams = window.location.search;
+        
+        // Inserisce nell'iframe l'URL di Apps Script mantenendo gli stessi parametri passati nel wrapper
+        document.getElementById('app-iframe').src = baseAppsScriptUrl + searchParams;
+    </script>
 </body>
 </html>
