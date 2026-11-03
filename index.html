@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>"> <meta charset="UTF-8">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La classe malaisée — Socio-philosophie du déclassement</title>
     
-    <meta name="description" content="Hypertexte interactif et socio-philosophie du déclassement par Raffaele Alberto Ventura.">
+    <meta name="description" content="La socio-philosophie du déclassement par Raffaele Alberto Ventura.">
 
     <!-- Balises Open Graph -->
-    <meta property="og:title" content="La classe malaisée — Hypertexte">
-    <meta property="og:description" content="Hypertexte interactif et socio-philosophie du déclassement par Raffaele Alberto Ventura.">
-    <meta property="og:url" content="https://rav-ltd.github.io/classe/">
+    <meta property="og:title" content="La classe malaisée">
+    <meta property="og:description" content="La socio-philosophie du déclassement par Raffaele Alberto Ventura.">
+    <meta property="og:url" content="https://rav.ltd/">
     <meta property="og:image" content="https://raw.githubusercontent.com/rav-ltd/classe/refs/heads/main/thumbclasse.png">
     <meta property="og:image:secure_url" content="https://raw.githubusercontent.com/rav-ltd/classe/refs/heads/main/thumbclasse.png">
     <meta property="og:image:type" content="image/png">
@@ -20,39 +21,228 @@
 
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="La classe malaisée — Hypertexte">
-    <meta name="twitter:description" content="Hypertexte interactif et socio-philosophie du déclassement par Raffaele Alberto Ventura.">
+    <meta name="twitter:title" content="La classe malaisée">
+    <meta name="twitter:description" content="La socio-philosophie du déclassement par Raffaele Alberto Ventura.">
     <meta name="twitter:image" content="https://raw.githubusercontent.com/rav-ltd/classe/refs/heads/main/thumbclasse.png">
 
     <style>
+        :root {
+            --bg-color: #ffffff;
+            --sidebar-bg: #f7f3ec;
+            --text-color: #2b2b2b;
+            --border-color: #e6dfd3;
+            --tree-line: #8c8273;
+            --font-serif: Georgia, Cambria, "Times New Roman", Times, serif;
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #f7f3ec;
+            background-color: var(--sidebar-bg);
+            font-family: var(--font-main);
         }
+
+        /* Guscio statico istantaneo */
+        #static-shell {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            background-color: var(--sidebar-bg);
+            transition: opacity 0.35s ease;
+        }
+
+        #static-nav {
+            width: 440px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 35px 25px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .site-header {
+            margin-bottom: 28px;
+            padding-bottom: 22px;
+            border-bottom: 1.5px solid var(--border-color);
+        }
+
+        .site-header .main-title {
+            font-family: var(--font-serif);
+            font-size: 1.55rem;
+            font-style: italic;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            line-height: 1.25;
+        }
+
+        .site-header .sub-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #6b6357;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .site-header .author {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #2b2b2b;
+            letter-spacing: 0.02em;
+        }
+
+        .nav-loading-hint {
+            margin-top: 30px;
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 0.88rem;
+            color: #8c8273;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hourglass-spin {
+            font-size: 1.4rem;
+            display: inline-block;
+            animation: spinHourglass 2s infinite ease-in-out;
+        }
+
+        @keyframes spinHourglass {
+            0% { transform: rotate(0deg); }
+            45% { transform: rotate(180deg); }
+            50% { transform: rotate(180deg); }
+            95% { transform: rotate(360deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #static-main {
+            flex: 1;
+            padding: 60px 90px;
+            overflow-y: auto;
+            background-color: var(--bg-color);
+        }
+
+        .content-box {
+            max-width: 840px;
+        }
+
+        .content-box p {
+            font-family: var(--font-serif);
+            font-size: 1.06rem;
+            line-height: 1.72;
+            color: #2b2b2b;
+            margin-bottom: 1.35rem;
+        }
+
+        .content-box .callout {
+            font-style: italic;
+            color: #5c5549;
+            background: rgba(247, 243, 236, 0.45);
+            padding: 14px 18px;
+            border-left: 2.5px solid var(--tree-line);
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Iframe Apps Script in overlay */
         iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             border: none;
             display: block;
+            z-index: 2;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+
+        iframe.ready {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @media (max-width: 768px) {
+            #static-nav { display: none; }
+            #static-main { padding: 40px 20px; }
         }
     </style>
 </head>
 <body>
+
+    <!-- 1. Schermata iniziale statica (visibile in 0,05s) -->
+    <div id="static-shell">
+        <aside id="static-nav">
+            <div class="site-header">
+                <div class="main-title">La classe malaisée</div>
+                <div class="sub-title">Socio-philosophie du déclassement</div>
+                <div class="author">Raffaele Alberto Ventura</div>
+            </div>
+            <div class="nav-loading-hint">
+                <span class="hourglass-spin">⏳</span>
+                <span>Chargement du sommaire...</span>
+            </div>
+        </aside>
+
+        <main id="static-main">
+            <div class="content-box">
+                <p>En 2017, la <em>Teoria della classe disagiata</em> ouvrit les yeux de la jeunesse italienne sur les promesses non tenues de la société de l’abondance. Le livre analysait comment le capitalisme nous a jetés dans l'indifférenciation et comment l’impératif de distinction nous entraîne dans une course aux armements symboliques sur un marché saturé, produisant un surplus condamné au déclassement.</p>
+
+                <p>Dix ans après, ce cadre d’analyse semble s’appliquer aussi à la France. Il est rendu encore plus actuel par l'avènement de l’IA générative de masse, qui aggrave la crise d'indifférenciation. Cette classe disqualifiée, inadaptée, bientôt superflue — notre classe malaisée — est le résultat de plusieurs décennies de croissance économique dont on a compris trop tard qu’elle ne pouvait pas être éternelle. Certains croient que cet effondrement aurait pu être accepté avec résignation, mais les représentations de soi ne sont pas des caprices que l’on pourrait ajuster. Profondément enracinées, elles sont le produit de causes sociales et culturelles.</p>
+
+                <p>Aujourd’hui, la jeunesse se révolte. Pouvait-elle réagir autrement? La crise n’est pas seulement économique, elle est existentielle : c’est le dernier avatar de la lutte pour la reconnaissance annoncée par Hegel à l’aube de la modernité. Être ou ne pas être? Telle est encore et toujours la question.</p>
+
+                <p class="callout">Cet hypertexte en “work in progress” constitue la première adaptation en français des thèses de ce livre culte et des suivants, avec l’ajout de nombreuses références au nouveau contexte historique et géographique. Les chapitres vont apparaître au fur-et-à-mesure de leur traduction entre novembre 2026 et janvier 2027. Les contenus disponibles sont marqués en vert et les plus récents avec un <span style="color: #d32f2f;">●</span> rouge.</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- 2. Iframe dinamico caricato in sottofondo -->
     <iframe id="app-iframe" allow="clipboard-write"></iframe>
 
     <script>
-        // URL di base della Web App di Google Apps Script
         const baseAppsScriptUrl = "https://script.google.com/macros/s/AKfycbzXjrlAwQW1SRBdvISqjXGkfMftBQrsdWScgBmcw4JCDITvMtbyxS59nSHoX3ZoorsGgg/exec";
+        const defaultTab = "t.h23zcxu3jwib";
+        const iframe = document.getElementById('app-iframe');
+        const shell = document.getElementById('static-shell');
+
+        // Risoluzione parametro tab prioritario (search query es. ?tab=... o hash es. #t....)
+        const params = new URLSearchParams(window.location.search);
+        let tabVal = params.get('tab');
         
-        // Recupera eventuali parametri (es. ?tab=...) presenti nell'URL di GitHub Pages
-        const searchParams = window.location.search;
+        if (!tabVal && window.location.hash && window.location.hash.length > 1) {
+            tabVal = window.location.hash.substring(1);
+        }
         
-        // Inserisce nell'iframe l'URL di Apps Script mantenendo gli stessi parametri passati nel wrapper
-        document.getElementById('app-iframe').src = baseAppsScriptUrl + searchParams;
+        // Se non specificato, punta direttamente al tab richiesto
+        if (!tabVal) {
+            tabVal = defaultTab;
+        }
+
+        // Carica l'Apps Script con il tab target
+        iframe.src = baseAppsScriptUrl + "?tab=" + encodeURIComponent(tabVal);
+
+        // Transizione morbida: appena l'iframe è caricato, lo mostra e nasconde la shell statica
+        iframe.onload = function() {
+            setTimeout(() => {
+                iframe.classList.add('ready');
+                shell.style.opacity = '0';
+                setTimeout(() => { shell.style.display = 'none'; }, 350);
+            }, 150);
+        };
     </script>
 </body>
 </html>
