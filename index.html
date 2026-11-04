@@ -8,22 +8,11 @@
     
     <meta name="description" content="La socio-philosophie du déclassement par Raffaele Alberto Ventura.">
 
-    <!-- Balises Open Graph -->
     <meta property="og:title" content="La classe malaisée">
     <meta property="og:description" content="La socio-philosophie du déclassement par Raffaele Alberto Ventura.">
     <meta property="og:url" content="https://rav.ltd/">
     <meta property="og:image" content="https://raw.githubusercontent.com/rav-ltd/classe/refs/heads/main/thumbclasse.png">
-    <meta property="og:image:secure_url" content="https://raw.githubusercontent.com/rav-ltd/classe/refs/heads/main/thumbclasse.png">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
     <meta property="og:type" content="website">
-
-    <!-- Twitter Cards -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="La classe malaisée">
-    <meta name="twitter:description" content="La socio-philosophie du déclassement par Raffaele Alberto Ventura.">
-    <meta name="twitter:image" content="https://raw.githubusercontent.com/rav-ltd/classe/refs/heads/main/thumbclasse.png">
 
     <style>
         :root {
@@ -56,9 +45,9 @@
             position: absolute;
             top: 0;
             left: 0;
-            z-index: 1;
+            z-index: 10;
             background-color: var(--sidebar-bg);
-            transition: opacity 0.35s ease;
+            transition: opacity 0.4s ease;
         }
 
         #static-nav {
@@ -158,14 +147,13 @@
             width: 100%;
         }
 
-        /* Cursore lampeggiante per l'effetto macchina da scrivere */
         .typewriter-cursor {
             display: inline-block;
             width: 2px;
             height: 1.15em;
             background-color: var(--visible-green);
             vertical-align: -0.15em;
-            margin-left: 3px;
+            margin-left: 2px;
             animation: cursorBlink 0.75s infinite step-start;
         }
 
@@ -173,7 +161,6 @@
             50% { opacity: 0; }
         }
 
-        /* Iframe Apps Script */
         iframe {
             position: absolute;
             top: 0;
@@ -182,15 +169,7 @@
             height: 100%;
             border: none;
             display: block;
-            z-index: 2;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.35s ease;
-        }
-
-        iframe.ready {
-            opacity: 1;
-            pointer-events: auto;
+            z-index: 1;
         }
 
         @media (max-width: 768px) {
@@ -201,7 +180,6 @@
 </head>
 <body>
 
-    <!-- Guscio iniziale identico al layout finale -->
     <div id="static-shell">
         <aside id="static-nav">
             <div class="site-header">
@@ -216,23 +194,10 @@
         </aside>
 
         <main id="static-main">
-            <div class="content-box">
-                <p>En 2017, la <em>Teoria della classe disagiata</em> ouvrit les yeux de la jeunesse italienne sur les promesses non tenues de la société de l’abondance. Le livre analysait comment le capitalisme nous a jetés dans l'indifférenciation et comment l’impératif de distinction nous entraîne dans une course aux armements symboliques sur un marché saturé, produisant un surplus condamné au déclassement.</p>
-
-                <p>Dix ans après, ce cadre d’analyse semble s’appliquer aussi à la France. Il est rendu encore plus actuel par l'avènement de l’IA générative de masse, qui aggrave la crise d'indifférenciation. Cette classe disqualifiée, inadaptée, bientôt superflue - notre classe <em>malaisée</em> - est le résultat de plusieurs décennies de croissance économique dont on a compris trop tard qu’elle ne pouvait pas être éternelle. Certains croient que cet effondrement aurait pû être accepté avec résignation, mais les représentations de soi ne sono pas des caprices que l’on pourrait ajuster. Profondément enracinées, elles sont le produit de causes sociales et culturelles.</p>
-
-                <p>Aujourd’hui, la jeunesse se révolte. Pouvait-elle réagir autrement? La crise n’est pas seulement économique, elle est existentielle : c’est le dernier avatar de la lutte pour la reconnaissance annoncée par Hegel à l’aube de la modernité. <em>Être ou ne pas être?</em> Telle est encore et toujours la question.</p>
-
-                <p>Cet hypertexte en “work in progress” constitue la première adaptation en français des thèses de ce livre culte et des suivants, avec l’ajout de nombreuses références au nouveau contexte historique et géographique. Les chapitres vont apparaître au fur-et-à-mesure de leur traduction entre novembre 2026 et janvier 2027. Les contenus disponible sont <span style="color: #2e7d32;">marqués en vert</span> et les plus récents avec un <span style="color: #d32f2f;">●</span> rouge.</p>
-
-                <hr class="doc-divider">
-
-                <p>Raffaele Alberto Ventura est philosophe précaire, auteur de plusieurs ouvrages. Il a édité en italien les écrits économiques de Cornelius Castoriadis. Ses derniers livres sont <em>La conquista dell’infelicità</em> (Einaudi 2025) e <em>L’istituzione immaginaria del capitalismo</em> (DeriveApprodi 2026).</p>
-            </div>
+            <div class="content-box" id="typewriter-target"></div>
         </main>
     </div>
 
-    <!-- Iframe in caricamento in background -->
     <iframe id="app-iframe" allow="clipboard-write"></iframe>
 
     <script>
@@ -240,82 +205,72 @@
         const defaultTab = "t.h23zcxu3jwib";
         const iframe = document.getElementById('app-iframe');
         const shell = document.getElementById('static-shell');
+        const target = document.getElementById('typewriter-target');
 
+        // Testo integrale perfettamente formattato
+        const rawContent = [
+            '<p>En 2017, la <em>Teoria della classe disagiata</em> ouvrit les yeux de la jeunesse italienne sur les promesses non tenues de la société de l’abondance. Le livre analysait comment le capitalisme nous a jetés dans l\'indifférenciation et comment l’impératif de distinction nous entraîne dans une course aux armements symboliques sur un marché saturé, produisant un surplus condamné au déclassement.</p>',
+            '<p>Dix ans après, ce cadre d’analyse semble s’appliquer aussi à la France. Il est rendu encore plus actuel par l\'avènement de l’IA générative de masse, qui aggrave la crise d\'indifférenciation. Cette classe disqualifiée, inadaptée, bientôt superflue - notre classe <em>malaisée</em> - est le résultat de plusieurs décennies de croissance économique dont on a compris trop tard qu’elle ne pouvait pas être éternelle. Certains croient que cet effondrement aurait pû être accepté avec résignation, mais les représentations de soi ne sont pas des caprices que l’on pourrait ajuster. Profondément enracinées, elles sont le produit de causes sociales et culturelles.</p>',
+            '<p>Aujourd’hui, la jeunesse se révolte. Pouvait-elle réagir autrement? La crise n’est pas seulement économique, elle est existentielle : c’est le dernier avatar de la lutte pour la reconnaissance annoncée par Hegel à l’aube de la modernité. <em>Être ou ne pas être?</em> Telle est encore et toujours la question.</p>',
+            '<p>Cet hypertexte en “work in progress” constitue la première adaptation en français des thèses de ce livre culte et des suivants, avec l’ajout de nombreuses références au nouveau contexte historique et géographique. Les chapitres vont apparaître au fur-et-à-mesure de leur traduction entre novembre 2026 et janvier 2027. Les contenus disponible sont <span style="color: #2e7d32;">marqués en vert</span> et les plus récents avec un <span style="color: #d32f2f;">●</span> rouge.</p>',
+            '<hr class="doc-divider">',
+            '<p>Raffaele Alberto Ventura est philosophe précaire, auteur de plusieurs ouvrages. Il a édité en italien les écrits économiques de Cornelius Castoriadis. Ses derniers livres sont <em>La conquista dell’infelicità</em> (Einaudi 2025) e <em>L’istituzione immaginaria del capitalismo</em> (DeriveApprodi 2026).</p>'
+        ].join('');
+
+        // Avvio macchina da scrivere
+        let charIndex = 0;
+        const typingSpeed = 10; // ms per carattere
+        let typingDone = false;
+        let iframeLoaded = false;
+
+        function runTypewriter() {
+            if (charIndex < rawContent.length) {
+                if (rawContent[charIndex] === '<') {
+                    const closeTag = rawContent.indexOf('>', charIndex);
+                    charIndex = closeTag !== -1 ? closeTag + 1 : charIndex + 1;
+                } else {
+                    charIndex++;
+                }
+                target.innerHTML = rawContent.substring(0, charIndex) + '<span class="typewriter-cursor"></span>';
+                setTimeout(runTypewriter, typingSpeed);
+            } else {
+                target.innerHTML = rawContent;
+                typingDone = true;
+                checkTransition();
+            }
+        }
+        runTypewriter();
+
+        // Parametri permalink
         const params = new URLSearchParams(window.location.search);
         let tabVal = params.get('tab');
-        
         if (!tabVal && window.location.hash && window.location.hash.length > 1) {
             tabVal = window.location.hash.substring(1);
         }
-        
-        if (!tabVal) {
-            tabVal = defaultTab;
+        if (!tabVal) tabVal = defaultTab;
+
+        // Se l'utente visita direttamente un capitolo specifico, salta la macchina da scrivere
+        const isCustomTab = (tabVal !== defaultTab);
+        if (isCustomTab) {
+            shell.style.display = 'none';
         }
 
         iframe.src = baseAppsScriptUrl + "?tab=" + encodeURIComponent(tabVal);
 
-        // Effetto macchina da scrivere carattere per carattere preservando i tag HTML
-        (function initTypewriter() {
-            // Cerca sia .content-box sia #static-main o #static-intro-card
-            const container = document.querySelector('.content-box') || 
-                              document.querySelector('#static-main > div') || 
-                              document.querySelector('#static-intro-card');
-            if (!container) return;
+        iframe.onload = function() {
+            // L'Apps Script impiega ancora qualche secondo interno dopo l'onload
+            setTimeout(() => {
+                iframeLoaded = true;
+                checkTransition();
+            }, 3000);
+        };
 
-            const fullHtml = container.innerHTML;
-            container.innerHTML = '<span class="typewriter-cursor"></span>';
-            const cursor = container.querySelector('.typewriter-cursor');
-
-            let charIndex = 0;
-            const typingSpeed = 16; // millisecondi per carattere
-
-            window._typewriterFinished = false;
-
-            function typeNext() {
-                if (charIndex < fullHtml.length) {
-                    if (fullHtml[charIndex] === '<') {
-                        const closeTagIndex = fullHtml.indexOf('>', charIndex);
-                        charIndex = closeTagIndex !== -1 ? closeTagIndex + 1 : charIndex + 1;
-                    } else {
-                        charIndex++;
-                    }
-                    container.innerHTML = fullHtml.substring(0, charIndex) + '<span class="typewriter-cursor"></span>';
-                    setTimeout(typeNext, typingSpeed);
-                } else {
-                    const finalCursor = container.querySelector('.typewriter-cursor');
-                    if (finalCursor) finalCursor.remove();
-                    window._typewriterFinished = true;
-                    // Se l'iframe era già pronto in sottofondo, mostralo adesso
-                    if (window._iframeLoaded) {
-                        revealApp();
-                    }
-                }
-            }
-
-            setTimeout(typeNext, 120);
-        })();
-
-        function revealApp() {
-            iframe.classList.add('ready');
-            shell.style.opacity = '0';
-            setTimeout(() => { shell.style.display = 'none'; }, 400);
-        }
-
-        // Ascolta il messaggio inviato da Apps Script solo quando il testo reale è pronto
-        window.addEventListener('message', function(event) {
-            if (event.data === 'rav_ready') {
-                iframe.classList.add('ready');
+        function checkTransition() {
+            if (isCustomTab || (typingDone && iframeLoaded)) {
                 shell.style.opacity = '0';
-                setTimeout(() => { shell.style.display = 'none'; }, 300);
+                setTimeout(() => { shell.style.display = 'none'; }, 400);
             }
-        });
-
-        // Fallback di sicurezza: se dopo 8 secondi non riceve messaggio, svela comunque l'iframe
-        setTimeout(() => {
-            iframe.classList.add('ready');
-            shell.style.opacity = '0';
-            setTimeout(() => { shell.style.display = 'none'; }, 300);
-        }, 8000);
+        }
     </script>
 </body>
 </html>
