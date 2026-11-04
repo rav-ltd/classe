@@ -269,6 +269,8 @@
             let charIndex = 0;
             const typingSpeed = 16; // millisecondi per carattere
 
+            window._typewriterFinished = false;
+
             function typeNext() {
                 if (charIndex < fullHtml.length) {
                     if (fullHtml[charIndex] === '<') {
@@ -282,18 +284,29 @@
                 } else {
                     const finalCursor = container.querySelector('.typewriter-cursor');
                     if (finalCursor) finalCursor.remove();
+                    window._typewriterFinished = true;
+                    // Se l'iframe era già pronto in sottofondo, mostralo adesso
+                    if (window._iframeLoaded) {
+                        revealApp();
+                    }
                 }
             }
 
             setTimeout(typeNext, 120);
         })();
 
+        function revealApp() {
+            iframe.classList.add('ready');
+            shell.style.opacity = '0';
+            setTimeout(() => { shell.style.display = 'none'; }, 400);
+        }
+
         iframe.onload = function() {
-            setTimeout(() => {
-                iframe.classList.add('ready');
-                shell.style.opacity = '0';
-                setTimeout(() => { shell.style.display = 'none'; }, 350);
-            }, 150);
+            window._iframeLoaded = true;
+            // Mostra l'iframe solo quando la macchina da scrivere ha terminato di comporre
+            if (window._typewriterFinished) {
+                revealApp();
+            }
         };
     </script>
 </body>
