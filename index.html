@@ -256,7 +256,10 @@
 
         // Effetto macchina da scrivere carattere per carattere preservando i tag HTML
         (function initTypewriter() {
-            const container = document.querySelector('.content-box');
+            // Cerca sia .content-box sia #static-main o #static-intro-card
+            const container = document.querySelector('.content-box') || 
+                              document.querySelector('#static-main > div') || 
+                              document.querySelector('#static-intro-card');
             if (!container) return;
 
             const fullHtml = container.innerHTML;
