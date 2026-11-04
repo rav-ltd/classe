@@ -301,13 +301,21 @@
             setTimeout(() => { shell.style.display = 'none'; }, 400);
         }
 
-        iframe.onload = function() {
-            window._iframeLoaded = true;
-            // Mostra l'iframe solo quando la macchina da scrivere ha terminato di comporre
-            if (window._typewriterFinished) {
-                revealApp();
+        // Ascolta il messaggio inviato da Apps Script solo quando il testo reale è pronto
+        window.addEventListener('message', function(event) {
+            if (event.data === 'rav_ready') {
+                iframe.classList.add('ready');
+                shell.style.opacity = '0';
+                setTimeout(() => { shell.style.display = 'none'; }, 300);
             }
-        };
+        });
+
+        // Fallback di sicurezza: se dopo 8 secondi non riceve messaggio, svela comunque l'iframe
+        setTimeout(() => {
+            iframe.classList.add('ready');
+            shell.style.opacity = '0';
+            setTimeout(() => { shell.style.display = 'none'; }, 300);
+        }, 8000);
     </script>
 </body>
 </html>
