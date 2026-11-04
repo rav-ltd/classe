@@ -158,6 +158,21 @@
             width: 100%;
         }
 
+        /* Cursore lampeggiante per l'effetto macchina da scrivere */
+        .typewriter-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.15em;
+            background-color: var(--visible-green);
+            vertical-align: -0.15em;
+            margin-left: 3px;
+            animation: cursorBlink 0.75s infinite step-start;
+        }
+
+        @keyframes cursorBlink {
+            50% { opacity: 0; }
+        }
+
         /* Iframe Apps Script */
         iframe {
             position: absolute;
@@ -238,6 +253,37 @@
         }
 
         iframe.src = baseAppsScriptUrl + "?tab=" + encodeURIComponent(tabVal);
+
+        // Effetto macchina da scrivere carattere per carattere preservando i tag HTML
+        (function initTypewriter() {
+            const container = document.querySelector('.content-box');
+            if (!container) return;
+
+            const fullHtml = container.innerHTML;
+            container.innerHTML = '<span class="typewriter-cursor"></span>';
+            const cursor = container.querySelector('.typewriter-cursor');
+
+            let charIndex = 0;
+            const typingSpeed = 16; // millisecondi per carattere
+
+            function typeNext() {
+                if (charIndex < fullHtml.length) {
+                    if (fullHtml[charIndex] === '<') {
+                        const closeTagIndex = fullHtml.indexOf('>', charIndex);
+                        charIndex = closeTagIndex !== -1 ? closeTagIndex + 1 : charIndex + 1;
+                    } else {
+                        charIndex++;
+                    }
+                    container.innerHTML = fullHtml.substring(0, charIndex) + '<span class="typewriter-cursor"></span>';
+                    setTimeout(typeNext, typingSpeed);
+                } else {
+                    const finalCursor = container.querySelector('.typewriter-cursor');
+                    if (finalCursor) finalCursor.remove();
+                }
+            }
+
+            setTimeout(typeNext, 120);
+        })();
 
         iframe.onload = function() {
             setTimeout(() => {
