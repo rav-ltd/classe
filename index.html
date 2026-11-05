@@ -1,303 +1,202 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La classe malaisée — Socio-philosophie du déclassement</title>
-    
-    <meta name="description" content="La socio-philosophie du déclassement par Raffaele Alberto Ventura.">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La classe malaisée — Socio-philosophie du déclassement</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
 
-    <meta property="og:title" content="La classe malaisée">
-    <meta property="og:description" content="La socio-philosophie du déclassement par Raffaele Alberto Ventura.">
-    <meta property="og:url" content="https://rav.ltd/">
-    <meta property="og:image" content="https://raw.githubusercontent.com/rav-ltd/classe/refs/heads/main/thumbclasse.png">
-    <meta property="og:type" content="website">
+<meta name="description" content="La socio-philosophie du déclassement par Raffaele Alberto Ventura.">
+<meta property="og:title" content="La classe malaisée">
+<meta property="og:description" content="La socio-philosophie du déclassement par Raffaele Alberto Ventura.">
+<meta property="og:url" content="https://rav.ltd/">
+<meta property="og:image" content="https://raw.githubusercontent.com/rav-ltd/classe/refs/heads/main/thumbclasse.png">
+<meta property="og:type" content="website">
 
-    <style>
-        :root {
-            --bg-color: #ffffff;
-            --sidebar-bg: #f7f3ec;
-            --text-color: #2b2b2b;
-            --border-color: #e6dfd3;
-            --tree-line: #8c8273;
-            --visible-green: #2e7d32;
-            --font-serif: Georgia, Cambria, "Times New Roman", Times, serif;
-            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
+<!-- Le connessioni verso Google si aprono mentre il resto della pagina viene ancora letto -->
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://ssl.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://script.googleusercontent.com">
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+<style>
+:root{--bg:#fff;--side:#f7f3ec;--line:#e6dfd3;--green:#2e7d32;
+  --serif:Georgia,Cambria,"Times New Roman",Times,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--side);font-family:var(--sans)}
 
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: var(--sidebar-bg);
-            font-family: var(--font-main);
-        }
+iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;z-index:1}
 
-        #static-shell {
-            display: flex;
-            width: 100vw;
-            height: 100vh;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 10;
-            background-color: var(--sidebar-bg);
-            transition: opacity 0.4s ease;
-        }
+#shell{display:flex;position:absolute;inset:0;z-index:10;background:var(--side);transition:opacity .4s ease}
+.direct #shell{display:none}                /* link diretto a un capitolo: niente introduzione */
+nav{width:440px;flex-shrink:0;padding:35px 25px;background:var(--side);border-right:1px solid var(--line)}
+.site-header{margin-bottom:20px;padding-bottom:20px;border-bottom:1.5px solid var(--line)}
+.main-title{font:italic normal 1.55rem/1.25 var(--serif);color:#1a1a1a;margin-bottom:8px}
+.sub-title{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:#6b6357;margin-bottom:12px;line-height:1.4}
+.author{font-size:.92rem;font-weight:600;color:#2b2b2b;letter-spacing:.02em}
+.hint{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#ede5d8;border:1px solid #dcd1c0;
+  border-radius:6px;font:italic .9rem var(--serif);color:#4a4338}
+.hourglass-spin{font-size:1.25rem;display:inline-block;flex-shrink:0;animation:flip 2s infinite ease-in-out}
+@keyframes flip{0%{transform:rotate(0)}45%,50%{transform:rotate(180deg)}95%,100%{transform:rotate(360deg)}}
 
-        #static-nav {
-            width: 440px;
-            background-color: var(--sidebar-bg);
-            border-right: 1px solid var(--border-color);
-            padding: 35px 25px;
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-        }
+main{flex:1;padding:60px 90px;overflow-y:auto;background:var(--bg)}
+#writer{max-width:840px;visibility:hidden}
+#writer p{font:1.06rem/1.72 var(--serif);color:#2b2b2b;margin-bottom:1.35rem}
+#writer hr{border:0;border-top:1.5px solid var(--line);margin:1.6rem 0}
+.cursor{display:inline-block;width:2px;height:1.15em;margin-left:2px;vertical-align:-.15em;
+  background:var(--green);animation:blink .7s infinite step-start}
+@keyframes blink{50%{opacity:0}}
 
-        .site-header {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1.5px solid var(--border-color);
-        }
-
-        .site-header .main-title {
-            font-family: var(--font-serif);
-            font-size: 1.55rem;
-            font-style: italic;
-            color: #1a1a1a;
-            margin-bottom: 8px;
-            line-height: 1.25;
-        }
-
-        .site-header .sub-title {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: #6b6357;
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-
-        .site-header .author {
-            font-size: 0.92rem;
-            font-weight: 600;
-            color: #2b2b2b;
-            letter-spacing: 0.02em;
-        }
-
-        .nav-loading-hint {
-            background-color: #ede5d8;
-            border: 1px solid #dcd1c0;
-            border-radius: 6px;
-            padding: 10px 14px;
-            margin-bottom: 22px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: var(--font-serif);
-            font-style: italic;
-            font-size: 0.9rem;
-            color: #4a4338;
-        }
-
-        .hourglass-spin {
-            font-size: 1.25rem;
-            display: inline-block;
-            animation: spinHourglass 2s infinite ease-in-out;
-            flex-shrink: 0;
-        }
-
-        @keyframes spinHourglass {
-            0% { transform: rotate(0deg); }
-            45% { transform: rotate(180deg); }
-            50% { transform: rotate(180deg); }
-            95% { transform: rotate(360deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        #static-main {
-            flex: 1;
-            padding: 60px 90px;
-            overflow-y: auto;
-            background-color: var(--bg-color);
-        }
-
-        .content-box {
-            max-width: 840px;
-        }
-
-        .content-box p {
-            font-family: var(--font-serif);
-            font-size: 1.06rem;
-            line-height: 1.72;
-            color: #2b2b2b;
-            margin-bottom: 1.35rem;
-        }
-
-        .content-box hr.doc-divider {
-            border: none;
-            border-top: 1.5px solid var(--border-color);
-            margin: 1.6rem 0;
-            width: 100%;
-        }
-
-        .typewriter-cursor {
-            display: inline-block;
-            width: 2px;
-            height: 1.15em;
-            background-color: var(--visible-green);
-            vertical-align: -0.15em;
-            margin-left: 2px;
-            animation: cursorBlink 0.7s infinite step-start;
-        }
-
-        @keyframes cursorBlink {
-            50% { opacity: 0; }
-        }
-
-        iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-            z-index: 1;
-        }
-
-        @media (max-width: 768px) {
-            #static-nav { display: none; }
-            #static-main { padding: 40px 20px; }
-        }
-    </style>
+@media (max-width:768px){nav{display:none}main{padding:40px 20px}}
+@media (prefers-reduced-motion:reduce){.hourglass-spin,.cursor{animation:none}}
+</style>
+<noscript><style>#writer{visibility:visible}</style></noscript>
 </head>
 <body>
 
-    <div id="static-shell">
-        <aside id="static-nav">
-            <div class="site-header">
-                <div class="main-title">La classe malaisée</div>
-                <div class="sub-title">Socio-philosophie du déclassement</div>
-                <div class="author">Raffaele Alberto Ventura</div>
-            </div>
-            <div class="nav-loading-hint">
-                <span class="hourglass-spin">⏳</span>
-                <span>Chargement de l'hypertexte en cours...</span>
-            </div>
-        </aside>
+<!-- L'iframe è il primo elemento e riceve l'indirizzo subito: parte a caricare mentre si legge il resto -->
+<iframe id="app" title="La classe malaisée — Hypertexte" allow="clipboard-write"></iframe>
+<script>
+(function () {
+  var BASE = "https://script.google.com/macros/s/AKfycbzXjrlAwQW1SRBdvISqjXGkfMftBQrsdWScgBmcw4JCDITvMtbyxS59nSHoX3ZoorsGgg/exec";
+  var HOME = "t.h23zcxu3jwib";              // deve coincidere con HOME_TAB di Code.gs
+  var ID = /^t\.[\w-]+$/;
 
-        <main id="static-main">
-            <!-- Struttura DOM reale già predisposta: la digitazione popolerà i testi uno per uno -->
-            <div class="content-box" id="writer-container">
-                <p>En 2017, la <em data-tw="Teoria della classe disagiata"></em><span data-tw=" ouvrit les yeux de la jeunesse italienne sur les promesses non tenues de la société de l’abondance. Le livre analysait comment le capitalisme nous a jetés dans l'indifférenciation et comment l’impératif de distinction nous entraîne dans une course aux armements symboliques sur un marché saturé, produisant un surplus condamné au déclassement."></span></p>
+  // Il capitolo viene letto dall'indirizzo: prima #capitolo (aggiornato durante la navigazione), poi ?tab=
+  var hash = ""; try { hash = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
+  var tab = ID.test(hash) ? hash : (new URLSearchParams(location.search).get("tab") || "");
+  if (!ID.test(tab)) tab = HOME;
 
-                <p><span data-tw="Dix ans après, ce cadre d’analyse semble s’appliquer aussi à la France. Il est rendu encore plus actuel par l'avènement de l’IA générative de masse, qui aggrave la crise d'indifférenciation. Cette classe disqualifiée, inadaptée, bientôt superflue - notre classe "></span><em data-tw="malaisée"></em><span data-tw=" - est le résultat de plusieurs décennies de croissance économique dont on a compris trop tard qu’elle ne pouvait pas être éternelle. Certains croient que cet effondrement aurait pû être accepté avec résignation, mais les représentations de soi ne sont pas des caprices que l’on pourrait ajuster. Profondément enracinées, elles sont le produit de causes sociales et culturelles."></span></p>
+  window.RAV = { base: BASE, home: HOME, id: ID, direct: tab !== HOME };
+  if (window.RAV.direct) document.documentElement.className = "direct";
+  document.getElementById("app").src = BASE + "?tab=" + encodeURIComponent(tab);
+})();
+</script>
 
-                <p><span data-tw="Aujourd’hui, la jeunesse se révolte. Pouvait-elle réagir autrement? La crise n’est pas seulement économique, elle est existentielle : c’est le dernier avatar de la lutte pour la reconnaissance annoncée par Hegel à l’aube de la modernité. "></span><em data-tw="Être ou ne pas être?"></em><span data-tw=" Telle est encore et toujours la question."></span></p>
-
-                <p><span data-tw="Cet hypertexte en “work in progress” constitue la première adaptation en français des thèses de ce livre culte et des suivants, avec l’ajout de nombreuses références au nouveau contexte historique et géographique. Les chapitres vont apparaître au fur-et-à-mesure de leur traduction entre novembre 2026 et janvier 2027. Les contenus disponible sont "></span><span style="color: #2e7d32;" data-tw="marqués en vert"></span><span data-tw=" et les plus récents avec un "></span><span style="color: #d32f2f;" data-tw="● rouge."></span></p>
-
-                <hr class="doc-divider" id="writer-hr" style="display: none;">
-
-                <p id="writer-bio" style="display: none;"><span data-tw="Raffaele Alberto Ventura est philosophe précaire, auteur de plusieurs ouvrages. Il a édité en italien les écrits économiques de Cornelius Castoriadis. Ses derniers livres sont "></span><em data-tw="La conquista dell’infelicità"></em><span data-tw=" (Einaudi 2025) e "></span><em data-tw="L’istituzione immaginaria del capitalismo"></em><span data-tw=" (DeriveApprodi 2026)."></span></p>
-            </div>
-        </main>
+<div id="shell">
+  <nav>
+    <div class="site-header">
+      <div class="main-title">La classe malaisée</div>
+      <div class="sub-title">Socio-philosophie du déclassement</div>
+      <div class="author">Raffaele Alberto Ventura</div>
     </div>
+    <div class="hint"><span class="hourglass-spin">⏳</span><span>Chargement de l'hypertexte en cours...</span></div>
+  </nav>
 
-    <iframe id="app-iframe" allow="clipboard-write"></iframe>
+  <main>
+    <!-- Testo reale nel DOM (leggibile da motori di ricerca e anteprime): lo script lo svuota e lo "digita" -->
+    <div id="writer">
+      <p>En 2017, la <em>Teoria della classe disagiata</em> ouvrit les yeux de la jeunesse italienne sur les promesses non tenues de la société de l’abondance. Le livre analysait comment le capitalisme nous a jetés dans l'indifférenciation et comment l’impératif de distinction nous entraîne dans une course aux armements symboliques sur un marché saturé, produisant un surplus condamné au déclassement.</p>
+      <p>Dix ans après, ce cadre d’analyse semble s’appliquer aussi à la France. Il est rendu encore plus actuel par l'avènement de l’IA générative de masse, qui aggrave la crise d'indifférenciation. Cette classe disqualifiée, inadaptée, bientôt superflue - notre classe <em>malaisée</em> - est le résultat de plusieurs décennies de croissance économique dont on a compris trop tard qu’elle ne pouvait pas être éternelle. Certains croient que cet effondrement aurait pu être accepté avec résignation, mais les représentations de soi ne sont pas des caprices que l’on pourrait ajuster. Profondément enracinées, elles sont le produit de causes sociales et culturelles.</p>
+      <p>Aujourd’hui, la jeunesse se révolte. Pouvait-elle réagir autrement? La crise n’est pas seulement économique, elle est existentielle : c’est le dernier avatar de la lutte pour la reconnaissance annoncée par Hegel à l’aube de la modernité. <em>Être ou ne pas être?</em> Telle est encore et toujours la question.</p>
+      <p>Cet hypertexte en “work in progress” constitue la première adaptation en français des thèses de ce livre culte et des suivants, avec l’ajout de nombreuses références au nouveau contexte historique et géographique. Les chapitres vont apparaître au fur et à mesure de leur traduction entre novembre 2026 et janvier 2027. Les contenus disponibles sont <span style="color:#2e7d32">marqués en vert</span> et les plus récents avec un <span style="color:#d32f2f">● rouge.</span></p>
+      <div data-late hidden>
+        <hr>
+        <p>Raffaele Alberto Ventura est philosophe précaire, auteur de plusieurs ouvrages. Il a édité en italien les écrits économiques de Cornelius Castoriadis. Ses derniers livres sont <em>La conquista dell’infelicità</em> (Einaudi 2025) et <em>L’istituzione immaginaria del capitalismo</em> (DeriveApprodi 2026).</p>
+      </div>
+    </div>
+  </main>
+</div>
 
-    <script>
-        const baseAppsScriptUrl = "https://script.google.com/macros/s/AKfycbzXjrlAwQW1SRBdvISqjXGkfMftBQrsdWScgBmcw4JCDITvMtbyxS59nSHoX3ZoorsGgg/exec";
-        const defaultTab = "t.h23zcxu3jwib";
-        const iframe = document.getElementById('app-iframe');
-        const shell = document.getElementById('static-shell');
+<script>
+(function () {
+  var shell = document.getElementById("shell"), frame = document.getElementById("app");
+  var writer = document.getElementById("writer"), cfg = window.RAV;
+  var typed = false, ready = false, faded = false;
 
-        // Permalink check
-        const params = new URLSearchParams(window.location.search);
-        let tabVal = params.get('tab');
-        if (!tabVal && window.location.hash && window.location.hash.length > 1) {
-            tabVal = window.location.hash.substring(1);
-        }
-        if (!tabVal) tabVal = defaultTab;
+  /* ── transizione: solo quando la macchina da scrivere ha finito E l'app ha qualcosa da mostrare ── */
+  function fade() {
+    if (faded) return;
+    faded = true;
+    shell.style.pointerEvents = "none";      // l'app sotto è subito cliccabile
+    shell.style.opacity = "0";
+    setTimeout(function () { shell.remove(); }, 450);
+  }
+  function tryFinish() { if (cfg.direct || (typed && ready)) fade(); }
 
-        const isDirectChapter = (tabVal !== defaultTab);
-        if (isDirectChapter) {
-            shell.style.display = 'none';
-        }
+  /* ── macchina da scrivere: tempo reale (non un timer per carattere), con accelerazione finale ── */
+  var items = [], total = 0;
+  var walker = document.createTreeWalker(writer, NodeFilter.SHOW_TEXT, null);
+  for (var n; (n = walker.nextNode());) {
+    if (!n.data.trim()) continue;
+    items.push({ node: n, full: n.data, shown: n.data.length, late: n.parentElement.closest("[data-late]") });
+    total += n.data.length;
+  }
+  items.forEach(function (it) { it.node.data = ""; it.shown = 0; });
+  writer.style.visibility = "visible";
 
-        // Macchina da scrivere robusta per nodi di testo
-        const elementsToType = Array.from(document.querySelectorAll('[data-tw]'));
-        const cursor = document.createElement('span');
-        cursor.className = 'typewriter-cursor';
+  var cursor = document.createElement("span");
+  cursor.className = "cursor";
+  var CPS = 300;                             // caratteri al secondo (~6 s per l'intero testo)
+  var pos = 0, last = 0, fastAt = 0, fastFrom = 0, cursorAt = -1;
 
-        let elemIndex = 0;
-        let charIndex = 0;
-        let typingFinished = false;
-        let iframeReady = false;
+  function render(count) {
+    var acc = 0;
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i], k = Math.max(0, Math.min(it.full.length, count - acc));
+      if (it.shown !== k) {
+        it.node.data = it.full.slice(0, k); it.shown = k;
+        if (k > 0 && it.late) it.late.hidden = false;
+      }
+      acc += it.full.length;
+      if (acc >= count) {
+        if (cursorAt !== i) { it.node.parentNode.insertBefore(cursor, it.node.nextSibling); cursorAt = i; }
+        return;
+      }
+    }
+  }
+  function finishTyping() {
+    render(total); cursor.remove(); typed = true; tryFinish();
+  }
+  function step(ts) {
+    if (typed) return;
+    var dt = last ? ts - last : 16; last = ts;
+    pos = Math.min(total, pos + CPS * dt / 1000);
+    if (fastAt) pos = Math.max(pos, fastFrom + (total - fastFrom) * Math.min(1, (ts - fastAt) / 450));
+    render(Math.floor(pos));
+    if (pos >= total) finishTyping(); else requestAnimationFrame(step);
+  }
+  function speedUp() {                       // l'app è pronta (o l'utente ha cliccato): completa in ~0,4 s
+    if (typed || fastAt) return;
+    fastAt = performance.now(); fastFrom = pos;
+  }
 
-        function typeLoop() {
-            if (elemIndex >= elementsToType.length) {
-                cursor.remove();
-                typingFinished = true;
-                completeTransition();
-                return;
-            }
+  if (cfg.direct) {
+    finishTyping();
+  } else if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    finishTyping();
+  } else {
+    requestAnimationFrame(step);
+    ["pointerdown", "keydown"].forEach(function (ev) { shell.addEventListener(ev, speedUp, { once: true }); });
+  }
 
-            const currentElem = elementsToType[elemIndex];
-            const fullText = currentElem.getAttribute('data-tw');
+  /* ── handshake con l'app: sostituisce il vecchio timer fisso di 3,5 s ── */
+  function markReady() {
+    if (ready) return;
+    ready = true; speedUp(); tryFinish();
+  }
 
-            // Mostra linea divisoria e blocco bio al momento giusto
-            if (elemIndex === 10) {
-                document.getElementById('writer-hr').style.display = 'block';
-                document.getElementById('writer-bio').style.display = 'block';
-            }
+  function fromGoogle(origin) {
+    try {
+      var h = new URL(origin).hostname;
+      return /(^|\.)(googleusercontent|google)\.com$/.test(h);
+    } catch (e) { return false; }
+  }
 
-            if (!currentElem.contains(cursor)) {
-                currentElem.appendChild(cursor);
-            }
+  window.addEventListener("message", function (ev) {
+    var d = ev.data;
+    if (!d || !fromGoogle(ev.origin)) return;
+    if (d.rav === "ready") markReady();
+    else if (d.rav === "tab" && (d.id === "" || cfg.id.test(d.id))) {
+      // l'indirizzo segue il capitolo aperto: copiare l'URL dà un permalink valido
+      try { history.replaceState(null, "", location.pathname + (d.id ? "#" + d.id : "")); } catch (e) {}
+    }
+  });
 
-            if (charIndex < fullText.length) {
-                const char = fullText.charAt(charIndex);
-                currentElem.insertBefore(document.createTextNode(char), cursor);
-                charIndex++;
-                setTimeout(typeLoop, 5); // Velocità scorrevole: copre l'intero testo in ~6-7s
-            } else {
-                charIndex = 0;
-                elemIndex++;
-                setTimeout(typeLoop, 15);
-            }
-        }
-
-        // Avvio immediato
-        typeLoop();
-
-        // Caricamento iframe in background
-        iframe.src = baseAppsScriptUrl + "?tab=" + encodeURIComponent(tabVal);
-
-        iframe.onload = function() {
-            // Apps Script elabora il documento: dopo 3,5s consideriamo l'app pronta
-            setTimeout(() => {
-                iframeReady = true;
-                completeTransition();
-            }, 3500);
-        };
-
-        function completeTransition() {
-            // Esegue la transizione solo se l'utente ha un link diretto OPPURE se la battitura è finita al 100%
-            if (isDirectChapter || (typingFinished && iframeReady)) {
-                shell.style.opacity = '0';
-                setTimeout(() => {
-                    shell.style.display = 'none';
-                }, 400);
-            }
-        }
-    </script>
+  // Ripiego se l'app non parla (versione vecchia in cache, origine inattesa): comportamento di prima
+  frame.addEventListener("load", function () { setTimeout(markReady, 3500); });
+  setTimeout(markReady, 15000);
+})();
+</script>
 </body>
 </html>
