@@ -67,7 +67,7 @@ main{flex:1;padding:60px 90px;overflow-y:auto;background:var(--bg)}
   var tab = ID.test(hash) ? hash : (new URLSearchParams(location.search).get("tab") || "");
   if (!ID.test(tab)) tab = HOME;
 
-  window.RAV = { base: BASE, home: HOME, id: ID, direct: tab !== HOME };
+  window.RAV = { base: BASE, home: HOME, id: ID, direct: tab !== HOME, tab: tab };
   if (window.RAV.direct) document.documentElement.className = "direct";
   document.getElementById("app").src = BASE + "?tab=" + encodeURIComponent(tab);
 })();
@@ -188,9 +188,20 @@ main{flex:1;padding:60px 90px;overflow-y:auto;background:var(--bg)}
     if (!d || !fromGoogle(ev.origin)) return;
     if (d.rav === "ready") markReady();
     else if (d.rav === "tab" && (d.id === "" || cfg.id.test(d.id))) {
+      cfg.tab = d.id || cfg.home;
       // l'indirizzo segue il capitolo aperto: copiare l'URL dà un permalink valido
       try { history.replaceState(null, "", location.pathname + (d.id ? "#" + d.id : "")); } catch (e) {}
     }
+  });
+
+  // Indirizzo cambiato a sito aperto (permalink incollato o cliccato): si apre quel capitolo.
+  // replaceState qui sopra non scatena "hashchange", quindi la navigazione dentro l'app non passa di qui.
+  window.addEventListener("hashchange", function () {
+    var h = ""; try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
+    var id = cfg.id.test(h) ? h : (h === "" ? cfg.home : "");
+    if (!id || id === cfg.tab) return;
+    cfg.tab = id;
+    frame.src = cfg.base + "?tab=" + encodeURIComponent(id);
   });
 
   // Ripiego se l'app non parla (versione vecchia in cache, origine inattesa): comportamento di prima
