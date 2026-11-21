@@ -728,3 +728,7 @@ html[lang="zh-Hans"] .copertina h1 em,html[lang="zh-Hans"] .testata h1 em{font-s
 html[lang="zh-Hans"] .corpo p,html[lang="zh-Hans"] .corpo li{line-height:1.85;text-align:justify}
 .lingua-link{margin-left:6px}
 html[lang="zh-Hans"] h1,html[lang="zh-Hans"] h2,html[lang="zh-Hans"] h3,html[lang="zh-Hans"] .sottotitolo,html[lang="zh-Hans"] .chapo,html[lang="zh-Hans"] .pc{font-style:normal!important}
+
+/* Home senza immagine (Raffaele, 21/11: «togli l'immagine in home. metti il link al cinese di fianco al bottone di lettura»). */
+.copertina .lingua-link{display:inline-block;margin-left:14px;padding:11px 14px;border:1px solid currentColor;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-decoration:none;color:var(--inchiostro);vertical-align:middle}
+.copertina .lingua-link:hover{background:var(--inchiostro);color:#000}
