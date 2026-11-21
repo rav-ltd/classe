@@ -55,13 +55,16 @@
   function conNome(id) { var n = nomeDi(id); return (n ? '<span class="nome">' + n + '</span> ' : '') + cap(id).titolo; }
   function due(n) { return (n < 10 ? '0' : '') + n; }
 
+  /* Tempo di lettura di una sezione: la somma dei suoi capitoli (Raffaele, 21/11: «scrivi il tempo di lettura dei
+   * nove sottocapitoli che appaiono subito in home»). */
+  function minutiDi(sez) { return sez.capitoli.reduce(function (t, id) { return t + (cap(id) ? cap(id).minuti : 0); }, 0); }
   function planHtml(corrente) {
     var h = '';
     function riga(id, cls) {
       var c = cap(id); if (!c) return '';
       var stato = (id === corrente ? ' qui' : '') + statoCls(id);
       return '<a class="' + cls + stato + '" href="#/' + id + '">' +
-        '<span class="pn">' + (c.num ? due(c.num) : '') + '</span>' +
+        '<span class="pn">' + (c.num || '') + '</span>' +
         '<span class="pt">' + conNome(id) + '</span>' +
         (c.chapo ? '<span class="pc">' + c.chapo + '</span>' : '') +
         '<span class="pm">' + c.minuti + ' min ' + SEGNO + '</span></a>';
@@ -75,7 +78,7 @@
         (primoCap ? '<a href="#/' + primoCap + '">' + v.titolo + '</a>' : v.titolo) + '</h3></header>';
       v.sezioni.forEach(function (s) {
         // sezioni chiuse, da aprire con un clic; aperta soltanto quella del capitolo corrente
-        h += '<details class="plan-sezione"' + (s.capitoli.indexOf(corrente) >= 0 ? ' open' : '') + '><summary><h4>' + s.titolo + '</h4></summary>';
+        h += '<details class="plan-sezione"' + (s.capitoli.indexOf(corrente) >= 0 ? ' open' : '') + '><summary><h4>' + s.titolo + '</h4><span class="sez-min">' + minutiDi(s) + ' min</span></summary>';
         s.capitoli.forEach(function (id) { h += riga(id, 'plan-voce'); });
         h += '</details>';
       });
@@ -151,13 +154,29 @@
     });
   });
 
+  /* La nota sull'autore (Raffaele, 21/11: «aggiungi vicino al nome dell'autore un link Bio»): il testo è quello
+   * che Raffaele ha scritto in fondo alla scheda d'accoglienza del Doc, dopo «***». */
+  function bio() {
+    corrente = null;
+    document.title = 'Raffaele Alberto Ventura — ' + BOOK.titolo;
+    scena.innerHTML = '<article class="capitolo bio"><header class="testata griglia"><div class="testata-dentro">' +
+      '<p class="sopra">L’auteur</p><h1>Raffaele Alberto Ventura</h1></div></header>' +
+      '<div class="corpo griglia">' + BOOK.bio.map(function (h) { return '<p>' + h + '</p>'; }).join('') +
+      '<p><a class="bottone" href="#/">Retour au sommaire</a></p></div></article>';
+    $('#barra-capitolo').textContent = '';
+    window.scrollTo(0, 0);
+    aggiornaScorrimento();
+  }
+
   function accoglienza() {
     corrente = null;
     document.title = BOOK.titolo;
     var primo = BOOK.ordine[0];
     scena.innerHTML =
       '<section class="copertina griglia"><div class="copertina-dentro">' +
-        '<p class="sopra">Raffaele Alberto Ventura</p>' +
+        // illustrazione in alto a destra, un poco coperta dal titolo; se il file manca, sparisce da sola
+        '<img class="copertina-img" src="img/home.png?v=1" alt="" onerror="this.remove()">' +
+        '<p class="sopra">Raffaele Alberto Ventura' + (BOOK.bio && BOOK.bio.length ? ' <a class="bio-link" href="#/bio">Bio</a>' : '') + '</p>' +
         '<h1 aria-label="La classe malaisée">' + lettere('La classe', 0) + ' <em>' + lettere('malaisée', 9) + '</em></h1>' +
         '<p class="sottotitolo" aria-label="Socio-philosophie du déclassement">' + lettere('Socio-philosophie du déclassement', 0) + '</p>' +
         '<div class="copertina-griglia">' + grigliaHtml(null) + '</div>' +
@@ -315,6 +334,7 @@
     chiudiSommario();
     var m = location.hash.match(/^#\/(t\.[a-z0-9]+)/);
     if (m) capitolo(m[1]);
+    else if (location.hash === '#/bio' && BOOK.bio && BOOK.bio.length) bio();
     else if (/^#s-/.test(location.hash)) { var e = document.getElementById(location.hash.slice(1)); if (e) e.scrollIntoView({ behavior: 'smooth' }); }
     else accoglienza();
   }
@@ -347,8 +367,24 @@
 
   /* ───────── Avvio ───────── */
   fetch('dati/book.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (b) {
-    BOOK = b; indicizza(); rotta();
+    BOOK = b; indicizza(); rotta(); dalVivo();
   }).catch(function (e) {
     scena.innerHTML = '<p class="attesa">Le texte n’a pas pu être chargé. (' + e.message + ')</p>';
   });
+
+  /* Il testo dal vivo: la pagina parte subito dalla fotografia (dati/book.json), poi chiede all'applicazione
+   * Apps Script (Libro.gs) il libro riletto dal Doc. Se arriva ed è diverso, sostituisce il testo; il capitolo
+   * aperto si ridisegna soltanto se il lettore è ancora in cima alla pagina, per non spostargli il testo sotto
+   * gli occhi. Se l'applicazione non risponde, o non risponde un libro, resta la fotografia. */
+  function dalVivo() {
+    var u = window.LIBRO_URL;
+    if (!u) return;
+    fetch(u, { redirect: 'follow' }).then(function (r) { return r.json(); }).then(function (b) {
+      if (!b || !b.ordine || !b.ordine.length || !b.capitoli || !b.plan) return;
+      var stesso = function (x) { return JSON.stringify([x.plan, x.ordine, x.capitoli]); };
+      if (stesso(b) === stesso(BOOK)) return;
+      BOOK = b; DOVE = {}; indicizza();
+      if (window.scrollY < 200) rotta();
+    }).catch(function () {});
+  }
 })();

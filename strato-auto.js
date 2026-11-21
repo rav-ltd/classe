@@ -1800,6 +1800,11 @@ window.STRATO_AUTO = {
  ],
  "25": [
   {
+   "tipo": "apertura",
+   "img": "25",
+   "alt": "Un petit bateau en papier portant un diplôme flotte dans une baignoire, tandis qu’un homme inquiet scrute l’horizon vide à la longue-vue."
+  },
+  {
    "tipo": "esergo",
    "testo": "Un diplôme est un navire en mer : une créance sur une place future, dont nul ne sait si elle rentrera au port"
   },
@@ -1877,6 +1882,11 @@ window.STRATO_AUTO = {
  ],
  "26": [
   {
+   "tipo": "apertura",
+   "img": "26",
+   "alt": "Un minuscule roi couronné porte une énorme boîte à fusibles sur le dos, tandis qu’une foule de petits personnages le désigne chacun dans une direction différente."
+  },
+  {
    "tipo": "cronologia",
    "dopo": "Fini, le pouvoir constituant républicain de l’abbé Sieyès",
    "richiede": [
@@ -1931,6 +1941,11 @@ window.STRATO_AUTO = {
  ],
  "27": [
   {
+   "tipo": "apertura",
+   "img": "27",
+   "alt": "Un petit souverain fatigué tend un énorme sac de pièces à un garde géant casqué, qui cache la couronne dans son dos."
+  },
+  {
    "tipo": "esergo",
    "testo": "Une société qui tient debout du seul fait de la répression n’est plus une société, c’est une foule"
   },
@@ -1949,6 +1964,11 @@ window.STRATO_AUTO = {
   }
  ],
  "conclusion": [
+  {
+   "tipo": "apertura",
+   "img": "conclusion",
+   "alt": "Un prince boudeur en couronne de papier est assis sur des cartons, face à un smartphone sur trépied équipé d’un anneau lumineux."
+  },
   {
    "tipo": "esergo",
    "testo": "Hamlet est le premier grand déçu de la littérature occidentale"

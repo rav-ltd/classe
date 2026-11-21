@@ -595,3 +595,45 @@ html[data-fondo="nero"] .glossario p > strong:first-child{color:#c8b9ff}
 
 /* Home e sommario senza righe sotto i capitoli (Raffaele, 21/11: «in home togli le righe sotto alcuni capitoli»). */
 .plan-voce,.plan-voce.solo,.plan-sezione h4,.plan-sezione summary{border-bottom:0;border-top:0}
+
+/* Numeri dei capitoli nel sommario: carattere del titolo, più grandi, senza lo zero davanti (Raffaele, 21/11:
+   «i numeri da 1 a 27 nel sommario mettili col font "buffo" del titolo più grandi, senza lo 0 davanti»). */
+.plan-voce{grid-template-columns:46px 1fr auto;align-items:center}
+.plan-voce .pn,html[data-fondo="nero"] .plan-voce .pn{font-family:'Fraunces',serif;font-style:italic;font-weight:800;
+  font-variation-settings:'opsz' 144,'SOFT' 100,'WONK' 1;font-size:30px;line-height:1;letter-spacing:-.03em;color:var(--accento)}
+
+/* Righe nei titoli del sommario (Raffaele, 21/11: «forse alcune righe nei titoli rendono tutto più bello ma deve essere
+   leggibile, in home, nel punto del sommario»): un filetto viola sopra il titolo di ogni parte e uno sottile sotto il
+   titolo di ogni sezione; sotto i capitoli nessuna riga. */
+html[data-stile="b"] .plan-parte header{border-top:2px solid var(--accento);padding-top:14px;margin-top:34px}
+.plan-sezione summary{border-bottom:1px solid color-mix(in srgb,var(--inchiostro) 22%,transparent)}
+.plan-sezione[open] summary{margin-bottom:6px}
+html[data-stile="b"] .plan-solo{border-top:1px solid color-mix(in srgb,var(--inchiostro) 22%,transparent)}
+
+/* Link «Bio» accanto al nome dell'autore, in copertina e nella barra (Raffaele, 21/11). */
+.bio-link,.bl-bio{font-family:var(--mono);font-size:11px;font-weight:400;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;
+  color:var(--accento);border:1px solid var(--accento);border-radius:99px;padding:2px 9px;margin-left:10px;vertical-align:middle;white-space:nowrap}
+.bio-link:hover,.bl-bio:hover{background:var(--accento);color:#0d0f14}
+.bl-bio{font-size:10px;padding:1px 8px;align-self:center}
+@media (max-width:1100px){.bl-bio{display:none}}
+.capitolo.bio .corpo > p{grid-column:testo}
+
+/* Illustrazione della home (Raffaele, 21/11: «un'illustrazione in home in alto a destra, un poco coperta dal titolo del
+   libro, magari con delle fiamme»): sta dietro al titolo, che le passa sopra. */
+.copertina-dentro{position:relative}
+.copertina-img{position:absolute;right:-4%;top:-150px;width:min(52%,600px);height:auto;z-index:0;pointer-events:none}
+.copertina-dentro > :not(.copertina-img){position:relative;z-index:1}
+html[data-stile="b"] .copertina{padding-top:170px}
+@media (max-width:819px){.copertina-img{width:74%;right:-6%;top:-130px;opacity:.9} html[data-stile="b"] .copertina{padding-top:150px}}
+
+/* Il sommario è un blocco solo (Raffaele, 21/11: «non separare tanto l'introduzione dal resto, fai un blocco coerente
+   con tutto il sommario»): Introduction, parti, Conclusion e Glossaire cominciano con lo stesso filetto viola e
+   stanno alla stessa distanza. */
+html[data-stile="b"] .plan-solo{border-top:2px solid var(--accento)}
+html[data-stile="b"] .plan-voce.solo{margin:0;padding:14px 0 16px}
+html[data-stile="b"] .plan-parte header{margin-top:0}
+html[data-stile="b"] .plan-parte{padding-bottom:16px}
+
+/* Tempo di lettura accanto al titolo di ogni sezione del sommario. */
+.plan-sezione summary{grid-template-columns:1fr auto 16px;column-gap:10px}
+.sez-min{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--tenue);white-space:nowrap}
