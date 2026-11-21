@@ -290,6 +290,8 @@
   function innestaStrato(c) {
     var k0 = c.num || nomeDi(c.id).toLowerCase();
     var voci = window.STRATO_ZH ? (window.STRATO_ZH[c.id] || []) : ((window.STRATO || {})[k0] || (window.STRATO_AUTO || {})[k0] || []);
+    // l'interattivo del capitolo (interattivi.js; in cinese è già nello STRATO_ZH)
+    if (!window.STRATO_ZH) voci = voci.concat((window.INTERATTIVI || {})[k0] || []);
     var testi = c.blocchi.map(function (b) { return nudo(b.h || ''); });
     var tutto = testi.join(' '), occupati = {};
     voci.forEach(function (v) {

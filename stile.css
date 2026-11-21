@@ -828,3 +828,30 @@ html[lang="zh-Hans"] h1,html[lang="zh-Hans"] h2,html[lang="zh-Hans"] h3,html[lan
 @media (max-width:559px){.capitolo.bio .corpo > .bio-libri{grid-template-columns:repeat(3,1fr)} .capitolo.bio .corpo.griglia > .bio-colonna{order:-1}}
 /* Ritratto più in alto, all'altezza del titolo (Raffaele, 21/11: «tira un po' su il ritratto a sinistra»). */
 @media (min-width:820px){.capitolo.bio .corpo.griglia > .bio-colonna{margin-top:-95px}}
+
+/* Interattivi per capitolo (Raffaele, 21/11): cursore a tappe, indovina, confronto. */
+.int-tappe{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;padding:0}
+.int-tappe button{font:inherit;font-family:var(--mono);font-size:12px;letter-spacing:.03em;background:none;color:var(--tenue);border:1px solid var(--tenue);padding:7px 10px;cursor:pointer;transition:.2s}
+.int-tappe li.passata button{color:var(--inchiostro);border-color:var(--inchiostro)}
+.int-tappe li.qui button{background:var(--accento);border-color:var(--accento);color:#000}
+.int-cursore{width:100%;accent-color:var(--accento);margin:4px 0 18px}
+.int-scheda{border-left:3px solid var(--accento);padding:6px 0 6px 18px;min-height:6.5em}
+.int-scheda.cambia{animation:int-entra .35s ease}
+@keyframes int-entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.int-valore{display:block;font-family:var(--titoli);font-size:clamp(28px,4vw,44px);line-height:1.05;color:var(--accento);margin-bottom:8px}
+.int-valore small{font-size:.45em;color:var(--tenue)}
+.int-testo{margin:0;font-size:16px;line-height:1.5}
+.int-domanda{font-size:18px;line-height:1.45;margin:0 0 16px}
+.int-opzioni{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.int-opzioni button,.int-stati button{font:inherit;font-size:15px;background:none;color:var(--inchiostro);border:1px solid var(--inchiostro);padding:12px 14px;cursor:pointer;text-align:left;transition:.2s}
+.int-opzioni button:hover:not(:disabled),.int-stati button:hover{background:var(--inchiostro);color:#000}
+.int-opzioni button:disabled{cursor:default;opacity:.45}
+.int-opzioni button.giusta{opacity:1;background:var(--accento);border-color:var(--accento);color:#000}
+.int-opzioni button.sbagliata{opacity:1;text-decoration:line-through}
+.int-spiegazione{margin:18px 0 0;font-size:16px;line-height:1.5;border-left:3px solid var(--accento);padding-left:16px;animation:int-entra .35s ease}
+.int-stati{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+.int-stati button{font-family:var(--mono);font-size:12px;letter-spacing:.04em;padding:8px 12px}
+.int-stati button.qui{background:var(--accento);border-color:var(--accento);color:#000}
+.int-righe .barra-pista i{display:block;height:100%;background:var(--accento);transition:width .6s cubic-bezier(.2,.8,.2,1)}
+
+.scrolly-cifra b.lunga{font-size:clamp(34px,4.4vw,54px);line-height:1.05}

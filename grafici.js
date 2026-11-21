@@ -50,6 +50,7 @@
       var p = v.passi[k];
       punti.forEach(function (c, i) { c.classList.toggle('pieno', i < p.n); });
       cifra.querySelector('b').textContent = p.cifra;
+      cifra.querySelector('b').classList.toggle('lunga', String(p.cifra).length > 4 || /[^\d.,≈ %+~-]/.test(p.cifra));   // «deux tiers», 二分之一: più piccola
       cifra.querySelector('small').textContent = p.dove;
       [].forEach.call(passi.querySelectorAll('.passo'), function (d) { d.classList.toggle('attivo', +d.dataset.k === k); });
     }
@@ -80,7 +81,7 @@
   /* Interattivo: più persone hanno il titolo, meno il titolo distingue. */
   function segno(v) {
     var N = 60;
-    var f = el('figure', 'fig segno entra');
+    var f = el('figure', 'fig fig-segno entra');   // non «segno»: è la classe del pallino letto/non letto (bug del 21/11)
     f.appendChild(el('figcaption', 'fig-titolo', v.titolo));
     var folla = el('div', 'folla');
     var teste = [];
@@ -146,5 +147,90 @@
     return f;
   }
 
-  window.GRAFICI = { cifra: cifra, apertura: apertura, cronologia: cronologia, 'scrolly-punti': scrollyPunti, barre: barre, segno: segno, esergo: esergo };
+  /* ───── Interattivi, uno per capitolo (Raffaele, 21/11: «prova a metterne una per capitolo»; proposte in interattivi/) ───── */
+
+  /* Cursore a tappe: il lettore trascina (o clicca una tappa) e vede il meccanismo svolgersi. */
+  function passi(v) {
+    var f = el('figure', 'fig int-passi entra');
+    f.appendChild(el('figcaption', 'fig-titolo', v.titolo));
+    var tappe = el('ol', 'int-tappe');
+    v.passi.forEach(function (p, i) {
+      var b = el('li', '', '<button type="button">' + p.etichetta + '</button>');
+      b.firstChild.addEventListener('click', function () { vai(i); });
+      tappe.appendChild(b);
+    });
+    f.appendChild(tappe);
+    var input = el('input'); input.type = 'range'; input.min = 0; input.max = v.passi.length - 1; input.step = 1; input.value = 0;
+    input.className = 'int-cursore'; input.setAttribute('aria-label', v.titolo);
+    f.appendChild(input);
+    var scheda = el('div', 'int-scheda', '<b class="int-valore"></b><p class="int-testo"></p>');
+    f.appendChild(scheda);
+    f.appendChild(el('p', 'fig-fonte', v.fonte || ''));
+    function vai(i) {
+      input.value = i;
+      [].forEach.call(tappe.children, function (li, k) { li.classList.toggle('qui', k === i); li.classList.toggle('passata', k < i); });
+      scheda.querySelector('.int-valore').innerHTML = v.passi[i].valore + (v.unita ? ' <small>' + v.unita + '</small>' : '');
+      scheda.querySelector('.int-testo').innerHTML = v.passi[i].testo;
+      scheda.classList.remove('cambia'); void scheda.offsetWidth; scheda.classList.add('cambia');
+      input.style.setProperty('--q', (v.passi.length > 1 ? i / (v.passi.length - 1) * 100 : 0) + '%');
+    }
+    input.addEventListener('input', function () { vai(+input.value); });
+    vai(0);
+    return f;
+  }
+
+  /* Indovina: il lettore sceglie una risposta, poi si svela la cifra del capitolo. */
+  function indovina(v) {
+    var f = el('figure', 'fig int-indovina entra');
+    f.appendChild(el('figcaption', 'fig-titolo', v.titolo));
+    f.appendChild(el('p', 'int-domanda', v.domanda));
+    var scelte = el('div', 'int-opzioni');
+    var spiega = el('p', 'int-spiegazione', v.spiegazione); spiega.hidden = true;
+    v.opzioni.forEach(function (o, i) {
+      var b = el('button', '', o); b.type = 'button';
+      b.addEventListener('click', function () {
+        [].forEach.call(scelte.children, function (x, k) {
+          x.disabled = true; x.classList.toggle('giusta', k === v.giusta); x.classList.toggle('sbagliata', k === i && i !== v.giusta);
+        });
+        f.classList.add('svelato'); spiega.hidden = false;
+      });
+      scelte.appendChild(b);
+    });
+    f.appendChild(scelte); f.appendChild(spiega);
+    f.appendChild(el('p', 'fig-fonte', v.fonte || ''));
+    return f;
+  }
+
+  /* Confronta: due o tre situazioni; il lettore passa dall'una all'altra e le barre si spostano. */
+  function confronta(v) {
+    var f = el('figure', 'fig int-confronta entra');
+    f.appendChild(el('figcaption', 'fig-titolo', v.titolo));
+    var bottoni = el('div', 'int-stati');
+    var righe = el('div', 'int-righe');
+    var max = 0;
+    v.stati.forEach(function (s) { s.righe.forEach(function (r) { max = Math.max(max, Math.abs(r.v)); }); });
+    v.stati[0].righe.forEach(function (r) {
+      righe.appendChild(el('div', 'barra-riga', '<span class="barra-et">' + r.etichetta + '</span>' +
+        '<span class="barra-pista"><i></i></span><b class="barra-val"></b>'));
+    });
+    function mostra(k) {
+      [].forEach.call(bottoni.children, function (b, i) { b.classList.toggle('qui', i === k); b.setAttribute('aria-pressed', i === k); });
+      v.stati[k].righe.forEach(function (r, i) {
+        var riga = righe.children[i]; if (!riga) return;
+        riga.querySelector('i').style.width = (max ? Math.abs(r.v) / max * 100 : 0) + '%';
+        riga.querySelector('.barra-val').textContent = String(r.v).replace('.', ',') + (v.unita ? ' ' + v.unita : '');
+      });
+    }
+    v.stati.forEach(function (s, k) {
+      var b = el('button', '', s.nome); b.type = 'button';
+      b.addEventListener('click', function () { mostra(k); });
+      bottoni.appendChild(b);
+    });
+    f.appendChild(bottoni); f.appendChild(righe);
+    f.appendChild(el('p', 'fig-fonte', v.fonte || ''));
+    mostra(0);
+    return f;
+  }
+
+  window.GRAFICI = { passi: passi, indovina: indovina, confronta: confronta, punti: function (v) { return scrollyPunti(v); }, cifra: cifra, apertura: apertura, cronologia: cronologia, 'scrolly-punti': scrollyPunti, barre: barre, segno: segno, esergo: esergo };
 })();
