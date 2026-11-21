@@ -37,7 +37,12 @@
   }
 
   /* ───────── Plan ───────── */
+  // «Intro dell'intro» (Raffaele, 21/11: «metti la frasetta come intro dell'intro»): la frase introduttiva fa da
+  // riassunto dell'Introduzione, finché nel Doc l'Introduzione non ha un riassunto suo (che allora prevale).
+  var INTRO_CHAPO = 'Les représentations de soi ne sont pas des caprices que l’on pourrait ajuster. Profondément enracinées, elles sont le produit de causes sociales et culturelles. Aujourd’hui, la jeunesse se révolte. Pouvait-elle réagir autrement? La crise n’est pas seulement économique, elle est existentielle.';
   function indicizza() {
+    var intro = BOOK.capitoli[BOOK.ordine[0]];
+    if (intro && !intro.chapo) intro.chapo = INTRO_CHAPO;
     BOOK.plan.forEach(function (v) {
       if (v.tipo === 'solo') { DOVE[v.id] = { parte: null, sezione: null }; return; }
       v.sezioni.forEach(function (s) {
@@ -384,6 +389,7 @@
     if (!u) return;
     fetch(u, { redirect: 'follow' }).then(function (r) { return r.json(); }).then(function (b) {
       if (!b || !b.ordine || !b.ordine.length || !b.capitoli || !b.plan) return;
+      var i0 = b.capitoli[b.ordine[0]]; if (i0 && !i0.chapo) i0.chapo = INTRO_CHAPO;   // come in indicizza(), prima del confronto
       var stesso = function (x) { return JSON.stringify([x.plan, x.ordine, x.capitoli]); };
       if (stesso(b) === stesso(BOOK)) return;
       BOOK = b; DOVE = {}; indicizza();
