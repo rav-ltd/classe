@@ -183,6 +183,15 @@
     aggiornaScorrimento();
   }
 
+  /* Il testo sul lato destro, in cinese: la stessa frase introduttiva, tradotta, su quattro righe sghembe. */
+  function bandellaZh(stili) {
+    var f = T(INTRO_CHAPO).match(/[^。？！]+[。？！]/g) || [T(INTRO_CHAPO)];
+    var righe = [f[0], f[1], (f[2] || '') + (f[3] || ''), f.slice(4).join('')].filter(Boolean);
+    righe[0] = '“' + righe[0]; righe[righe.length - 1] += '”';
+    return '<p class="bandella">' + righe.map(function (r, i) {
+      return '<span class="riga" style="' + (stili[i] || '') + '">' + r + '</span>';
+    }).join('') + '</p>';
+  }
   function accoglienza() {
     corrente = null;
     document.title = BOOK.titolo;
@@ -194,6 +203,9 @@
         (ZH ? '<h1 aria-label="' + T('La classe malaisée') + '">' + lettere(T('La classe malaisée').slice(0, 2), 0) + '<em>' + lettere(T('La classe malaisée').slice(2), 2) + '</em></h1>'
             : '<h1 aria-label="La classe malaisée">' + lettere('La classe', 0) + ' <em>' + lettere('malaisée', 9) + '</em></h1>') +
         '<p class="sottotitolo" aria-label="' + T('Socio-philosophie du déclassement') + '">' + lettere(T('Socio-philosophie du déclassement'), 0) + '</p>' +
+        // il testo sul lato destro, accanto a titolo e sottotitolo (rimesso da Raffaele, 21/11: «rimetti il testo sul lato a destra in home»)
+        (ZH ? bandellaZh(["--x:0px;--r:-0.6deg", "--x:46px;--r:0.5deg", "--x:14px;--r:-0.9deg", "--x:88px;--r:0.7deg"]) :
+        '<p class="bandella"><span class="riga" style="--x:0px;--r:-0.6deg">«\u00a0Les représentations de soi ne sont pas des caprices que l’on pourrait ajuster.</span><span class="riga" style="--x:46px;--r:0.5deg">Profondément enracinées, elles sont le produit de causes sociales et culturelles.</span><span class="riga" style="--x:14px;--r:-0.9deg">Aujourd’hui, la jeunesse se révolte. Pouvait-elle réagir autrement\u00a0?</span><span class="riga" style="--x:88px;--r:0.7deg">La crise n’est pas seulement économique, elle est existentielle.\u00a0»</span></p>') +
         '<div class="copertina-griglia">' + grigliaHtml(null) + '</div>' +
         '<a class="bottone" href="#/' + primo + '">' + T('Commencer la lecture') + '</a>' + ALTRA +   // la lingua accanto al pulsante (Raffaele, 21/11)
       '</div></section>' +
