@@ -1,0 +1,597 @@
+/* Ipertesto v2, prova. Un solo motore, tre stili: data-stile="a" (Blanche), "b" (Marché), "c" (Nuit).
+   Tutto ciò che cambia tra gli stili passa da variabili o dai blocchi in fondo. */
+
+:root{
+  --testo:"Source Serif 4",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --misura:680px; --margine:clamp(264px,35vw,470px);
+}
+html[data-stile="a"]{
+  --carta:#f7f3ea; --carta2:#efe9dc; --inchiostro:#17140f; --tenue:#6f685a; --filo:#d8d0bf;
+  --accento:#c4161c; --su-accento:#fff; --evid:#c4161c;
+  --titoli:"Fraunces",Georgia,serif;
+}
+html[data-stile="b"]{
+  --carta:#fff; --carta2:#f1f1ee; --inchiostro:#000; --tenue:#55554f; --filo:#000;
+  --accento:#2b2bff; --su-accento:#fff; --evid:#e6ff3a;
+  --titoli:"Archivo","Arial Narrow",Arial,sans-serif;
+}
+html[data-stile="c"]{
+  --carta:#0d0f14; --carta2:#151821; --inchiostro:#ece7db; --tenue:#8e8a80; --filo:#2a2e3a;
+  --accento:#ff7a45; --su-accento:#0d0f14; --evid:#ff7a45;
+  --titoli:"Instrument Serif",Georgia,serif;
+}
+
+*{box-sizing:border-box}
+html{scroll-padding-top:80px;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--carta);color:var(--inchiostro);font-family:var(--testo);font-size:20px;line-height:1.62;
+  font-optical-sizing:auto;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;transition:background .3s,color .3s}
+body.velato{overflow:hidden}
+a{color:inherit}
+::selection{background:var(--evid);color:var(--su-accento)}
+html[data-stile="b"] ::selection{color:#000}
+.attesa{font-family:var(--mono);font-size:13px;text-align:center;padding:40vh 24px;color:var(--tenue)}
+
+@media (max-width:640px){ body,html[data-stile="b"] body,html[data-stile="c"] body{font-size:18px} .testata{padding-top:110px} }
+
+/* La griglia comune: testo, margine delle note, fuoriuscite a tutta larghezza. */
+.griglia{display:grid;grid-template-columns:[tutto-start] minmax(24px,1fr) [menu-start] minmax(0,var(--margine)) [testo-start] minmax(0,var(--misura)) [testo-end] minmax(24px,1fr) [tutto-end];position:relative}
+.griglia > *{grid-column:testo}
+.griglia > .largo{grid-column:tutto}
+@media (max-width:819px){ .griglia{grid-template-columns:[tutto-start] minmax(22px,1fr) [menu-start] 0 [testo-start] minmax(0,var(--misura)) [testo-end] minmax(22px,1fr) [tutto-end]} }
+
+/* ───────── Barra ───────── */
+.barra{position:fixed;inset:0 0 auto 0;height:52px;z-index:20;display:flex;align-items:center;gap:20px;padding:0 20px;
+  background:color-mix(in srgb,var(--carta) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid color-mix(in srgb,var(--filo) 60%,transparent);font-family:var(--mono);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.barra a{text-decoration:none}
+.barra-libro{font-weight:500;white-space:nowrap}
+.barra-capitolo{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tenue);opacity:0;transform:translateY(6px);transition:.25s}
+body.dentro .barra-capitolo{opacity:1;transform:none}
+.barra-sommario{margin-left:auto;display:flex;align-items:center;gap:12px;background:none;border:0;padding:8px 0;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer}
+.avanzamento{position:absolute;left:0;right:0;bottom:-2px;height:3px}
+.avanzamento i{display:block;height:100%;background:var(--accento);transform-origin:0 50%;transform:scaleX(0)}
+@media (max-width:640px){ .barra-parola{display:none} .barra{gap:12px;padding:0 14px} }
+
+/* ───────── La griglia dei 27 ───────── */
+.mini,.binario-griglia,.copertina-griglia{display:flex;align-items:center;gap:var(--g-fra,7px)}
+.g-parte{display:grid;grid-template-columns:repeat(3,var(--g,7px));gap:var(--g-vuoto,2px)}
+.g-solo{display:block}
+.g-parte a,.g-solo a{display:block;width:var(--g,7px);height:var(--g,7px);border:1px solid var(--inchiostro);opacity:.45;transition:.15s}
+.g-parte a.letto,.g-solo a.letto{background:var(--inchiostro);opacity:.8}
+.g-parte a.qui,.g-solo a.qui{background:var(--accento);border-color:var(--accento);opacity:1}
+.g-parte a:hover,.g-solo a:hover{opacity:1;border-color:var(--accento);transform:scale(1.25)}
+.g-solo a{border-radius:50%}
+.barra .mini{pointer-events:none}
+
+/* ───────── Testata del capitolo ───────── */
+.testata{padding:150px 0 70px;overflow:hidden}
+.testata-dentro{position:relative}
+.sopra{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--tenue);margin:0 0 22px}
+.testata h1{font-family:var(--titoli);margin:0 0 26px;text-wrap:balance}
+.chapo{margin:0 0 30px;text-wrap:pretty}
+.meta{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--tenue);margin:0}
+
+/* ───────── Il testo ───────── */
+.capitolo{padding-bottom:90px}
+.capitolo > p{margin:0 0 1.15em;hyphens:auto;text-wrap:pretty}
+.capitolo > p.attacco::first-letter{font-family:var(--titoli);float:left;font-size:4.9em;line-height:.8;padding:.06em .09em 0 0;color:var(--accento)}
+.capitolo a{text-decoration-color:var(--accento);text-underline-offset:3px}
+.capitolo h2{font-family:var(--titoli);margin:2.6em 0 .9em;text-wrap:balance;scroll-margin-top:90px}
+.h2-n{display:block;font-family:var(--mono);font-weight:400;font-size:12px;letter-spacing:.14em;color:var(--accento);margin-bottom:10px;font-style:normal}
+.capitolo blockquote{margin:1.6em 0 1.8em;padding:0 0 0 26px;border-left:2px solid var(--accento);font-size:.93em;line-height:1.55;color:color-mix(in srgb,var(--inchiostro) 86%,var(--carta))}
+.capitolo ul{margin:0 0 1.2em;padding:0;list-style:none}
+.capitolo li{margin:0 0 .5em calc(22px + var(--l,0)*22px);position:relative}
+.capitolo li::before{content:"";position:absolute;left:-20px;top:.72em;width:8px;height:1px;background:var(--accento)}
+.capitolo hr{border:0;height:1px;background:var(--filo);width:120px;margin:3em auto}
+sup.nota{font-family:var(--mono);font-size:.56em;line-height:0;vertical-align:.75em;margin-left:2px;padding:1px 3px;color:var(--accento);cursor:pointer;border-radius:2px}
+sup.nota:hover,sup.nota:focus-visible{background:var(--accento);color:var(--su-accento);outline:0}
+
+/* Note a margine */
+.margine{position:absolute;grid-column:3;left:44px;width:calc(var(--margine) - 56px);font-size:13.5px;line-height:1.45;color:var(--tenue);hyphens:auto;overflow-wrap:anywhere;transition:color .3s}
+.margine b,.nota-aperta b{font-family:var(--mono);font-weight:500;font-size:11px;color:var(--accento);margin-right:4px}
+.margine.accesa{color:var(--inchiostro)}
+.nota-aperta{font-size:15px;line-height:1.5;color:var(--tenue);border-top:1px solid var(--accento);padding:12px 0 4px;margin:-.4em 0 1.4em;overflow-wrap:anywhere}
+@media (max-width:1099px){ .margine{display:none} }
+
+/* ───────── Menu ad albero, nella colonna di sinistra ───────── */
+.albero{position:fixed;z-index:1;left:max(24px,calc((100vw - var(--margine) - var(--misura)) / 2));top:84px;width:calc(var(--margine) - 40px);max-height:calc(100vh - 150px);overflow:auto;scrollbar-width:none;font-family:var(--mono);font-size:11px;line-height:1.35}
+.albero::-webkit-scrollbar{display:none}
+@media (max-width:819px){ .albero{display:none} }
+.albero a{text-decoration:none;color:var(--tenue);transition:color .15s}
+.albero a:hover{color:var(--inchiostro)}
+.al-solo{margin:0 0 4px}
+.al-parte{margin:0;border-top:1px solid var(--filo)}
+.al-parte:last-of-type{border-bottom:1px solid var(--filo);margin-bottom:4px}
+.al-parte summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:22px 1fr 12px;gap:0 6px;align-items:baseline;padding:10px 0;font-family:var(--titoli);font-size:14px;line-height:1.15;color:var(--inchiostro)}
+.al-parte summary::-webkit-details-marker{display:none}
+.al-parte summary i{font-style:normal;color:var(--accento)}
+.al-parte summary::after{content:"+";font-family:var(--mono);font-size:12px;color:var(--tenue)}
+.al-parte[open] summary::after{content:"–"}
+.al-rami{margin:0 0 12px 6px;border-left:1px solid var(--filo)}
+.al-sez{position:relative;padding:5px 0 3px 14px}
+.al-sez-t{display:block;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--tenue);opacity:.75;margin-bottom:3px;position:relative}
+.al-sez-t::before{content:"";position:absolute;left:-14px;top:.6em;width:9px;height:1px;background:var(--filo)}
+.al-cap{display:grid;grid-template-columns:20px 1fr;gap:0 4px;padding:3px 0;align-items:baseline}
+.al-solo .al-cap{grid-template-columns:1fr;padding:6px 0;font-family:var(--titoli);font-size:14px;color:var(--inchiostro)}
+.al-cap b{font-weight:400;font-size:10px}
+.al-cap.letto b::after{content:"";display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--tenue);margin-left:2px;vertical-align:middle}
+.albero .al-cap.qui{color:var(--inchiostro)} .al-cap.qui b{color:var(--accento)}
+.al-h2{list-style:none;margin:2px 0 8px 24px;padding:0 0 0 10px;border-left:1px solid var(--filo)}
+.al-h2 li{margin:0;padding:2.5px 0}
+.al-h2 a{font-size:10.5px;display:block}
+.albero .al-h2 a.qui{color:var(--accento)}
+.scrolly,.coda{position:relative;z-index:2}
+
+/* ───────── Eserghi ───────── */
+.esergo{margin:2.2em 0 2.4em}
+.esergo p{font-family:var(--titoli);margin:0;text-wrap:balance}
+.entra{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+.entra.visto{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){ .entra{opacity:1;transform:none;transition:none} }
+
+/* ───────── Figure ───────── */
+.fig{margin:2.6em 0 2.8em;padding:26px 0 0;border-top:1px solid var(--inchiostro)}
+.fig-titolo{font-family:var(--titoli);font-size:1.15em;line-height:1.25;margin:0 0 22px;text-wrap:balance}
+.fig-fonte{font-family:var(--mono);font-size:11px;letter-spacing:.03em;color:var(--tenue);margin:18px 0 0}
+
+.barra-riga{display:grid;grid-template-columns:1fr auto;gap:6px 16px;align-items:end;margin-bottom:18px}
+.barra-et{font-size:15px;line-height:1.3}
+.barra-val{font-family:var(--titoli);font-size:34px;line-height:1;font-weight:400}
+.barra-pista{grid-column:1/-1;height:14px;background:var(--carta2);display:block}
+.barra-pista i{display:block;height:100%;width:0;background:var(--inchiostro);transition:width 1.1s cubic-bezier(.2,.7,.2,1) .15s}
+.barra-riga:first-of-type .barra-pista i{background:var(--accento)}
+.visto .barra-pista i{width:var(--v)}
+
+.folla{display:grid;grid-template-columns:repeat(15,1fr);gap:10px 6px;margin-bottom:22px}
+.folla i{display:block;aspect-ratio:1/1.5;position:relative;opacity:.9}
+.folla i::before{content:"";position:absolute;left:25%;top:0;width:50%;aspect-ratio:1;border-radius:50%;background:var(--filo);transition:background .25s}
+.folla i::after{content:"";position:absolute;left:10%;right:10%;top:38%;bottom:0;border-radius:40% 40% 4px 4px;background:var(--filo);transition:background .25s}
+html[data-stile="b"] .folla i::before,html[data-stile="b"] .folla i::after{background:#cfcfc8}
+.folla i.titolato::before,.folla i.titolato::after{background:color-mix(in srgb,var(--accento) calc(var(--distinzione,1)*100%),var(--tenue))}
+.segno-cursore{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:22px}
+.segno-cursore b{color:var(--accento);font-weight:500}
+.segno-cursore input{display:block;width:100%;margin-top:12px;-webkit-appearance:none;appearance:none;height:28px;background:transparent;cursor:pointer}
+.segno-cursore input::-webkit-slider-runnable-track{height:2px;background:linear-gradient(to right,var(--accento) var(--q,5%),var(--filo) var(--q,5%))}
+.segno-cursore input::-moz-range-track{height:2px;background:var(--filo)}
+.segno-cursore input::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--accento);border:3px solid var(--carta);margin-top:-10px;box-shadow:0 0 0 1px var(--accento)}
+.segno-cursore input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--accento);border:3px solid var(--carta)}
+.segno-misure > div{display:grid;grid-template-columns:minmax(0,210px) 1fr;gap:16px;align-items:center;margin-bottom:12px;font-size:15px;line-height:1.25}
+.segno-misure em{display:block;font-size:13px;color:var(--tenue)}
+.segno-misure .pista{height:14px;background:var(--carta2);display:block}
+.segno-misure .pista i{display:block;height:100%;transition:width .25s}
+.m-usage{background:var(--inchiostro)} .m-signe{background:var(--accento)}
+@media (max-width:560px){ .segno-misure > div{grid-template-columns:1fr} .folla{grid-template-columns:repeat(12,1fr)} }
+
+/* Scrollytelling */
+.scrolly{display:grid;grid-template-columns:minmax(24px,1fr) minmax(0,380px) minmax(0,560px) minmax(24px,1fr);column-gap:40px;margin:3em 0;background:var(--carta2);border-block:1px solid var(--filo)}
+.scrolly-fisso{grid-column:3;grid-row:1;position:sticky;top:52px;height:calc(100vh - 52px);display:flex;align-items:center}
+.scrolly-quadro{width:100%;display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:8px 28px;align-items:end}
+.scrolly-quadro .fig-titolo{grid-column:1/-1;margin-bottom:14px}
+.punti{width:100%;max-height:62vh;display:block}
+.punti circle{fill:none;stroke:var(--inchiostro);stroke-width:1;opacity:.5;transition:fill .35s,stroke .35s,opacity .35s}
+.punti circle.pieno{fill:var(--accento);stroke:var(--accento);opacity:1}
+.scrolly-cifra b{display:block;font-family:var(--titoli);font-weight:400;font-size:92px;line-height:.9;color:var(--accento);font-variant-numeric:tabular-nums}
+.scrolly-cifra span{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin:8px 0 10px}
+.scrolly-cifra em{display:block;font-size:15px;line-height:1.3}
+.scrolly-cifra small{display:block;font-family:var(--mono);font-size:11px;color:var(--tenue);margin-top:10px;line-height:1.4}
+.scrolly-passi{grid-column:2;grid-row:1;padding:20vh 0 12vh}
+.passo{min-height:78vh;display:flex;align-items:center}
+.passo-carta{opacity:.28;transition:opacity .4s;border-left:2px solid var(--accento);padding-left:20px}
+.passo.attivo .passo-carta{opacity:1}
+.passo-dove{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accento)}
+.passo p{margin:8px 0 0;font-size:1.1em;line-height:1.4}
+@media (max-width:899px){
+  .scrolly{display:block;padding:0 22px}
+  .scrolly-fisso{height:auto;top:52px;padding:18px 0 14px;background:var(--carta2);z-index:2;border-bottom:1px solid var(--filo)}
+  .scrolly-quadro{grid-template-columns:minmax(0,150px) 1fr;align-items:center}
+  .punti{max-height:none}
+  .scrolly-cifra b{font-size:58px}
+  .scrolly-passi{padding:8vh 0 4vh}
+  .passo{min-height:62vh}
+}
+
+/* ───────── Coda del capitolo ───────── */
+.coda{padding:0 0 120px}
+.seguito{display:block;text-decoration:none;border-top:3px solid var(--inchiostro);padding:34px 0 30px;position:relative;transition:.2s}
+.seguito .sopra{display:block;margin-bottom:16px}
+.seguito-num{position:absolute;right:0;top:26px;font-family:var(--titoli);font-size:64px;line-height:1;color:var(--accento)}
+.seguito-titolo{display:block;font-family:var(--titoli);font-size:clamp(30px,5vw,46px);line-height:1.08;margin:0 90px 14px 0;text-wrap:balance}
+.seguito-chapo{display:block;font-style:italic;color:var(--tenue);font-size:.95em;line-height:1.45}
+.seguito:hover .seguito-titolo{color:var(--accento)}
+.coda-link{display:flex;justify-content:space-between;gap:20px;font-family:var(--mono);font-size:12px;letter-spacing:.05em;text-transform:uppercase;border-top:1px solid var(--filo);padding-top:18px;margin:0}
+.coda-link a{text-decoration:none;color:var(--tenue)} .coda-link a:hover{color:var(--accento)}
+
+/* ───────── Plan (accoglienza e sommario) ───────── */
+.plan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 44px}
+.plan-solo{grid-column:1/-1}
+.plan-parte header{border-top:3px solid var(--inchiostro);padding:16px 0 26px;display:flex;gap:16px;align-items:baseline}
+.romano{font-family:var(--titoli);font-size:44px;line-height:1;color:var(--accento);min-width:1.2em}
+.plan-parte h3{font-family:var(--titoli);font-size:25px;line-height:1.12;margin:0;font-weight:400;text-wrap:balance}
+.plan-sezione{margin-bottom:26px}
+.plan-sezione h4{font-family:var(--mono);font-weight:400;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--tenue);margin:0;padding:0 0 8px;border-bottom:1px solid var(--filo)}
+.plan-voce{display:grid;grid-template-columns:30px 1fr auto;gap:0 8px;padding:11px 0;border-bottom:1px solid var(--filo);text-decoration:none;align-items:baseline;transition:.15s}
+.plan-voce .pn{font-family:var(--mono);font-size:11px;color:var(--accento)}
+.plan-voce .pt{font-family:var(--titoli);font-size:19px;line-height:1.2}
+.plan-voce .pm{font-family:var(--mono);font-size:10px;color:var(--tenue);white-space:nowrap}
+.plan-voce .pc{grid-column:2/-1;font-size:13.5px;line-height:1.4;color:var(--tenue);font-style:italic;max-height:0;overflow:hidden;opacity:0;transition:max-height .3s,opacity .3s,margin .3s}
+.plan-voce:hover .pc,.plan-voce:focus-visible .pc{max-height:8em;opacity:1;margin-top:6px}
+.plan-voce:hover .pt{color:var(--accento)}
+.plan-voce.letto .pn::after{content:" ✓"}
+.plan-voce.qui{background:var(--carta2);box-shadow:-10px 0 0 var(--carta2),10px 0 0 var(--carta2)}
+.plan-voce.solo{grid-template-columns:1fr auto;border-top:3px solid var(--inchiostro);padding:18px 0;margin-bottom:34px}
+.plan-voce.solo .pn{display:none} .plan-voce.solo .pt{font-size:26px} .plan-voce.solo .pc{grid-column:1/-1}
+@media (max-width:899px){ .plan{grid-template-columns:1fr} .plan-voce .pc{display:none} }
+@media (hover:none){ .plan-voce .pc{display:none} }
+
+.copertina{min-height:100vh;padding:130px 0 70px;align-content:center}
+.copertina > .copertina-dentro{grid-column:menu-start/testo-end}
+.copertina h1{font-family:var(--titoli);margin:0 0 54px}
+.copertina-griglia{--g:22px;--g-vuoto:5px;--g-fra:22px;margin-bottom:22px;flex-wrap:wrap}
+.copertina-nota{font-family:var(--mono);font-size:12px;line-height:1.7;letter-spacing:.03em;color:var(--tenue);margin:0 0 44px}
+.bottone{display:inline-block;font-family:var(--mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;padding:16px 22px;background:var(--inchiostro);color:var(--carta);transition:.2s}
+.bottone:hover{background:var(--accento);color:var(--su-accento)}
+.plan-largo{grid-column:menu-start/testo-end !important;padding:30px 0 140px}
+
+.velo{position:fixed;inset:0;z-index:40;background:var(--carta);overflow:auto;padding:84px max(24px,calc(50% - 560px)) 80px}
+.velo-chiudi{position:fixed;top:14px;right:20px;z-index:41;background:var(--inchiostro);color:var(--carta);border:0;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;cursor:pointer}
+
+.prova{position:fixed;left:14px;bottom:14px;z-index:60;display:flex;gap:2px;align-items:center;font-family:var(--mono);font-size:11px;background:#111;color:#bbb;padding:5px 6px 5px 10px;border-radius:999px;box-shadow:0 4px 18px rgba(0,0,0,.25)}
+.prova span{margin-right:6px}
+.prova button{font:inherit;color:#ddd;background:none;border:0;border-radius:999px;padding:5px 10px;cursor:pointer}
+.prova button.scelto{background:#fff;color:#000}
+@media (max-width:560px){ .prova span{display:none} }
+
+/* ═════════ Stile A · Blanche ═════════
+   Carta avorio, un solo rosso, due filetti: la tradizione del libro francese, senza copiarne una copertina. */
+html[data-stile="a"] .testata{text-align:center}
+html[data-stile="a"] .testata-dentro{grid-column:menu-start/testo-end;max-width:860px;margin:0 auto;width:100%;padding:44px 0 40px;border-top:1px solid var(--inchiostro);border-bottom:1px solid var(--inchiostro);outline:1px solid var(--accento);outline-offset:6px;outline-color:transparent;box-shadow:0 -7px 0 -6px var(--accento),0 7px 0 -6px var(--accento)}
+html[data-stile="a"] .testata-num{display:block;font-family:var(--titoli);font-style:italic;font-weight:300;font-size:74px;line-height:1;color:var(--accento);margin-bottom:22px;font-variant-numeric:lining-nums}
+html[data-stile="a"] .testata h1{font-weight:340;font-size:clamp(40px,6.4vw,76px);line-height:1.02;letter-spacing:-.022em;font-variation-settings:"opsz" 144}
+html[data-stile="a"] .chapo{font-style:italic;font-size:1.08em;line-height:1.45;max-width:34em;margin-inline:auto;color:color-mix(in srgb,var(--inchiostro) 82%,var(--carta))}
+html[data-stile="a"] .capitolo h2{font-weight:400;font-size:1.55em;line-height:1.15;letter-spacing:-.01em}
+html[data-stile="a"] .esergo{border-top:1px solid var(--accento);border-bottom:1px solid var(--accento);padding:30px 0 32px;text-align:center}
+html[data-stile="a"] .esergo p{font-style:italic;font-weight:300;font-size:clamp(26px,3.6vw,36px);line-height:1.18;letter-spacing:-.01em}
+html[data-stile="a"] .esergo p::before{content:"«\00a0";color:var(--accento)} html[data-stile="a"] .esergo p::after{content:"\00a0»";color:var(--accento)}
+html[data-stile="a"] .copertina h1{font-weight:300;font-size:clamp(64px,13vw,170px);line-height:.9;letter-spacing:-.035em}
+html[data-stile="a"] .copertina h1 em{color:var(--accento);font-weight:300}
+html[data-stile="a"] .seguito-num,html[data-stile="a"] .romano{font-style:italic;font-weight:300}
+html[data-stile="a"] .seguito-titolo{font-weight:340;letter-spacing:-.015em}
+
+/* ═════════ Stile B · Marché ═════════
+   Bianco, nero, un blu elettrico e un giallo acido; titoli in grottesco largo, tutto maiuscolo. Rumoroso di proposito. */
+html[data-stile="b"] body{font-size:19.5px}
+html[data-stile="b"] .barra{background:#000;color:#fff;border:0;backdrop-filter:none}
+html[data-stile="b"] .barra-capitolo{color:var(--evid)}
+html[data-stile="b"] .barra .g-parte a,html[data-stile="b"] .barra .g-solo a{border-color:#fff}
+html[data-stile="b"] .barra a.letto{background:#fff}
+html[data-stile="b"] .barra a.qui{background:var(--evid);border-color:var(--evid)}
+html[data-stile="b"] .avanzamento{height:5px;bottom:-5px} html[data-stile="b"] .avanzamento i{background:var(--evid)}
+html[data-stile="b"] .testata{background:var(--evid);padding:130px 0 56px;margin-bottom:70px;border-bottom:6px solid #000}
+html[data-stile="b"] .testata-dentro{grid-column:menu-start/testo-end}
+html[data-stile="b"] .testata-num{position:absolute;right:-30px;top:-96px;font-family:var(--titoli);font-weight:900;font-stretch:125%;font-size:clamp(200px,34vw,460px);line-height:.8;letter-spacing:-.05em;color:transparent;-webkit-text-stroke:2px #000;pointer-events:none}
+html[data-stile="b"] .testata .sopra,html[data-stile="b"] .testata .meta{color:#000}
+html[data-stile="b"] .testata .sopra{display:inline-block;background:#000;color:var(--evid);padding:6px 10px;margin-bottom:30px}
+html[data-stile="b"] .testata h1{position:relative;font-weight:900;font-stretch:112%;text-transform:uppercase;font-size:clamp(42px,8.2vw,112px);line-height:.9;letter-spacing:-.035em;max-width:11em}
+html[data-stile="b"] .chapo{position:relative;font-family:var(--titoli);font-weight:500;font-size:1.2em;line-height:1.3;max-width:30em}
+html[data-stile="b"] .capitolo > p.attacco::first-letter{font-weight:900;font-stretch:125%;color:#000;font-size:5.2em;padding-right:.07em}
+html[data-stile="b"] .capitolo h2{font-weight:800;font-stretch:110%;text-transform:uppercase;font-size:1.7em;line-height:1;letter-spacing:-.02em;border-top:6px solid #000;padding-top:14px;margin-top:3em}
+html[data-stile="b"] .h2-n{color:#000;font-weight:500;float:right;margin:2px 0 0 14px;font-size:13px}
+html[data-stile="b"] .capitolo blockquote{border-left:6px solid var(--accento);font-family:var(--titoli);font-weight:500;font-size:.9em;line-height:1.45;color:#000}
+html[data-stile="b"] sup.nota{background:var(--evid);color:#000} html[data-stile="b"] sup.nota:hover{background:#000;color:var(--evid)}
+html[data-stile="b"] .margine{font-family:var(--titoli);font-size:12.5px;color:#333;border-top:2px solid #000;padding-top:6px}
+html[data-stile="b"] .margine b,html[data-stile="b"] .nota-aperta b{color:#000;background:var(--evid);padding:0 4px}
+html[data-stile="b"] .capitolo a{text-decoration-thickness:2px}
+html[data-stile="b"] .esergo p{display:inline;font-weight:800;font-stretch:108%;font-size:clamp(28px,4.4vw,48px);line-height:1.22;letter-spacing:-.025em;background:var(--evid);box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:.04em .18em}
+html[data-stile="b"] .fig{border-top:6px solid #000}
+html[data-stile="b"] .fig-titolo{font-weight:700;font-size:1.05em;letter-spacing:-.01em}
+html[data-stile="b"] .barra-val,html[data-stile="b"] .scrolly-cifra b{font-weight:900;font-stretch:125%;letter-spacing:-.04em}
+html[data-stile="b"] .scrolly{background:#000;color:#fff;border:0;--inchiostro:#fff;--filo:#444;--tenue:#aaa;--accento:#e6ff3a;--carta2:#000}
+html[data-stile="b"] .scrolly-fisso{background:#000}
+html[data-stile="b"] .seguito{background:#000;color:#fff;padding:34px 28px 32px;border:0;box-shadow:10px 10px 0 var(--accento)}
+html[data-stile="b"] .seguito .sopra{color:var(--evid)} html[data-stile="b"] .seguito-chapo{color:#bbb;font-style:normal;font-family:var(--titoli)}
+html[data-stile="b"] .seguito-num{right:24px;color:var(--evid);font-weight:900;font-stretch:125%}
+html[data-stile="b"] .seguito-titolo{font-weight:900;font-stretch:110%;text-transform:uppercase;letter-spacing:-.03em;line-height:.95}
+html[data-stile="b"] .seguito:hover .seguito-titolo{color:var(--evid)}
+html[data-stile="b"] .coda-link{border-top:0;margin-top:30px}
+html[data-stile="b"] .copertina{background:var(--evid)}
+html[data-stile="b"] .copertina h1{font-weight:900;font-stretch:125%;text-transform:uppercase;font-size:clamp(54px,12.5vw,190px);line-height:.84;letter-spacing:-.05em}
+html[data-stile="b"] .copertina h1 em{font-style:normal;color:transparent;-webkit-text-stroke:2px #000}
+html[data-stile="b"] .copertina .sopra,html[data-stile="b"] .copertina-nota{color:#000}
+html[data-stile="b"] .romano,html[data-stile="b"] .plan-parte h3,html[data-stile="b"] .plan-voce .pt{font-weight:800}
+html[data-stile="b"] .plan-parte h3{text-transform:uppercase;font-size:21px;letter-spacing:-.01em} html[data-stile="b"] .plan-voce .pt{font-weight:600;font-size:17px}
+html[data-stile="b"] .plan-parte header{border-top-width:6px}
+html[data-stile="b"] .plan-voce:hover{background:var(--evid)} html[data-stile="b"] .plan-voce:hover .pt{color:#000}
+html[data-stile="b"] .plan-voce .pn{color:#000}
+
+/* ═════════ Stile C · Nuit ═════════
+   Lettura notturna: fondo blu-nero, testo color carta, un arancio di brace. Titoli in un romano stretto, molto grandi. */
+html[data-stile="c"] body{font-size:19.5px;line-height:1.66}
+html[data-stile="c"] .testata{padding:22vh 0 90px;background:radial-gradient(120% 90% at 85% 0%,#232838 0%,transparent 60%)}
+html[data-stile="c"] .testata-dentro{grid-column:menu-start/testo-end}
+html[data-stile="c"] .testata-num{position:absolute;right:0;top:-.34em;font-family:var(--titoli);font-style:italic;font-size:clamp(170px,26vw,360px);line-height:1;color:transparent;-webkit-text-stroke:1px color-mix(in srgb,var(--accento) 70%,transparent);pointer-events:none;opacity:.8}
+html[data-stile="c"] .testata .sopra{color:var(--accento)}
+html[data-stile="c"] .testata h1{position:relative;font-weight:400;font-size:clamp(50px,9vw,128px);line-height:.94;letter-spacing:-.02em;max-width:9.5em}
+html[data-stile="c"] .chapo{position:relative;font-size:1.18em;line-height:1.45;max-width:31em;color:#c9c3b6}
+html[data-stile="c"] .capitolo > p{color:#dcd6c9}
+html[data-stile="c"] .capitolo > p.attacco::first-letter{font-size:5.6em;line-height:.72;padding-top:.1em}
+html[data-stile="c"] .capitolo h2{font-weight:400;font-size:2.15em;line-height:1.02;letter-spacing:-.01em;margin-top:2.4em}
+html[data-stile="c"] .h2-n{margin-bottom:14px}
+html[data-stile="c"] .h2-n::after{content:"";display:inline-block;width:46px;height:1px;background:var(--accento);vertical-align:middle;margin-left:12px}
+html[data-stile="c"] .capitolo blockquote{border-left-width:1px;font-style:italic;color:#c2bcaf}
+html[data-stile="c"] .esergo{margin:2.8em 0 3em}
+html[data-stile="c"] .esergo p{font-style:italic;font-size:clamp(34px,5.2vw,62px);line-height:1.04;letter-spacing:-.015em;color:var(--accento)}
+html[data-stile="c"] .fig{border-top-color:var(--filo)}
+html[data-stile="c"] .fig-titolo{font-size:1.5em;line-height:1.1}
+html[data-stile="c"] .scrolly{background:#07080b}
+html[data-stile="c"] .scrolly-fisso{background:#07080b}
+html[data-stile="c"] .seguito{border-top:1px solid var(--accento)}
+html[data-stile="c"] .seguito-num{font-style:italic;font-size:84px;top:18px}
+html[data-stile="c"] .seguito-titolo{font-size:clamp(36px,6vw,62px);line-height:1}
+html[data-stile="c"] .copertina{background:radial-gradient(90% 70% at 80% 10%,#232838 0%,transparent 65%)}
+html[data-stile="c"] .copertina h1{font-weight:400;font-size:clamp(70px,15vw,220px);line-height:.84;letter-spacing:-.03em}
+html[data-stile="c"] .copertina h1 em{color:var(--accento)}
+html[data-stile="c"] .bottone{background:var(--accento);color:var(--su-accento)} html[data-stile="c"] .bottone:hover{background:var(--inchiostro)}
+html[data-stile="c"] .plan-parte header{border-top:1px solid var(--accento)} html[data-stile="c"] .plan-voce.solo{border-top:1px solid var(--accento)}
+html[data-stile="c"] .romano{font-style:italic} html[data-stile="c"] .plan-parte h3{font-size:30px;line-height:1.02} html[data-stile="c"] .plan-voce .pt{font-size:22px;line-height:1.1}
+html[data-stile="c"] .velo-chiudi{background:var(--accento);color:var(--su-accento)}
+
+/* ═════════ Stile D · Marché noir ═════════
+   Scelta di Raffaele del 2026-11-21: «un mix di struttura B ma con sfondo nero di C».
+   Tutte le regole di B valgono (data-stile="b"); qui si rovescia soltanto il fondo. Il giallo diventa l'accento. */
+html[data-fondo="nero"]{
+  --carta:#0d0f14; --carta2:#181b24; --inchiostro:#f2eee3; --tenue:#9b978c; --filo:#3a3e4a;
+  --accento:#e6ff3a; --su-accento:#000; --evid:#e6ff3a;
+}
+html[data-fondo="nero"] .capitolo > p,html[data-fondo="nero"] .capitolo li{color:#dedace}
+html[data-fondo="nero"] .testata,html[data-fondo="nero"] .copertina{--inchiostro:#000;--tenue:#000;color:#000}
+html[data-fondo="nero"] .copertina .bottone{color:#fff} html[data-fondo="nero"] .copertina .bottone:hover{background:#fff;color:#000}
+html[data-fondo="nero"] .capitolo > p.attacco::first-letter{color:var(--accento)}
+html[data-fondo="nero"] .capitolo h2{border-top-color:var(--inchiostro)}
+html[data-fondo="nero"] .h2-n{color:var(--accento)}
+html[data-fondo="nero"] .capitolo blockquote{color:var(--inchiostro)}
+html[data-fondo="nero"] .margine{color:var(--tenue);border-top:1px solid #4a4d57}
+html[data-fondo="nero"] .nota-aperta{color:#bdb9ad}
+html[data-fondo="nero"] .esergo p{color:#000}
+html[data-fondo="nero"] .fig{border-top-color:var(--inchiostro)}
+html[data-fondo="nero"] .folla i::before,html[data-fondo="nero"] .folla i::after{background:#3a3e4a}
+html[data-fondo="nero"] .folla i.titolato::before,html[data-fondo="nero"] .folla i.titolato::after{background:color-mix(in srgb,var(--accento) calc(var(--distinzione,1)*100%),#77786f)}
+html[data-fondo="nero"] .scrolly{border-block:1px solid #2a2e3a}
+html[data-fondo="nero"] .seguito{background:var(--evid);color:#000;box-shadow:10px 10px 0 var(--inchiostro)}
+html[data-fondo="nero"] .seguito .sopra,html[data-fondo="nero"] .seguito-num{color:#000}
+html[data-fondo="nero"] .seguito-chapo{color:#222}
+html[data-fondo="nero"] .seguito:hover .seguito-titolo{color:#000;text-decoration:underline;text-decoration-thickness:4px;text-underline-offset:6px}
+html[data-fondo="nero"] .plan-voce .pn{color:var(--accento)}
+html[data-fondo="nero"] .plan-voce:hover .pn,html[data-fondo="nero"] .plan-voce:hover .pm,html[data-fondo="nero"] .plan-voce:hover .pc{color:#000}
+html[data-fondo="nero"] .plan-voce:hover{box-shadow:-10px 0 0 var(--evid),10px 0 0 var(--evid)}
+
+/* ═════════ Giro del 2026-11-21 (sera), parole di Raffaele: «non fare apparire le note. partiamo su una testata
+   meno ingombrante sopra… a sinistra mettere il nostro menu di navigazione tra le parti, contratto ma ad albero.
+   Invece del giallo proverei una specie di violetto chiaro». Vale per lo stile D (e la testata anche per B). */
+html[data-fondo="nero"]{ --accento:#c8b9ff; --evid:#c8b9ff; }
+html[data-stile="b"] .testata{background:none;border-bottom:0;padding:104px 0 0;margin-bottom:44px;overflow:visible}
+html[data-stile="b"] .testata-dentro{grid-column:testo;border-bottom:6px solid var(--inchiostro);padding-bottom:26px}
+html[data-stile="b"] .testata-num{position:static;display:inline-block;font-size:13px;font-stretch:100%;font-weight:700;letter-spacing:.04em;line-height:1;-webkit-text-stroke:0;color:#000;background:var(--evid);padding:6px 8px;margin-right:8px;vertical-align:top}
+html[data-stile="b"] .testata .sopra{display:inline-block;background:none;color:var(--tenue);padding:6px 0;margin-bottom:18px;vertical-align:top}
+html[data-stile="b"] .testata h1{font-size:clamp(32px,4.6vw,56px);line-height:.96;margin-bottom:18px;max-width:none}
+html[data-stile="b"] .chapo{font-size:1.02em;margin-bottom:18px}
+html[data-stile="b"] .testata .meta{color:var(--tenue)}
+html[data-fondo="nero"] .testata{--inchiostro:#f2eee3;--tenue:#9b978c;color:var(--inchiostro)}
+html[data-stile="b"] .al-parte summary,html[data-stile="b"] .al-solo .al-cap{font-weight:700;text-transform:uppercase;font-size:12px;letter-spacing:.01em}
+html[data-stile="b"] .capitolo > h2:first-child{border-top:0;padding-top:0;margin-top:0}
+
+/* Copertina dell'accoglienza alleggerita (Raffaele, 2026-11-21: «alleggerisci anche la copertina dell'accoglienza»):
+   niente blocco colorato né schermata intera; titolo, griglia e subito il sommario. Vale per B e D. */
+html[data-stile="b"] .copertina{background:none;min-height:0;padding:104px 0 34px}
+html[data-stile="b"] .copertina .sopra{margin-bottom:14px}
+html[data-stile="b"] .copertina h1{font-size:clamp(38px,6.4vw,80px);line-height:.88;margin-bottom:30px}
+html[data-stile="b"] .copertina-griglia{--g:15px;--g-vuoto:4px;--g-fra:16px;margin-bottom:16px}
+html[data-stile="b"] .copertina-nota{margin-bottom:24px;color:var(--tenue)}
+html[data-stile="b"] .copertina .bottone{padding:12px 16px;font-size:12px}
+html[data-stile="b"] .plan-largo{padding-top:10px}
+html[data-fondo="nero"] .copertina{--inchiostro:#f2eee3;--tenue:#9b978c;color:var(--inchiostro)}
+html[data-fondo="nero"] .copertina h1 em{-webkit-text-stroke:0;color:var(--accento)}
+html[data-fondo="nero"] .copertina .bottone{background:var(--accento);color:#000}
+html[data-fondo="nero"] .copertina .bottone:hover{background:var(--inchiostro);color:#000}
+html[data-fondo="nero"] .copertina .sopra,html[data-fondo="nero"] .copertina-nota{color:var(--tenue)}
+
+/* Menu di sinistra quasi doppio (Raffaele, 2026-11-21: «i menu a sinistra devono essere piu larghi quasi del doppio»). */
+.albero{width:calc(var(--margine) - 56px);font-size:12.5px}
+.al-parte summary{font-size:15px;grid-template-columns:28px 1fr 14px;padding:12px 0}
+html[data-stile="b"] .al-parte summary,html[data-stile="b"] .al-solo .al-cap{font-size:13.5px}
+.al-sez-t{font-size:10.5px;margin-bottom:5px} .al-sez{padding:7px 0 4px 16px}
+.al-cap{grid-template-columns:26px 1fr;padding:4px 0} .al-cap b{font-size:11px}
+.al-h2{margin-left:30px} .al-h2 a{font-size:11.5px}
+
+/* Titoli delle sezioni nel menu più leggibili (Raffaele, 2026-11-21: «rendere piu leggibili i titoli dei capitoletti intermedi tipo "classe instruite"»). */
+.al-sez{padding-top:11px}
+.al-sez-t{font-family:var(--titoli);font-size:13.5px;line-height:1.2;letter-spacing:.02em;font-weight:600;color:var(--inchiostro);opacity:1;margin-bottom:6px}
+.al-sez-t::before{background:var(--accento);width:10px;left:-16px;top:.55em}
+
+/* Indicatore di lettura (Raffaele, 2026-11-21: «un indicatore che fa capire subito al lettore se ha gia aperto/letto
+   il capitolo»): cerchio vuoto = mai aperto, mezzo = cominciato, pieno = letto. Nel menu, nel sommario, nella griglia. */
+.segno{display:inline-block;width:10px;height:10px;border-radius:50%;border:1.5px solid var(--tenue);opacity:.7;vertical-align:-1px;flex:none}
+.aperto .segno,.segno.aperto{border-color:var(--accento);opacity:1;background:linear-gradient(90deg,var(--accento) 50%,transparent 50%)}
+.letto .segno,.segno.letto{border-color:var(--accento);opacity:1;background:var(--accento)}
+.al-cap{grid-template-columns:26px 1fr 12px}
+.al-solo .al-cap{grid-template-columns:1fr 12px}
+.al-cap .segno{align-self:center}
+.al-cap.letto b::after{display:none}
+.plan-voce.letto .pn::after{content:none}
+.plan-voce .pm .segno{margin-left:6px}
+.al-legenda{display:flex;gap:16px;margin:14px 0 0;font-size:10.5px;color:var(--tenue)}
+.al-legenda .segno{width:8px;height:8px;margin-right:3px}
+.g-parte a.aperto,.g-solo a.aperto{opacity:.9;border-color:var(--accento);background:linear-gradient(90deg,var(--accento) 50%,transparent 50%)}
+.g-parte a.letto,.g-solo a.letto{background:var(--accento);border-color:var(--accento);opacity:.9}
+.g-parte a.qui,.g-solo a.qui{outline:1.5px solid var(--inchiostro);outline-offset:1.5px;opacity:1}
+html[data-stile="b"] .barra a.aperto{background:linear-gradient(90deg,var(--evid) 50%,transparent 50%);border-color:var(--evid)}
+html[data-stile="b"] .barra a.letto{background:var(--evid);border-color:var(--evid)}
+html[data-stile="b"] .barra a.qui{outline-color:#fff}
+html[data-fondo="nero"] .plan-voce:hover .segno{border-color:#000} html[data-fondo="nero"] .plan-voce.letto:hover .segno{background:#000}
+html[data-fondo="nero"] .plan-voce.aperto:hover .segno{background:linear-gradient(90deg,#000 50%,transparent 50%)}
+
+/* Nome dell'autore più grande in copertina (Raffaele, 2026-11-21: «Raffaele Alberto Ventura in piu grande»). */
+html[data-stile="b"] .copertina .sopra{font-family:var(--titoli);font-weight:700;font-size:clamp(17px,2.1vw,26px);letter-spacing:.01em;text-transform:none;margin-bottom:16px}
+html[data-fondo="nero"] .copertina .sopra{color:var(--inchiostro)}
+
+/* Titoli delle sezioni più leggibili anche nel sommario (Raffaele, 2026-11-21). */
+.plan-sezione h4{font-family:var(--titoli);font-weight:700;font-size:15px;line-height:1.2;letter-spacing:.02em;color:var(--inchiostro);padding:6px 0 10px 16px;position:relative;border-bottom-color:var(--tenue)}
+.plan-sezione h4::before{content:"";position:absolute;left:0;top:calc(6px + .55em);width:10px;height:2px;background:var(--accento)}
+.plan-voce .pm{grid-row:1;grid-column:3} .plan-voce .pc{grid-row:2}
+.plan-voce.solo .pm{grid-column:2}
+
+/* «Introduction» e «Conclusion» davanti al titolo (Raffaele, 2026-11-21: «Ci deve essere scritto Introduction et Conclusion»). */
+.nome{color:var(--accento)} .nome::after{content:" ·";opacity:.6}
+.plan-voce:hover .nome{color:inherit}
+
+/* Illustrazione d'apertura: cartoncino bianco, disegno «Paint» in nero e violetto. */
+.apertura{margin:0 0 2.2em;background:#f2eee3;border:6px solid var(--inchiostro)}
+.apertura img{display:block;width:100%;height:auto;image-rendering:auto}
+html[data-stile="b"] .capitolo > .apertura + h2{border-top:0;padding-top:0;margin-top:0}
+
+/* Cronologia */
+.crono{list-style:none;margin:0;padding:0;border-left:2px solid var(--accento)}
+.crono li{display:grid;grid-template-columns:92px 1fr;gap:0 14px;padding:0 0 16px 18px;position:relative;align-items:baseline}
+.crono li::before{content:"";position:absolute;left:-6px;top:.55em;width:10px;height:10px;border-radius:50%;background:var(--carta);border:2px solid var(--accento)}
+.crono b{font-family:var(--titoli);font-weight:800;font-size:1.25em;line-height:1;color:var(--accento);font-variant-numeric:tabular-nums}
+.crono span{font-size:.86em;line-height:1.4}
+@media (max-width:560px){ .crono li{grid-template-columns:1fr} }
+
+/* Sommario: le sezioni sono chiuse e si aprono con un clic (Raffaele, 2026-11-21: «nel sommario in home non ci
+   devono essere tutte le sottosezioni, e troppo. le si possono aprire»). */
+.plan-sezione{margin-bottom:0}
+.plan-sezione summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:1fr 16px;align-items:center;border-bottom:1px solid var(--tenue)}
+.plan-sezione summary::-webkit-details-marker{display:none}
+.plan-sezione summary::after{content:"+";font-family:var(--mono);font-size:15px;color:var(--accento);text-align:right}
+.plan-sezione[open] summary::after{content:"–"}
+.plan-sezione summary h4{border-bottom:0;padding:13px 0 13px 16px}
+.plan-sezione summary h4::before{top:calc(13px + .55em)}
+.plan-sezione summary:hover h4{color:var(--accento)}
+.plan-sezione[open]{margin-bottom:18px}
+
+/* Sottotitolo del libro in copertina (Raffaele, 21/11: «aggiungi anche il sottotitolo fin dalla home»). */
+.copertina h1:has(+ .sottotitolo){margin-bottom:26px}
+.copertina .sottotitolo{font-family:var(--titoli);font-weight:500;font-size:clamp(19px,2.3vw,30px);line-height:1.2;letter-spacing:.01em;color:var(--evid,var(--accento));margin:0 0 50px}
+
+/* Titolo e sottotitolo cinetici (Raffaele, 21/11: «un font o un effetto più stravagante, con il testo con un effetto
+   fluttuante/dinamico contemporaneo»). Le lettere di Archivo cambiano peso e larghezza a onda (font variabile);
+   il sottotitolo passa a un corsivo con grazie e galleggia. Fermo se il lettore chiede meno movimento. */
+.parola{display:inline-block;white-space:nowrap}
+.copertina h1 .l,.copertina .sottotitolo .l{display:inline-block;will-change:transform}
+html[data-stile="b"] .copertina h1{font-size:clamp(44px,8.6vw,118px);line-height:.9;letter-spacing:-.02em;min-height:1.9em}
+html[data-stile="b"] .copertina h1 .l{animation:respiro 5.5s ease-in-out infinite;animation-delay:calc(var(--i) * -.34s)}
+@keyframes respiro{
+  0%,100%{font-variation-settings:'wght' 900,'wdth' 125;transform:translateY(0) skewX(0)}
+  50%{font-variation-settings:'wght' 400,'wdth' 62;transform:translateY(-.07em) skewX(-7deg)}
+}
+html[data-stile="b"] .copertina .sottotitolo{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;font-size:clamp(26px,3.6vw,48px);letter-spacing:0;color:var(--accento)}
+html[data-stile="b"] .copertina .sottotitolo .l{animation:galleggia 4.2s ease-in-out infinite;animation-delay:calc(var(--i) * -.13s)}
+@keyframes galleggia{0%,100%{transform:translateY(.09em) rotate(-2deg)}50%{transform:translateY(-.11em) rotate(2deg)}}
+@media (prefers-reduced-motion:reduce){.copertina h1 .l,.copertina .sottotitolo .l{animation:none!important}}
+
+/* Testo non copiabile (Raffaele, 21/11: «rendi impossibile copiare il testo»): niente selezione; app.js ferma copia, taglio,
+   menu contestuale e trascinamento. È un freno per il lettore, non una protezione: il testo resta nei dati della pagina. */
+#scena,#velo{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#scena img{-webkit-user-drag:none;pointer-events:none}
+@media print{body{display:none}}
+
+/* In testa a ogni pagina: titolo, sottotitolo e autore (Raffaele, 21/11: «in tutte le pagine ci deve essere scritto sopra
+   titolo, sottotitolo e "un livre de Raffaele Alberto Ventura"»). Due righe nella barra; su schermo stretto il sottotitolo cede. */
+.barra{height:58px}
+.barra-libro{display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:3px;align-items:baseline;line-height:1.1}
+.bl-titolo{font-weight:700}
+.bl-sotto{font-family:'Instrument Serif',serif;font-style:italic;font-size:15px;letter-spacing:0;text-transform:none;color:var(--evid,var(--accento))}
+.bl-autore{grid-column:1/-1;font-size:10px;letter-spacing:.08em;opacity:.72}
+html[data-fondo="nero"] .bl-sotto{color:#c8b9ff}
+@media (max-width:640px){.bl-sotto{display:none}}
+
+/* Titoli del libro e dei capitoli in un carattere ondulato (Raffaele, 21/11: «i titoli (libro e capitoli) devono essere
+   in un font più ondulato»): Fraunces corsivo, morbido (SOFT) e sbilenco (WONK), al posto dell'Archivo largo.
+   In copertina le lettere ondeggiano: salgono e scendono, e cambiano peso e morbidezza. */
+html[data-stile="b"] .copertina h1,html[data-stile="b"] .testata h1,html[data-stile="b"] .bl-titolo{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:800;font-stretch:normal;text-transform:none;letter-spacing:-.025em;
+  font-variation-settings:'opsz' 144,'SOFT' 100,'WONK' 1}
+html[data-stile="b"] .copertina h1{font-size:clamp(52px,9.6vw,132px);line-height:.95;min-height:1.95em}
+html[data-stile="b"] .testata h1{font-size:clamp(36px,5.2vw,64px);line-height:1}
+html[data-stile="b"] .bl-titolo{font-size:16px;letter-spacing:0}
+html[data-stile="b"] .copertina h1 .l{animation:onda 4.6s ease-in-out infinite;animation-delay:calc(var(--i) * -.3s)}
+@keyframes onda{
+  0%,100%{font-variation-settings:'opsz' 144,'SOFT' 100,'WONK' 1,'wght' 900;transform:translateY(.07em) rotate(-4deg)}
+  50%{font-variation-settings:'opsz' 144,'SOFT' 0,'WONK' 1,'wght' 300;transform:translateY(-.09em) rotate(4deg)}
+}
+
+/* Più infografiche e una frase in grande per capitolo (Raffaele, 21/11: «aggiungi più infografiche in ogni capitolo e
+   almeno una frase in grande»). «cifra»: un numero del capitolo in grande, con didascalia. «esergo grande»: la frase
+   forte del capitolo, a tutta larghezza. */
+.fig.cifra{display:grid;grid-template-columns:auto 1fr;gap:6px 26px;align-items:center;border-top:0;padding:0;margin:2.2em 0}
+.cifra-valore{font-family:'Fraunces',serif;font-style:italic;font-weight:800;font-variation-settings:'opsz' 144,'SOFT' 100,'WONK' 1;
+  font-size:clamp(54px,8.5vw,104px);line-height:.95;letter-spacing:-.03em;color:var(--accento);white-space:nowrap}
+.cifra-et{font-family:var(--mono);font-size:13px;line-height:1.55;letter-spacing:.02em;color:var(--inchiostro);max-width:30em;
+  border-left:2px solid var(--accento);padding-left:16px}
+@media (max-width:640px){.fig.cifra{grid-template-columns:1fr}.cifra-et{border-left:0;padding-left:0}}
+.esergo.grande{grid-column:menu-start/testo-end;margin:3.4em 0 3.6em}
+html[data-stile="b"] .esergo.grande p{display:block;background:none;padding:0;color:var(--accento);
+  font-family:'Fraunces',serif;font-style:italic;font-weight:700;font-stretch:normal;font-variation-settings:'opsz' 144,'SOFT' 100,'WONK' 1;
+  font-size:clamp(40px,6.6vw,92px);line-height:1.02;letter-spacing:-.03em;text-wrap:balance}
+html[data-fondo="nero"] .esergo.grande p{color:#c8b9ff}
+
+/* Titolo fermo (Raffaele, 21/11: «mi piace lo stile del titolo ma non deve muoversi»): resta il carattere ondulato,
+   senza animazione; fermo anche il sottotitolo. */
+html[data-stile="b"] .copertina h1 .l,html[data-stile="b"] .copertina .sottotitolo .l{animation:none;transform:none}
+html[data-stile="b"] .copertina h1{min-height:0}
+
+/* Illustrazioni senza riquadro né sfondo (Raffaele, 21/11: «niente riquadro né sfondo»): PNG trasparente sulla pagina. */
+.apertura{background:none;border:0;margin:0 0 1.6em}
+/* La frase in grande resta fuori dal menu di sinistra: parte dalla colonna del testo e sconfina a destra. */
+.esergo.grande{grid-column:testo-start/-1;padding-right:24px}
+html[data-stile="b"] .esergo.grande p{font-size:clamp(34px,5vw,66px);line-height:1.04}
+@media (max-width:820px){.esergo.grande{grid-column:testo}}
+
+/* Titolo della home meno grande (Raffaele, 21/11: «proviamo con quello stile di titolo ma meno grande in home»). */
+html[data-stile="b"] .copertina h1{font-size:clamp(40px,6.2vw,84px);line-height:.98}
+html[data-stile="b"] .copertina .sottotitolo{font-size:clamp(22px,2.8vw,36px);margin-bottom:38px}
+
+/* Barra fissa più sobria, su una sola riga (Raffaele, 21/11: «e più sobrio nella parte fissa in alto, una sola riga»):
+   titolo, sottotitolo e autore in fila, stesso corpo piccolo, senza colore. */
+.barra{height:44px}
+.barra-libro{display:flex;align-items:baseline;gap:0;white-space:nowrap;line-height:1}
+html[data-stile="b"] .bl-titolo,.bl-titolo{font-family:inherit;font-style:normal;font-weight:500;font-size:inherit;letter-spacing:inherit;font-variation-settings:normal}
+.bl-sotto,.bl-autore,html[data-fondo="nero"] .bl-sotto{font-family:inherit;font-style:normal;font-size:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;opacity:.55}
+.bl-sotto::before,.bl-autore::before{content:"·";margin:0 .7em}
+@media (max-width:1100px){.bl-autore{display:none}}
+@media (max-width:640px){.bl-sotto{display:none}}
+
+/* Senza la griglia dei 27 quadrati, né nella barra né in home, e con meno righe orizzontali (Raffaele, 21/11: «carina
+   l'idea dei tre quadrati ma li toglierei sia sopra che in home. alleggerisci lo stile con meno righe orizzontali»).
+   La griglia resta nel codice (grigliaHtml), soltanto nascosta. Restano i filetti sottili fra le voci degli elenchi. */
+.barra .mini,.copertina-griglia{display:none}
+html[data-stile="b"] .testata-dentro{border-bottom:0;padding-bottom:0}
+html[data-stile="b"] .capitolo h2{border-top:0;padding-top:0}
+html[data-stile="b"] .fig{border-top:0;padding-top:0}
+html[data-stile="b"] .plan-parte header,html[data-stile="b"] .plan-voce.solo{border-top:0}
+html[data-stile="b"] .seguito{border-top:0}
+.plan-sezione summary{border-bottom:0}
+html[data-stile="b"] .copertina .sottotitolo{margin-bottom:30px}
+
+/* Home: titolo su una riga, sottotitolo sulla riga sotto (Raffaele, 21/11: «la home un po' vuota sopra. forse classe
+   malaisée va messa su una riga e un'altra riga il sottotitolo»). */
+html[data-stile="b"] .copertina h1{font-size:clamp(40px,8.4vw,128px);line-height:1;white-space:nowrap;margin-bottom:18px}
+html[data-stile="b"] .copertina .sottotitolo{font-size:clamp(24px,3.6vw,52px)}
+@media (max-width:520px){html[data-stile="b"] .copertina h1{white-space:normal}}
+/* Titolo della parte cliccabile, in home e nel sommario: porta al primo capitolo. */
+.plan-parte header h3 a{color:inherit;text-decoration:none}
+.plan-parte header h3 a:hover{color:var(--accento)}
+
+/* Nel menu di sinistra il capitolo in cui siamo si vede subito (Raffaele, 21/11: «nel menu a sinistra evidenzia sempre
+   chiaramente il capitolo in cui siamo»): fondo viola pieno, testo nero in grassetto, su tutta la larghezza della voce. */
+.albero .al-cap.qui,.albero .al-solo .al-cap.qui{background:var(--accento);color:#0d0f14;font-weight:700;border-radius:3px;
+  padding:7px 8px;margin:3px -8px}
+.albero .al-cap.qui b,.albero .al-cap.qui .nome{color:#0d0f14;font-weight:700}
+.albero .al-cap.qui .segno{filter:brightness(0)}
+
+/* Glossario: il termine di ogni voce in viola (Raffaele, 21/11: «nel glossario metti i titoli delle parole in violino»). */
+.glossario p > strong:first-child{color:var(--accento);font-family:var(--titoli);font-weight:700;font-size:1.08em}
+html[data-fondo="nero"] .glossario p > strong:first-child{color:#c8b9ff}
+
+/* Home e sommario senza righe sotto i capitoli (Raffaele, 21/11: «in home togli le righe sotto alcuni capitoli»). */
+.plan-voce,.plan-voce.solo,.plan-sezione h4,.plan-sezione summary{border-bottom:0;border-top:0}

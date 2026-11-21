@@ -1,213 +1,41 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-stile="b" data-fondo="nero">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>La classe malaisée — Socio-philosophie du déclassement</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
-
 <meta name="description" content="La socio-philosophie du déclassement par Raffaele Alberto Ventura.">
 <meta property="og:title" content="La classe malaisée">
 <meta property="og:description" content="La socio-philosophie du déclassement par Raffaele Alberto Ventura.">
 <meta property="og:url" content="https://rav.ltd/">
 <meta property="og:image" content="https://raw.githubusercontent.com/rav-ltd/classe/refs/heads/main/thumbclasse.png">
 <meta property="og:type" content="website">
-
-<!-- Le connessioni verso Google si aprono mentre il resto della pagina viene ancora letto -->
-<link rel="preconnect" href="https://script.google.com">
-<link rel="preconnect" href="https://ssl.gstatic.com" crossorigin>
-<link rel="dns-prefetch" href="https://script.googleusercontent.com">
-
-<style>
-:root{--bg:#fff;--side:#f7f3ec;--line:#e6dfd3;--green:#2e7d32;
-  --serif:Georgia,Cambria,"Times New Roman",Times,serif;
-  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow:hidden;background:var(--side);font-family:var(--sans)}
-
-iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;z-index:1}
-
-#shell{display:flex;position:absolute;inset:0;z-index:10;background:var(--side);transition:opacity .4s ease}
-.direct #shell{display:none}                /* link diretto a un capitolo: niente introduzione */
-nav{width:440px;flex-shrink:0;padding:35px 25px;background:var(--side);border-right:1px solid var(--line)}
-.site-header{margin-bottom:20px;padding-bottom:20px;border-bottom:1.5px solid var(--line)}
-.main-title{font:italic normal 1.55rem/1.25 var(--serif);color:#1a1a1a;margin-bottom:8px}
-.sub-title{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:#6b6357;margin-bottom:12px;line-height:1.4}
-.author{font-size:.92rem;font-weight:600;color:#2b2b2b;letter-spacing:.02em}
-.hint{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#ede5d8;border:1px solid #dcd1c0;
-  border-radius:6px;font:italic .9rem var(--serif);color:#4a4338}
-.hourglass-spin{font-size:1.25rem;display:inline-block;flex-shrink:0;animation:flip 2s infinite ease-in-out}
-@keyframes flip{0%{transform:rotate(0)}45%,50%{transform:rotate(180deg)}95%,100%{transform:rotate(360deg)}}
-
-main{flex:1;padding:60px 90px;overflow-y:auto;background:var(--bg)}
-#writer{max-width:840px;visibility:hidden}
-#writer p{font:1.06rem/1.72 var(--serif);color:#2b2b2b;margin-bottom:1.35rem}
-#writer hr{border:0;border-top:1.5px solid var(--line);margin:1.6rem 0}
-.cursor{display:inline-block;width:2px;height:1.15em;margin-left:2px;vertical-align:-.15em;
-  background:var(--green);animation:blink .7s infinite step-start}
-@keyframes blink{50%{opacity:0}}
-
-@media (max-width:768px){nav{display:none}main{padding:40px 20px}}
-@media (prefers-reduced-motion:reduce){.hourglass-spin,.cursor{animation:none}}
-</style>
-<noscript><style>#writer{visibility:visible}</style></noscript>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1;1,9..144,100..900,0..100,0..1&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="stile.css?v=40">
 </head>
 <body>
+<header class="barra" id="barra">
+  <a class="barra-libro" href="#/"><span class="bl-titolo">La classe malaisée</span><span class="bl-sotto">Socio-philosophie du déclassement</span><span class="bl-autore">un livre de Raffaele Alberto Ventura</span></a>
+  <span class="barra-capitolo" id="barra-capitolo"></span>
+  <button class="barra-sommario" id="apri-sommario" aria-label="Sommaire">
+    <span class="mini" id="mini"></span><span class="barra-parola">Sommaire</span>
+  </button>
+  <div class="avanzamento"><i id="avanzamento"></i></div>
+</header>
 
-<!-- L'iframe è il primo elemento e riceve l'indirizzo subito: parte a caricare mentre si legge il resto -->
-<iframe id="app" title="La classe malaisée — Hypertexte" allow="clipboard-write"></iframe>
-<script>
-(function () {
-  var BASE = "https://script.google.com/macros/s/AKfycbzXjrlAwQW1SRBdvISqjXGkfMftBQrsdWScgBmcw4JCDITvMtbyxS59nSHoX3ZoorsGgg/exec";
-  var HOME = "t.h23zcxu3jwib";              // deve coincidere con HOME_TAB di Code.gs
-  var ID = /^t\.[\w-]+$/;
+<main id="scena"><p class="attesa">Chargement…</p></main>
 
-  // Il capitolo viene letto dall'indirizzo: prima #capitolo (aggiornato durante la navigazione), poi ?tab=
-  var hash = ""; try { hash = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
-  var tab = ID.test(hash) ? hash : (new URLSearchParams(location.search).get("tab") || "");
-  if (!ID.test(tab)) tab = HOME;
-
-  window.RAV = { base: BASE, home: HOME, id: ID, direct: tab !== HOME, tab: tab };
-  if (window.RAV.direct) document.documentElement.className = "direct";
-  document.getElementById("app").src = BASE + "?tab=" + encodeURIComponent(tab);
-})();
-</script>
-
-<div id="shell">
-  <nav>
-    <div class="site-header">
-      <div class="main-title">La classe malaisée</div>
-      <div class="sub-title">Socio-philosophie du déclassement</div>
-      <div class="author">Raffaele Alberto Ventura</div>
-    </div>
-    <div class="hint"><span class="hourglass-spin">⏳</span><span>Chargement de l'hypertexte en cours...</span></div>
-  </nav>
-
-  <main>
-    <!-- Testo reale nel DOM (leggibile da motori di ricerca e anteprime): lo script lo svuota e lo "digita" -->
-    <div id="writer">
-      <p>En 2017, la <em>Teoria della classe disagiata</em> ouvrit les yeux de la jeunesse italienne sur les promesses non tenues de la société de l’abondance. Le livre analysait comment le capitalisme nous a jetés dans l'indifférenciation et comment l’impératif de distinction nous entraîne dans une course aux armements symboliques sur un marché saturé, produisant un surplus condamné au déclassement.</p>
-      <p>Dix ans après, ce cadre d’analyse semble s’appliquer aussi à la France. Il est rendu encore plus actuel par l'avènement de l’IA générative de masse, qui aggrave la crise d'indifférenciation. Cette classe disqualifiée, inadaptée, bientôt superflue - notre classe <em>malaisée</em> - est le résultat de plusieurs décennies de croissance économique dont on a compris trop tard qu’elle ne pouvait pas être éternelle. Certains croient que cet effondrement aurait pu être accepté avec résignation, mais les représentations de soi ne sont pas des caprices que l’on pourrait ajuster. Profondément enracinées, elles sont le produit de causes sociales et culturelles.</p>
-      <p>Aujourd’hui, la jeunesse se révolte. Pouvait-elle réagir autrement? La crise n’est pas seulement économique, elle est existentielle : c’est le dernier avatar de la lutte pour la reconnaissance annoncée par Hegel à l’aube de la modernité. <em>Être ou ne pas être?</em> Telle est encore et toujours la question.</p>
-      <p>Cet hypertexte en “work in progress” constitue la première adaptation en français des thèses de ce livre culte et des suivants, avec l’ajout de nombreuses références au nouveau contexte historique et géographique. Les chapitres vont apparaître au fur et à mesure de leur traduction entre novembre 2026 et janvier 2027. Les contenus disponibles sont <span style="color:#2e7d32">marqués en vert</span> et les plus récents avec un <span style="color:#d32f2f">● rouge.</span></p>
-      <div data-late hidden>
-        <hr>
-        <p>Raffaele Alberto Ventura est philosophe précaire, auteur de plusieurs ouvrages. Il a édité en italien les écrits économiques de Cornelius Castoriadis. Ses derniers livres sont <em>La conquista dell’infelicità</em> (Einaudi 2025) et <em>L’istituzione immaginaria del capitalismo</em> (DeriveApprodi 2026).</p>
-      </div>
-    </div>
-  </main>
+<div class="velo" id="velo" hidden>
+  <button class="velo-chiudi" id="chiudi-sommario" aria-label="Fermer">Fermer ✕</button>
+  <div class="velo-dentro" id="velo-dentro"></div>
 </div>
 
-<script>
-(function () {
-  var shell = document.getElementById("shell"), frame = document.getElementById("app");
-  var writer = document.getElementById("writer"), cfg = window.RAV;
-  var typed = false, ready = false, faded = false;
-
-  /* ── transizione: solo quando la macchina da scrivere ha finito E l'app ha qualcosa da mostrare ── */
-  function fade() {
-    if (faded) return;
-    faded = true;
-    shell.style.pointerEvents = "none";      // l'app sotto è subito cliccabile
-    shell.style.opacity = "0";
-    setTimeout(function () { shell.remove(); }, 450);
-  }
-  function tryFinish() { if (cfg.direct || (typed && ready)) fade(); }
-
-  /* ── macchina da scrivere: tempo reale (non un timer per carattere), con accelerazione finale ── */
-  var items = [], total = 0;
-  var walker = document.createTreeWalker(writer, NodeFilter.SHOW_TEXT, null);
-  for (var n; (n = walker.nextNode());) {
-    if (!n.data.trim()) continue;
-    items.push({ node: n, full: n.data, shown: n.data.length, late: n.parentElement.closest("[data-late]") });
-    total += n.data.length;
-  }
-  items.forEach(function (it) { it.node.data = ""; it.shown = 0; });
-  writer.style.visibility = "visible";
-
-  var cursor = document.createElement("span");
-  cursor.className = "cursor";
-  var CPS = 300;                             // caratteri al secondo (~6 s per l'intero testo)
-  var pos = 0, last = 0, fastAt = 0, fastFrom = 0, cursorAt = -1;
-
-  function render(count) {
-    var acc = 0;
-    for (var i = 0; i < items.length; i++) {
-      var it = items[i], k = Math.max(0, Math.min(it.full.length, count - acc));
-      if (it.shown !== k) {
-        it.node.data = it.full.slice(0, k); it.shown = k;
-        if (k > 0 && it.late) it.late.hidden = false;
-      }
-      acc += it.full.length;
-      if (acc >= count) {
-        if (cursorAt !== i) { it.node.parentNode.insertBefore(cursor, it.node.nextSibling); cursorAt = i; }
-        return;
-      }
-    }
-  }
-  function finishTyping() {
-    render(total); cursor.remove(); typed = true; tryFinish();
-  }
-  function step(ts) {
-    if (typed) return;
-    var dt = last ? ts - last : 16; last = ts;
-    pos = Math.min(total, pos + CPS * dt / 1000);
-    if (fastAt) pos = Math.max(pos, fastFrom + (total - fastFrom) * Math.min(1, (ts - fastAt) / 450));
-    render(Math.floor(pos));
-    if (pos >= total) finishTyping(); else requestAnimationFrame(step);
-  }
-  function speedUp() {                       // l'app è pronta (o l'utente ha cliccato): completa in ~0,4 s
-    if (typed || fastAt) return;
-    fastAt = performance.now(); fastFrom = pos;
-  }
-
-  if (cfg.direct) {
-    finishTyping();
-  } else if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    finishTyping();
-  } else {
-    requestAnimationFrame(step);
-    ["pointerdown", "keydown"].forEach(function (ev) { shell.addEventListener(ev, speedUp, { once: true }); });
-  }
-
-  /* ── handshake con l'app: sostituisce il vecchio timer fisso di 3,5 s ── */
-  function markReady() {
-    if (ready) return;
-    ready = true; speedUp(); tryFinish();
-  }
-
-  function fromGoogle(origin) {
-    try {
-      var h = new URL(origin).hostname;
-      return /(^|\.)(googleusercontent|google)\.com$/.test(h);
-    } catch (e) { return false; }
-  }
-
-  window.addEventListener("message", function (ev) {
-    var d = ev.data;
-    if (!d || !fromGoogle(ev.origin)) return;
-    if (d.rav === "ready") markReady();
-    else if (d.rav === "tab" && (d.id === "" || cfg.id.test(d.id))) {
-      cfg.tab = d.id || cfg.home;
-      // l'indirizzo segue il capitolo aperto: copiare l'URL dà un permalink valido
-      try { history.replaceState(null, "", location.pathname + (d.id ? "#" + d.id : "")); } catch (e) {}
-    }
-  });
-
-  // Indirizzo cambiato a sito aperto (permalink incollato o cliccato): si apre quel capitolo.
-  // replaceState qui sopra non scatena "hashchange", quindi la navigazione dentro l'app non passa di qui.
-  window.addEventListener("hashchange", function () {
-    var h = ""; try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
-    var id = cfg.id.test(h) ? h : (h === "" ? cfg.home : "");
-    if (!id || id === cfg.tab) return;
-    cfg.tab = id;
-    frame.src = cfg.base + "?tab=" + encodeURIComponent(id);
-  });
-
-  // Ripiego se l'app non parla (versione vecchia in cache, origine inattesa): comportamento di prima
-  frame.addEventListener("load", function () { setTimeout(markReady, 3500); });
-  setTimeout(markReady, 15000);
-})();
-</script>
+<script src="strato.js?v=40"></script>
+<script src="strato-auto.js?v=40"></script>
+<script src="grafici.js?v=40"></script>
+<script src="app.js?v=40"></script>
 </body>
 </html>
