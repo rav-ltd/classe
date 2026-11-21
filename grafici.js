@@ -9,6 +9,7 @@
     return e;
   }
   var SVG = 'http://www.w3.org/2000/svg';
+  function T(s) { var d = window.INTERFACCIA; return (d && d[s]) || s; }   // scritte dell'interfaccia (versione cinese)
   var riduci = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* 100 punti, un pannello fisso e dei passi che scorrono (scrollytelling). */
@@ -32,7 +33,7 @@
       punti.push(c);
     }
     quadro.appendChild(svg);
-    var cifra = el('div', 'scrolly-cifra', '<b></b><span>sur 100</span><em>' + v.legenda + '</em><small></small>');
+    var cifra = el('div', 'scrolly-cifra', '<b></b><span>' + T('sur 100') + '</span><em>' + v.legenda + '</em><small></small>');
     quadro.appendChild(cifra);
     fisso.appendChild(quadro);
     s.appendChild(fisso);
@@ -52,7 +53,7 @@
       cifra.querySelector('small').textContent = p.dove;
       [].forEach.call(passi.querySelectorAll('.passo'), function (d) { d.classList.toggle('attivo', +d.dataset.k === k); });
     }
-    svg.setAttribute('aria-label', v.passi.map(function (p) { return p.dove + ' : ' + p.cifra + ' sur 100'; }).join(' ; '));
+    svg.setAttribute('aria-label', v.passi.map(function (p) { return p.dove + ' : ' + p.cifra + ' ' + T('sur 100'); }).join(' ; '));
     var oss = new IntersectionObserver(function (voci) {
       voci.forEach(function (x) { if (x.isIntersecting) mostra(+x.target.dataset.k); });
     }, { rootMargin: '-45% 0px -45% 0px' });
@@ -121,7 +122,7 @@
   function apertura(v) {
     var f = el('figure', 'apertura entra');
     var i = document.createElement('img');
-    i.src = 'img/' + v.img + '.png'; i.alt = v.alt || ''; i.loading = 'lazy'; i.width = 1200; i.height = 800;
+    i.src = (window.RADICE || '') + 'img/' + v.img + '.png'; i.alt = v.alt || ''; i.loading = 'lazy'; i.width = 1200; i.height = 800;
     f.appendChild(i);
     return f;
   }
@@ -133,7 +134,7 @@
     var ol = el('ol', 'crono');
     v.tappe.forEach(function (t) { ol.appendChild(el('li', '', '<b>' + t.anno + '</b><span>' + t.testo + '</span>')); });
     f.appendChild(ol);
-    f.appendChild(el('p', 'fig-fonte', v.fonte || 'Dates citées dans le chapitre.'));
+    f.appendChild(el('p', 'fig-fonte', v.fonte || T('Dates citées dans le chapitre.')));
     return f;
   }
 

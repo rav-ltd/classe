@@ -29,6 +29,15 @@
   }
   var SEGNO = '<i class="segno" aria-hidden="true"></i>';
 
+  /* Lingua (Raffaele, 21/11: «fai un clone in cinese di tutto il sito … dalla home si può scegliere di attivare la
+   * versione cinese»). La pagina zh/index.html dichiara window.LINGUA = 'zh', window.RADICE = '../' (immagini e codice
+   * stanno nella cartella del sito francese) e window.INTERFACCIA, il dizionario delle scritte (zh/interfaccia.js).
+   * T() traduce una scritta dell'interfaccia; senza dizionario la lascia in francese. */
+  var ZH = window.LINGUA === 'zh', RADICE = window.RADICE || '';
+  function T(s) { var d = window.INTERFACCIA; return (d && d[s]) || s; }
+  var ALTRA = ZH ? '<a class="bio-link lingua-link" href="../" lang="fr">Français</a>'
+                 : '<a class="bio-link lingua-link" href="zh/" lang="zh-Hans">中文</a>';
+
   /* Testo nudo, per ritrovare le àncore dello strato qualunque sia la tipografia del Doc. */
   function nudo(h) {
     return h.replace(/<sup class="nota"[^>]*>.*?<\/sup>/g, '').replace(/<[^>]+>/g, '')
@@ -41,8 +50,8 @@
   // riassunto dell'Introduzione, finché nel Doc l'Introduzione non ha un riassunto suo (che allora prevale).
   var INTRO_CHAPO = 'Les représentations de soi ne sont pas des caprices que l’on pourrait ajuster. Profondément enracinées, elles sont le produit de causes sociales et culturelles. Aujourd’hui, la jeunesse se révolte. Pouvait-elle réagir autrement? La crise n’est pas seulement économique, elle est existentielle.';
   function indicizza() {
-    var intro = BOOK.capitoli[BOOK.ordine[0]];
-    if (intro && !intro.chapo) intro.chapo = INTRO_CHAPO;
+    var p0 = BOOK.plan[0], intro = p0 && p0.tipo === 'solo' && p0.id === BOOK.ordine[0] && (p0.nome ? p0.nome === T('Introduction') : /^Introduction/i.test(p0.etichetta || '')) ? BOOK.capitoli[p0.id] : null;
+    if (intro && !intro.chapo) intro.chapo = T(INTRO_CHAPO);
     BOOK.plan.forEach(function (v) {
       if (v.tipo === 'solo') { DOVE[v.id] = { parte: null, sezione: null }; return; }
       v.sezioni.forEach(function (s) {
@@ -54,6 +63,7 @@
   /* Le schede fuori dalle parti portano il loro nome: «Introduction», «Conclusion» (dall'etichetta del Plan). */
   function nomeDi(id) {
     var v = BOOK.plan.filter(function (x) { return x.tipo === 'solo' && x.id === id; })[0];
+    if (v && v.nome) return v.nome;
     var m = v && /^(Introduction|Conclusion)/i.exec(v.etichetta || '');
     return m ? m[1] : '';
   }
@@ -72,7 +82,7 @@
         '<span class="pn">' + (c.num || '') + '</span>' +
         '<span class="pt">' + conNome(id) + '</span>' +
         (c.chapo ? '<span class="pc">' + c.chapo + '</span>' : '') +
-        '<span class="pm">' + c.minuti + ' min ' + SEGNO + '</span></a>';
+        '<span class="pm">' + c.minuti + ' ' + T('min') + ' ' + SEGNO + '</span></a>';
     }
     BOOK.plan.forEach(function (v) {
       if (v.tipo === 'solo') { h += '<div class="plan-solo">' + riga(v.id, 'plan-voce solo') + '</div>'; return; }
@@ -83,7 +93,7 @@
         (primoCap ? '<a href="#/' + primoCap + '">' + v.titolo + '</a>' : v.titolo) + '</h3></header>';
       v.sezioni.forEach(function (s) {
         // sezioni chiuse, da aprire con un clic; aperta soltanto quella del capitolo corrente
-        h += '<details class="plan-sezione"' + (s.capitoli.indexOf(corrente) >= 0 ? ' open' : '') + '><summary><h4>' + s.titolo + '</h4><span class="sez-min">' + minutiDi(s) + ' min</span></summary>';
+        h += '<details class="plan-sezione"' + (s.capitoli.indexOf(corrente) >= 0 ? ' open' : '') + '><summary><h4>' + s.titolo + '</h4><span class="sez-min">' + minutiDi(s) + ' ' + T('min') + '</span></summary>';
         s.capitoli.forEach(function (id) { h += riga(id, 'plan-voce'); });
         h += '</details>';
       });
@@ -134,8 +144,8 @@
       });
       h += '</div></details>';
     });
-    h += '<p class="al-legenda"><span><i class="segno"></i> à lire</span><span><i class="segno aperto"></i> commencé</span><span><i class="segno letto"></i> lu</span></p>';
-    return '<nav class="albero" id="albero" aria-label="Sommaire">' + h + '</nav>';
+    h += '<p class="al-legenda"><span><i class="segno"></i> ' + T('à lire') + '</span><span><i class="segno aperto"></i> ' + T('commencé') + '</span><span><i class="segno letto"></i> ' + T('lu') + '</span></p>';
+    return '<nav class="albero" id="albero" aria-label="' + T('Sommaire') + '">' + h + '</nav>';
   }
   var corrente = null;
   function disegnaMini() { $('#mini').innerHTML = grigliaHtml(corrente); }
@@ -165,9 +175,9 @@
     corrente = null;
     document.title = 'Raffaele Alberto Ventura — ' + BOOK.titolo;
     scena.innerHTML = '<article class="capitolo bio"><header class="testata griglia"><div class="testata-dentro">' +
-      '<p class="sopra">L’auteur</p><h1>Raffaele Alberto Ventura</h1></div></header>' +
+      '<p class="sopra">' + T('L’auteur') + '</p><h1>' + T('Raffaele Alberto Ventura') + '</h1></div></header>' +
       '<div class="corpo griglia">' + BOOK.bio.map(function (h) { return '<p>' + h + '</p>'; }).join('') +
-      '<p><a class="bottone" href="#/">Retour au sommaire</a></p></div></article>';
+      '<p><a class="bottone" href="#/">' + T('Retour au sommaire') + '</a></p></div></article>';
     $('#barra-capitolo').textContent = '';
     window.scrollTo(0, 0);
     aggiornaScorrimento();
@@ -180,13 +190,14 @@
     scena.innerHTML =
       '<section class="copertina griglia"><div class="copertina-dentro">' +
         // illustrazione in alto a destra, un poco coperta dal titolo; se il file manca, sparisce da sola
-        '<img class="copertina-img" src="img/home.png?v=1" alt="" onerror="this.remove()">' +
-        '<p class="sopra">Raffaele Alberto Ventura' + (BOOK.bio && BOOK.bio.length ? ' <a class="bio-link" href="#/bio">Bio</a>' : '') + '</p>' +
+        '<img class="copertina-img" src="' + RADICE + 'img/home.png?v=1" alt="" onerror="this.remove()">' +
+        '<p class="sopra">' + T('Raffaele Alberto Ventura') + (BOOK.bio && BOOK.bio.length ? ' <a class="bio-link" href="#/bio">' + T('Bio') + '</a>' : '') + ' ' + ALTRA + '</p>' +
         // citazione storta, evidenziata in giallo, davanti all'illustrazione: testo dato da Raffaele il 21/11 (frasi della scheda d'accoglienza)
-        '<h1 aria-label="La classe malaisée">' + lettere('La classe', 0) + ' <em>' + lettere('malaisée', 9) + '</em></h1>' +
-        '<p class="sottotitolo" aria-label="Socio-philosophie du déclassement">' + lettere('Socio-philosophie du déclassement', 0) + '</p>' +
+        (ZH ? '<h1 aria-label="' + T('La classe malaisée') + '">' + lettere(T('La classe malaisée').slice(0, 2), 0) + '<em>' + lettere(T('La classe malaisée').slice(2), 2) + '</em></h1>'
+            : '<h1 aria-label="La classe malaisée">' + lettere('La classe', 0) + ' <em>' + lettere('malaisée', 9) + '</em></h1>') +
+        '<p class="sottotitolo" aria-label="' + T('Socio-philosophie du déclassement') + '">' + lettere(T('Socio-philosophie du déclassement'), 0) + '</p>' +
         '<div class="copertina-griglia">' + grigliaHtml(null) + '</div>' +
-        '<a class="bottone" href="#/' + primo + '">Commencer la lecture</a>' +
+        '<a class="bottone" href="#/' + primo + '">' + T('Commencer la lecture') + '</a>' +
         // la Torre dei tarocchi stilizzata, in grande a destra del titolo (Raffaele, 21/11; disegno: torre.py)
         '<svg class="torre" viewBox="96 0 200 200" aria-hidden="true"><polygon points="292,0 222,34 244,38 176,62 232,46 212,40 274,6" fill="#ffe53b"/><polygon points="118,200 127,66 173,66 182,200" fill="#d9774a"/><polygon points="158,66 173,66 182,200 162,200" fill="#b0552f"/><path d="M125.562 80H174.438" stroke="#0d0f14" stroke-width="1" opacity=".55"/><path d="M132 80v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M144 80v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M156 80v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M168 80v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M124.758 92H175.242" stroke="#0d0f14" stroke-width="1" opacity=".55"/><path d="M138 92v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M150 92v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M162 92v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M174 92v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M123.954 104H176.046" stroke="#0d0f14" stroke-width="1" opacity=".55"/><path d="M132 104v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M144 104v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M156 104v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M168 104v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M123.15 116H176.85" stroke="#0d0f14" stroke-width="1" opacity=".55"/><path d="M138 116v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M150 116v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M162 116v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M174 116v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M122.346 128H177.654" stroke="#0d0f14" stroke-width="1" opacity=".55"/><path d="M132 128v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M144 128v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M156 128v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M168 128v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M121.542 140H178.458" stroke="#0d0f14" stroke-width="1" opacity=".55"/><path d="M138 140v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M150 140v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M162 140v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M174 140v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M120.738 152H179.262" stroke="#0d0f14" stroke-width="1" opacity=".55"/><path d="M132 152v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M144 152v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M156 152v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M168 152v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M119.934 164H180.066" stroke="#0d0f14" stroke-width="1" opacity=".55"/><path d="M138 164v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M150 164v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M162 164v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M174 164v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M119.13 176H180.87" stroke="#0d0f14" stroke-width="1" opacity=".55"/><path d="M132 176v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M144 176v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M156 176v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M168 176v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M118.326 188H181.674" stroke="#0d0f14" stroke-width="1" opacity=".55"/><path d="M138 188v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M150 188v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M162 188v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><path d="M174 188v12" stroke="#0d0f14" stroke-width="1" opacity=".4"/><polygon points="122,66 122,52 131,52 131,58 140,58 140,50 149,50 149,60 157,56 163,62 170,54 178,58 178,66" fill="#d9774a"/><path transform="translate(140 60) rotate(-8) scale(1.5)" d="M0 0C-9 -8 -3 -16 -6 -26C2 -20 4 -14 3 -9C7 -13 8 -18 7 -22C13 -14 11 -6 0 0Z" fill="#ff9a3d"/><path transform="translate(156 60) rotate(6) scale(1.9)" d="M0 0C-9 -8 -3 -16 -6 -26C2 -20 4 -14 3 -9C7 -13 8 -18 7 -22C13 -14 11 -6 0 0Z" fill="#ff9a3d"/><path transform="translate(148 60) rotate(0) scale(1.1)" d="M0 0C-9 -8 -3 -16 -6 -26C2 -20 4 -14 3 -9C7 -13 8 -18 7 -22C13 -14 11 -6 0 0Z" fill="#ffe53b"/><path transform="translate(166 62) rotate(14) scale(1.0)" d="M0 0C-9 -8 -3 -16 -6 -26C2 -20 4 -14 3 -9C7 -13 8 -18 7 -22C13 -14 11 -6 0 0Z" fill="#ffe53b"/><path d="M142 96v-10a4 4 0 0 1 8 0v10z" fill="#0d0f14"/><path transform="translate(146 87) rotate(0) scale(0.62)" d="M0 0C-9 -8 -3 -16 -6 -26C2 -20 4 -14 3 -9C7 -13 8 -18 7 -22C13 -14 11 -6 0 0Z" fill="#ffe53b"/><path d="M158 118v-10a4 4 0 0 1 8 0v10z" fill="#0d0f14"/><path transform="translate(162 109) rotate(0) scale(0.62)" d="M0 0C-9 -8 -3 -16 -6 -26C2 -20 4 -14 3 -9C7 -13 8 -18 7 -22C13 -14 11 -6 0 0Z" fill="#ffe53b"/><path d="M140 140v-10a4 4 0 0 1 8 0v10z" fill="#0d0f14"/><path transform="translate(144 131) rotate(0) scale(0.62)" d="M0 0C-9 -8 -3 -16 -6 -26C2 -20 4 -14 3 -9C7 -13 8 -18 7 -22C13 -14 11 -6 0 0Z" fill="#ffe53b"/><path d="M143 200v-17a7 7 0 0 1 14 0v17z" fill="#0d0f14"/></svg>' +
       '</div></section>' +
@@ -205,14 +216,14 @@
     segna(id, 0.01);
     document.title = c.titolo + ' · ' + BOOK.titolo;
     var d = DOVE[id] || {}, i = BOOK.ordine.indexOf(id);
-    var sopra = d.parte ? 'Partie ' + d.parte.num + ' · ' + d.sezione.titolo : (nomeDi(id) || BOOK.titolo);
+    var sopra = d.parte ? T('Partie') + ' ' + d.parte.num + ' · ' + d.sezione.titolo : (nomeDi(id) || BOOK.titolo);
 
     var h = '<header class="testata griglia"><div class="testata-dentro">' +
       (c.num ? '<span class="testata-num" aria-hidden="true">' + due(c.num) + '</span>' : '') +
       '<p class="sopra">' + sopra + '</p>' +
       '<h1>' + c.titolo + '</h1>' +
       (c.chapo ? '<p class="chapo">' + c.chapo + '</p>' : '') +
-      '<p class="meta">' + c.minuti + ' min de lecture' + (NOTE && c.note.length ? ' · ' + c.note.length + ' notes' : '') + '</p>' +
+      '<p class="meta">' + c.minuti + ' ' + T('min de lecture') + (NOTE && c.note.length ? ' · ' + c.note.length + ' notes' : '') + '</p>' +
       '</div></header>';
 
     // glossario: una scheda in cui ogni blocco è una voce che comincia con il termine in grassetto
@@ -235,12 +246,12 @@
     h += '<footer class="coda griglia"><div class="coda-dentro">';
     if (succ) {
       var s = cap(succ), ds = DOVE[succ] || {};
-      h += '<a class="seguito" href="#/' + succ + '"><span class="sopra">À suivre' + (ds.sezione ? ' · ' + ds.sezione.titolo : (nomeDi(succ) ? ' · ' + nomeDi(succ) : '')) + '</span>' +
+      h += '<a class="seguito" href="#/' + succ + '"><span class="sopra">' + T('À suivre') + (ds.sezione ? ' · ' + ds.sezione.titolo : (nomeDi(succ) ? ' · ' + nomeDi(succ) : '')) + '</span>' +
         (s.num ? '<span class="seguito-num">' + due(s.num) + '</span>' : '') +
         '<span class="seguito-titolo">' + s.titolo + '</span>' + (s.chapo ? '<span class="seguito-chapo">' + s.chapo + '</span>' : '') + '</a>';
     }
     h += '<p class="coda-link">' + (prec ? '<a href="#/' + prec + '">← ' + cap(prec).titolo + '</a>' : '') +
-      '<a href="#/">Tout le sommaire</a></p></div></footer>';
+      '<a href="#/">' + T('Tout le sommaire') + '</a></p></div></footer>';
 
     h += alberoHtml(id);
 
@@ -257,14 +268,14 @@
   /* Lo strato: ogni voce trova il blocco che contiene la sua àncora; se non lo trova, non compare. */
   function innestaStrato(c) {
     var k0 = c.num || nomeDi(c.id).toLowerCase();
-    var voci = (window.STRATO || {})[k0] || (window.STRATO_AUTO || {})[k0] || [];
+    var voci = window.STRATO_ZH ? (window.STRATO_ZH[c.id] || []) : ((window.STRATO || {})[k0] || (window.STRATO_AUTO || {})[k0] || []);
     var testi = c.blocchi.map(function (b) { return nudo(b.h || ''); });
     var tutto = testi.join(' ');
     voci.forEach(function (v) {
       if (v.tipo === 'apertura') { var a0 = window.GRAFICI.apertura(v), art = $('#articolo'); art.insertBefore(a0, art.firstChild); return; }
       var ancora = nudo(v.dopo || v.testo || '');
-      var k = -1;
-      testi.forEach(function (t, i) { if (k < 0 && t.indexOf(ancora) >= 0) k = i; });
+      var k = typeof v.b === 'number' ? v.b : -1;
+      if (k < 0) testi.forEach(function (t, i) { if (k < 0 && t.indexOf(ancora) >= 0) k = i; });
       var mancano = (v.richiede || []).filter(function (r) { return tutto.indexOf(nudo(r)) < 0; });
       if (k < 0 || mancano.length || !window.GRAFICI[v.tipo]) {
         console.warn('strato: voce non agganciata', v.tipo, k < 0 ? 'àncora assente' : mancano);
@@ -374,10 +385,10 @@
   stile(daUrl || salvato || 'd');
 
   /* ───────── Avvio ───────── */
-  fetch('dati/book.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (b) {
+  fetch(window.LIBRO_JSON || 'dati/book.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (b) {
     BOOK = b; indicizza(); rotta(); dalVivo();
   }).catch(function (e) {
-    scena.innerHTML = '<p class="attesa">Le texte n’a pas pu être chargé. (' + e.message + ')</p>';
+    scena.innerHTML = '<p class="attesa">' + T('Le texte n’a pas pu être chargé.') + ' (' + e.message + ')</p>';
   });
 
   /* Il testo dal vivo: la pagina parte subito dalla fotografia (dati/book.json), poi chiede all'applicazione

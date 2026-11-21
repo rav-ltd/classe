@@ -715,3 +715,16 @@ html,body{overflow-x:clip;max-width:100%}
    sta in alto a destra, più piccola e attenuata, dietro il titolo. */
 .copertina-dentro > .torre{position:absolute;right:2%;top:-26px;height:calc(100% + 40px);width:auto;z-index:0;pointer-events:none;overflow:visible}
 @media (max-width:1020px){.copertina-dentro > .torre{top:-18px;right:0;height:190px;opacity:.5}}
+
+/* Riassunto dell'Introduzione al passaggio del mouse, più grande (Raffaele, 21/11: «ingrandisci un po' il carattere
+   dell'onover dell'intro in home»). */
+.plan-voce.solo .pc{font-size:17px;line-height:1.45;max-width:80ch}
+.plan-voce.solo:hover .pc,.plan-voce.solo:focus-visible .pc{max-height:10em}
+
+/* Versione cinese (zh/): il corsivo non esiste nei caratteri cinesi, l'enfasi diventa un punto sotto (着重号) nel testo
+   e resta colore nei titoli; righe un po' più alte per la lettura. */
+html[lang="zh-Hans"] .corpo em{font-style:normal;text-emphasis:dot;text-emphasis-position:under right;-webkit-text-emphasis:dot;-webkit-text-emphasis-position:under}
+html[lang="zh-Hans"] .copertina h1 em,html[lang="zh-Hans"] .testata h1 em{font-style:normal}
+html[lang="zh-Hans"] .corpo p,html[lang="zh-Hans"] .corpo li{line-height:1.85;text-align:justify}
+.lingua-link{margin-left:6px}
+html[lang="zh-Hans"] h1,html[lang="zh-Hans"] h2,html[lang="zh-Hans"] h3,html[lang="zh-Hans"] .sottotitolo,html[lang="zh-Hans"] .chapo,html[lang="zh-Hans"] .pc{font-style:normal!important}

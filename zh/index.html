@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-stile="b" data-fondo="nero">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="alternate" hreflang="fr" href="https://rav.ltd/">
+<title>多余阶级</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1;1,9..144,100..900,0..100,0..1&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../stile.css?v=78">
+</head>
+<body>
+<header class="barra" id="barra">
+  <a class="barra-libro" href="#/"><span class="bl-titolo">多余阶级</span><span class="bl-sotto">阶层跌落的社会哲学</span><span class="bl-autore">拉法埃莱·阿尔贝托·文图拉 著</span></a>
+  <span class="barra-capitolo" id="barra-capitolo"></span>
+  <button class="barra-sommario" id="apri-sommario" aria-label="目录">
+    <span class="mini" id="mini"></span><span class="barra-parola">目录</span>
+  </button>
+  <div class="avanzamento"><i id="avanzamento"></i></div>
+</header>
+
+<main id="scena"><p class="attesa">加载中……</p></main>
+
+<div class="velo" id="velo" hidden>
+  <button class="velo-chiudi" id="chiudi-sommario" aria-label="关闭">关闭 ✕</button>
+  <div class="velo-dentro" id="velo-dentro"></div>
+</div>
+
+<!-- Versione cinese (zh/monta.py): testo da zh/dati/book.json, niente lettura dal vivo del Doc. -->
+<script>window.LINGUA = 'zh'; window.RADICE = '../'; window.LIBRO_JSON = 'dati/book.json';</script>
+<script src="interfaccia.js?v=78"></script>
+<script src="strato.js?v=78"></script>
+<script src="../grafici.js?v=78"></script>
+<script src="../app.js?v=78"></script>
+</body>
+</html>
