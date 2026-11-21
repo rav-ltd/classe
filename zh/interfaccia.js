@@ -1,6 +1,7 @@
 /* Scritto da zh/monta.py: non si corregge a mano. */
 window.INTERFACCIA = {
 "La classe malaisée": "多余阶级",
+"Livres": "著作",
 "Partie": "第",
 "À suivre": "下一章",
 "L’auteur": "作者",

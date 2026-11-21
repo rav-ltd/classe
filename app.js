@@ -169,12 +169,27 @@
 
   /* La nota sull'autore (Raffaele, 21/11: «aggiungi vicino al nome dell'autore un link Bio»): il testo è quello
    * che Raffaele ha scritto in fondo alla scheda d'accoglienza del Doc, dopo «***». */
+  var LIBRI = [   // senza Incanto e La regola del gioco (Raffaele, 21/11: «togli pure incanto e la regola del gioco»); dal CV («CV Ventura synthese 11/2026 fr»), dal più recente; packshot in img/libri/
+    ['istituzione', 'L’istituzione immaginaria del capitalismo', 'DeriveApprodi', 2026],
+    ['conquista', 'La conquista dell’infelicità', 'Einaudi', 2025],
+    ['radical-choc', 'Radical choc', 'Einaudi', 2020],
+    ['guerra', 'La guerra di tutti', 'minimum fax', 2019],
+    ['teoria', 'Teoria della classe disagiata', 'minimum fax', 2017]
+  ];
   function bio() {
     corrente = null;
     document.title = 'Raffaele Alberto Ventura — ' + BOOK.titolo;
     scena.innerHTML = '<article class="capitolo bio"><header class="testata griglia"><div class="testata-dentro">' +
       '<p class="sopra">' + T('L’auteur') + '</p><h1>' + T('Raffaele Alberto Ventura') + '</h1></div></header>' +
-      '<div class="corpo griglia">' + BOOK.bio.map(function (h) { return '<p>' + h + '</p>'; }).join('') +
+      '<div class="corpo griglia">' +
+      // il ritratto nella colonna sinistra (Raffaele, 21/11: «mettila a sinistra»; ritaglia_ritratto.py)
+      '<aside class="bio-colonna"><img class="bio-ritratto" src="' + RADICE + 'img/ritratto.png" alt="" onerror="this.remove()"></aside>' +
+      BOOK.bio.map(function (h) { return '<p>' + h + '</p>'; }).join('') +
+      // i libri sotto il testo (Raffaele, 21/11: «i libri sotto il testo»)
+      '<div class="bio-libri">' + LIBRI.map(function (l) {
+        return '<figure><img src="' + RADICE + 'img/libri/' + l[0] + '.png" alt="' + l[1].replace(/"/g, '&quot;') + '" loading="lazy" width="444" height="650">' +
+          '<figcaption><em>' + l[1] + '</em><span>' + l[2] + ', ' + l[3] + '</span></figcaption></figure>';
+      }).join('') + '</div>' +
       '<p><a class="bottone" href="#/">' + T('Retour au sommaire') + '</a></p></div></article>';
     $('#barra-capitolo').textContent = '';
     window.scrollTo(0, 0);
@@ -276,9 +291,9 @@
     var k0 = c.num || nomeDi(c.id).toLowerCase();
     var voci = window.STRATO_ZH ? (window.STRATO_ZH[c.id] || []) : ((window.STRATO || {})[k0] || (window.STRATO_AUTO || {})[k0] || []);
     var testi = c.blocchi.map(function (b) { return nudo(b.h || ''); });
-    var tutto = testi.join(' ');
+    var tutto = testi.join(' '), occupati = {};
     voci.forEach(function (v) {
-      if (v.tipo === 'apertura') { var a0 = window.GRAFICI.apertura(v), art = $('#articolo'); art.insertBefore(a0, art.firstChild); return; }
+      if (v.tipo === 'apertura') { var a0 = window.GRAFICI.apertura(v), art = $('#articolo'); art.insertBefore(a0, art.firstChild); occupati[-1] = true; return; }
       var ancora = nudo(v.dopo || v.testo || '');
       var k = typeof v.b === 'number' ? v.b : -1;
       if (k < 0) testi.forEach(function (t, i) { if (k < 0 && t.indexOf(ancora) >= 0) k = i; });
@@ -287,10 +302,46 @@
         console.warn('strato: voce non agganciata', v.tipo, k < 0 ? 'àncora assente' : mancano);
         return;
       }
-      var blocco = $('[data-b="' + k + '"]', scena), nodo = window.GRAFICI[v.tipo](v);
-      if (v.prima) blocco.parentNode.insertBefore(nodo, blocco);
-      else blocco.parentNode.insertBefore(nodo, blocco.nextSibling);
+      var p = posto(v.prima ? k - 1 : k), nodo = window.GRAFICI[v.tipo](v);
+      occupati[p] = true;
+      if (p < 0) { var art1 = $('#articolo'), pr = $('[data-b="0"]', art1); art1.insertBefore(nodo, pr); return; }
+      var blocco = $('[data-b="' + p + '"]', scena);
+      if (blocco.tagName === 'LI') blocco = blocco.parentNode;       // mai dentro un elenco: dopo l'elenco intero
+      blocco.parentNode.insertBefore(nodo, blocco.nextSibling);
     });
+
+    /* Dove mettere una voce perché non interrompa il flusso (Raffaele, 21/11: «des infographies qui interrompent un
+     * flux»): dopo il blocco k, oppure più avanti, al primo blocco che chiude davvero un discorso (al massimo dodici blocchi più avanti; se non c'è, al primo posto libero). Si va avanti se il
+     * blocco finisce con «:» o senza punto finale, se è dentro un elenco che continua, se il blocco seguente è una
+     * citazione o un elenco annunciati, o se lì c'è già un'altra voce (mai due voci attaccate). Al massimo sei passi. */
+    function buono(p) {
+      if (p < 0 || p >= c.blocchi.length || occupati[p] || occupati[p - 1] || occupati[p + 1]) return false;
+      var b = c.blocchi[p], dopo = c.blocchi[p + 1] || {}, t = testi[p].trim();
+      if (b.t === 'h2' || (b.t === 'li' && dopo.t === 'li')) return false;
+      if (b.t === 'p' && !/[.!?»”…)\]。？！」）]$/.test(t)) return false;
+      return !((dopo.t === 'quote' || dopo.t === 'li') && /[:：]$/.test(t));
+    }
+    function posto(k) {
+      for (var p = k, passi = 0; passi < 12 && p < c.blocchi.length - 1; p++, passi++) {
+        if (p < 0) { if (!occupati[-1]) return -1; continue; }
+        var b = c.blocchi[p], dopo = c.blocchi[p + 1] || {}, t = testi[p].trim();
+        var chiuso = b.t === 'h2' ? false : /[.!?»”…)\]。？！」）]$/.test(t);
+        if (b.t === 'li' && dopo.t === 'li') continue;
+        if (b.t === 'h2' || (dopo.t === 'h2' && occupati[p + 1])) continue;
+        if (!chiuso && b.t !== 'quote' && b.t !== 'li') continue;
+        if ((dopo.t === 'quote' || dopo.t === 'li') && /[:：]$/.test(t)) continue;
+        if (occupati[p] || occupati[p - 1]) continue;
+        return p;
+      }
+      // Nessun posto buono più avanti (succede in fondo ai capitoli, dove le voci si affollano): il posto buono
+      // più vicino, prima o dopo; in mancanza, il primo libero.
+      for (var d = 1; d < c.blocchi.length; d++) {
+        var q = [k + d, k - d];
+        for (var j = 0; j < 2; j++) if (buono(q[j])) return q[j];
+      }
+      for (p = k; p < c.blocchi.length; p++) if (!occupati[p] && !occupati[p - 1] && c.blocchi[p].t !== 'h2') return p;
+      return k;
+    }
   }
 
   /* Note: a margine quando c'è posto, altrimenti si aprono sotto il paragrafo al tocco. */

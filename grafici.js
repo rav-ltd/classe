@@ -140,7 +140,7 @@
 
   /* Una cifra del capitolo in grande, con la sua didascalia. */
   function cifra(v) {
-    var f = el('figure', 'fig cifra entra');
+    var f = el('figure', 'fig cifra entra' + (String(v.valore).length > 9 ? ' lunga' : ''));   // le cifre lunghe vanno a capo
     f.appendChild(el('b', 'cifra-valore', v.valore));
     f.appendChild(el('figcaption', 'cifra-et', v.etichetta));
     return f;
