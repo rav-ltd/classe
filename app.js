@@ -177,6 +177,8 @@
         // illustrazione in alto a destra, un poco coperta dal titolo; se il file manca, sparisce da sola
         '<img class="copertina-img" src="img/home.png?v=1" alt="" onerror="this.remove()">' +
         '<p class="sopra">Raffaele Alberto Ventura' + (BOOK.bio && BOOK.bio.length ? ' <a class="bio-link" href="#/bio">Bio</a>' : '') + '</p>' +
+        // bandella (dritta, fra virgolette) davanti all'illustrazione: testo dato da Raffaele il 21/11 (frasi della scheda d'accoglienza)
+        '<p class="bandella">«\u00a0Les représentations de soi ne sont pas des caprices que l’on pourrait ajuster. Profondément enracinées, elles sont le produit de causes sociales et culturelles. Aujourd’hui, la jeunesse se révolte. Pouvait-elle réagir autrement\u00a0? La crise n’est pas seulement économique, elle est existentielle.\u00a0»</p>' +
         '<h1 aria-label="La classe malaisée">' + lettere('La classe', 0) + ' <em>' + lettere('malaisée', 9) + '</em></h1>' +
         '<p class="sottotitolo" aria-label="Socio-philosophie du déclassement">' + lettere('Socio-philosophie du déclassement', 0) + '</p>' +
         '<div class="copertina-griglia">' + grigliaHtml(null) + '</div>' +
