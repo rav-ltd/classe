@@ -220,7 +220,8 @@
         (ZH ? bandellaZh(["--x:0px;--r:-0.6deg", "--x:46px;--r:0.5deg", "--x:14px;--r:-0.9deg", "--x:88px;--r:0.7deg"]) :
         '<p class="bandella"><span class="riga" style="--x:0px;--r:-0.6deg">«\u00a0Les représentations de soi ne sont pas des caprices que l’on pourrait ajuster.</span><span class="riga" style="--x:46px;--r:0.5deg">Profondément enracinées, elles sont le produit de causes sociales et culturelles.</span><span class="riga" style="--x:14px;--r:-0.9deg">Aujourd’hui, la jeunesse se révolte. Pouvait-elle réagir autrement\u00a0?</span><span class="riga" style="--x:88px;--r:0.7deg">La crise n’est pas seulement économique, elle est existentielle.\u00a0»</span></p>') +
         '<div class="copertina-griglia">' + grigliaHtml(null) + '</div>' +
-        '<a class="bottone" href="#/' + primo + '">' + T('Commencer la lecture') + '</a>' + ALTRA +   // la lingua accanto al pulsante (Raffaele, 21/11)
+        '<a class="bottone" href="#/' + primo + '">' + T('Commencer la lecture') + '</a>' + ALTRA +
+        (ZH ? '<p class="nota-ia">' + T('nota-ia') + '</p>' : '') +   // avviso della traduzione automatica (Raffaele, 22/11)   // la lingua accanto al pulsante (Raffaele, 21/11)
       '</div></section>' +
       '<section class="griglia"><div class="plan-largo">' + planHtml(null) + '</div></section>';
     $('#barra-capitolo').textContent = '';

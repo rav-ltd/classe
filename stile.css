@@ -855,3 +855,5 @@ html[lang="zh-Hans"] h1,html[lang="zh-Hans"] h2,html[lang="zh-Hans"] h3,html[lan
 .int-righe .barra-pista i{display:block;height:100%;background:var(--accento);transition:width .6s cubic-bezier(.2,.8,.2,1)}
 
 .scrolly-cifra b.lunga{font-size:clamp(34px,4.4vw,54px);line-height:1.05}
+
+.copertina .nota-ia{font-family:var(--mono);font-size:12px;letter-spacing:.02em;color:var(--tenue);margin:14px 0 0}
