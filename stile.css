@@ -864,3 +864,10 @@ html[lang="zh-Hans"] h1,html[lang="zh-Hans"] h2,html[lang="zh-Hans"] h3,html[lan
 .rednote-logo{display:inline-block;background:#ff2442;color:#fff;font-weight:700;font-size:12px;line-height:1;padding:6px 7px;border-radius:6px;letter-spacing:.02em}
 .bio-rednote .rednote-link{margin-left:0}
 @media (max-width:520px){.copertina .rednote-link{margin:12px 0 0}}
+
+/* Soltanto il pulsante rosso, senza riquadro (Raffaele, 22/11: «basta il pulsante rosso non riquadrato, più breve ed elegante»). */
+.rednote-link{border:0;padding:0;margin-left:16px;gap:0}
+.rednote-link .rednote-logo{font-size:13px;padding:9px 11px;border-radius:7px;transition:transform .15s,filter .15s}
+.rednote-link:hover .rednote-logo{transform:translateY(-1px);filter:brightness(1.08)}
+.copertina .sopra .rednote-link{margin-left:10px}
+.copertina .sopra .rednote-logo{font-size:11px;padding:5px 7px;border-radius:5px;font-family:var(--corpo,inherit)}

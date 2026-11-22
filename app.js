@@ -36,8 +36,8 @@
   var ZH = window.LINGUA === 'zh', RADICE = window.RADICE || '';
   function T(s) { var d = window.INTERFACCIA; return (d && d[s]) || s; }
   // il contatto RedNote, soltanto in cinese (Raffaele, 22/11: «aggiungi il mio contatto rednote sulla pagina cinese, con loghino»)
-  var REDNOTE = ZH ? '<a class="rednote-link" href="https://www.xiaohongshu.com/user/profile/6923747d000000003700af52" target="_blank" rel="noopener">' +
-    '<span class="rednote-logo" aria-hidden="true">小红书</span>文图拉｜欧洲哲学家</a>' : '';
+  var REDNOTE = ZH ? '<a class="rednote-link" href="https://www.xiaohongshu.com/user/profile/6923747d000000003700af52" target="_blank" rel="noopener" title="文图拉｜欧洲哲学家" aria-label="小红书 · 文图拉｜欧洲哲学家">' +
+    '<span class="rednote-logo">小红书</span></a>' : '';
   var ALTRA = ZH ? '<a class="lingua-link" href="../" lang="fr">Français</a>'
                  : '<a class="lingua-link" href="zh/" lang="zh-Hans">中文</a>';
 
@@ -215,7 +215,7 @@
     var primo = BOOK.ordine[0];
     scena.innerHTML =
       '<section class="copertina griglia"><div class="copertina-dentro">' +
-        '<p class="sopra">' + T('Raffaele Alberto Ventura') + (BOOK.bio && BOOK.bio.length ? ' <a class="bio-link" href="#/bio">' + T('Bio') + '</a>' : '') + '</p>' +
+        '<p class="sopra">' + T('Raffaele Alberto Ventura') + (BOOK.bio && BOOK.bio.length ? ' <a class="bio-link" href="#/bio">' + T('Bio') + '</a>' : '') + REDNOTE + '</p>' +   // RedNote dopo «Bio» (Raffaele, 22/11)
         // citazione storta, evidenziata in giallo, davanti all'illustrazione: testo dato da Raffaele il 21/11 (frasi della scheda d'accoglienza)
         (ZH ? '<h1 aria-label="' + T('La classe malaisée') + '">' + lettere(T('La classe malaisée').slice(0, 2), 0) + '<em>' + lettere(T('La classe malaisée').slice(2), 2) + '</em></h1>'
             : '<h1 aria-label="La classe malaisée">' + lettere('La classe', 0) + ' <em>' + lettere('malaisée', 9) + '</em></h1>') +
@@ -224,7 +224,7 @@
         (ZH ? bandellaZh(["--x:0px;--r:-0.6deg", "--x:46px;--r:0.5deg", "--x:14px;--r:-0.9deg", "--x:88px;--r:0.7deg"]) :
         '<p class="bandella"><span class="riga" style="--x:0px;--r:-0.6deg">«\u00a0Les représentations de soi ne sont pas des caprices que l’on pourrait ajuster.</span><span class="riga" style="--x:46px;--r:0.5deg">Profondément enracinées, elles sont le produit de causes sociales et culturelles.</span><span class="riga" style="--x:14px;--r:-0.9deg">Aujourd’hui, la jeunesse se révolte. Pouvait-elle réagir autrement\u00a0?</span><span class="riga" style="--x:88px;--r:0.7deg">La crise n’est pas seulement économique, elle est existentielle.\u00a0»</span></p>') +
         '<div class="copertina-griglia">' + grigliaHtml(null) + '</div>' +
-        '<a class="bottone" href="#/' + primo + '">' + T('Commencer la lecture') + '</a>' + ALTRA + REDNOTE +
+        '<a class="bottone" href="#/' + primo + '">' + T('Commencer la lecture') + '</a>' + ALTRA +
         (ZH ? '<p class="nota-ia">' + T('nota-ia') + '</p>' : '') +   // avviso della traduzione automatica (Raffaele, 22/11)   // la lingua accanto al pulsante (Raffaele, 21/11)
       '</div></section>' +
       '<section class="griglia"><div class="plan-largo">' + planHtml(null) + '</div></section>';
