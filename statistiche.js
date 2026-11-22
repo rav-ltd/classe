@@ -63,6 +63,13 @@
 
   function snap(s) { return [s.ord, s.tab, s.via, Math.round(s.t0 / 1000), Math.round(s.vis / 1000), Math.round(s.act / 1000), s.sd]; }
 
+  // lingua del sito nella colonna «lang» (Raffaele, 22/11: «segna la lingua del sito»): sul sito cinese «zh:» davanti
+  // alla lingua del browser (zh:zh-CN, zh:en-US), sul francese com'era; 8 caratteri al massimo, come prima
+  function lingua() {
+    var nav = (navigator.language || '').slice(0, 5);
+    return (window.LINGUA === 'zh' ? 'zh:' + nav : nav).slice(0, 8);
+  }
+
   function flush() {
     if (out) return;
     depth();
@@ -70,7 +77,7 @@
     if (seg) rows.push(snap(seg));
     if (!rows.length) return;
     var body = JSON.stringify({ k: 1, vid: vid, sid: sid, dev: innerWidth <= 768 ? 'm' : 'd',
-                                lang: (navigator.language || '').slice(0, 8), s: rows });
+                                lang: lingua(), s: rows });
     if (body === lastKey && !take.length) return;
     lastKey = body;
     var ok = false;
