@@ -180,6 +180,7 @@
     ['teoria', 'Teoria della classe disagiata', 'minimum fax', 2017]
   ];
   function bio() {
+    if (window.STAT) window.STAT.view('bio');
     corrente = null;
     document.title = 'Raffaele Alberto Ventura — ' + BOOK.titolo;
     scena.innerHTML = '<article class="capitolo bio"><header class="testata griglia"><div class="testata-dentro">' +
@@ -210,6 +211,7 @@
     }).join('') + '</p>';
   }
   function accoglienza() {
+    if (window.STAT) window.STAT.view('t.h23zcxu3jwib');   // la home conta come la scheda d'accoglienza del Doc, come nella v1
     corrente = null;
     document.title = BOOK.titolo;
     var primo = BOOK.ordine[0];
@@ -236,6 +238,7 @@
 
   /* ───────── Capitolo ───────── */
   function capitolo(id) {
+    if (window.STAT) window.STAT.view(id);   // statistiche anonime (statistiche.js)
     var c = cap(id);
     if (!c) return accoglienza();
     corrente = id;
