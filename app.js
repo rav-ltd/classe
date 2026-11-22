@@ -35,6 +35,9 @@
    * T() traduce una scritta dell'interfaccia; senza dizionario la lascia in francese. */
   var ZH = window.LINGUA === 'zh', RADICE = window.RADICE || '';
   function T(s) { var d = window.INTERFACCIA; return (d && d[s]) || s; }
+  // il contatto RedNote, soltanto in cinese (Raffaele, 22/11: «aggiungi il mio contatto rednote sulla pagina cinese, con loghino»)
+  var REDNOTE = ZH ? '<a class="rednote-link" href="https://www.xiaohongshu.com/user/profile/6923747d000000003700af52" target="_blank" rel="noopener">' +
+    '<span class="rednote-logo" aria-hidden="true">小红书</span>文图拉｜欧洲哲学家</a>' : '';
   var ALTRA = ZH ? '<a class="lingua-link" href="../" lang="fr">Français</a>'
                  : '<a class="lingua-link" href="zh/" lang="zh-Hans">中文</a>';
 
@@ -185,6 +188,7 @@
       // il ritratto nella colonna sinistra (Raffaele, 21/11: «mettila a sinistra»; ritaglia_ritratto.py)
       '<aside class="bio-colonna"><img class="bio-ritratto" src="' + RADICE + 'img/ritratto.png" alt="" onerror="this.remove()"></aside>' +
       BOOK.bio.map(function (h) { return '<p>' + h + '</p>'; }).join('') +
+      (REDNOTE ? '<p class="bio-rednote">' + REDNOTE + '</p>' : '') +
       // i libri sotto il testo (Raffaele, 21/11: «i libri sotto il testo»)
       '<div class="bio-libri">' + LIBRI.map(function (l) {
         return '<figure><img src="' + RADICE + 'img/libri/' + l[0] + '.png" alt="' + l[1].replace(/"/g, '&quot;') + '" loading="lazy" width="444" height="650">' +
@@ -220,7 +224,7 @@
         (ZH ? bandellaZh(["--x:0px;--r:-0.6deg", "--x:46px;--r:0.5deg", "--x:14px;--r:-0.9deg", "--x:88px;--r:0.7deg"]) :
         '<p class="bandella"><span class="riga" style="--x:0px;--r:-0.6deg">«\u00a0Les représentations de soi ne sont pas des caprices que l’on pourrait ajuster.</span><span class="riga" style="--x:46px;--r:0.5deg">Profondément enracinées, elles sont le produit de causes sociales et culturelles.</span><span class="riga" style="--x:14px;--r:-0.9deg">Aujourd’hui, la jeunesse se révolte. Pouvait-elle réagir autrement\u00a0?</span><span class="riga" style="--x:88px;--r:0.7deg">La crise n’est pas seulement économique, elle est existentielle.\u00a0»</span></p>') +
         '<div class="copertina-griglia">' + grigliaHtml(null) + '</div>' +
-        '<a class="bottone" href="#/' + primo + '">' + T('Commencer la lecture') + '</a>' + ALTRA +
+        '<a class="bottone" href="#/' + primo + '">' + T('Commencer la lecture') + '</a>' + ALTRA + REDNOTE +
         (ZH ? '<p class="nota-ia">' + T('nota-ia') + '</p>' : '') +   // avviso della traduzione automatica (Raffaele, 22/11)   // la lingua accanto al pulsante (Raffaele, 21/11)
       '</div></section>' +
       '<section class="griglia"><div class="plan-largo">' + planHtml(null) + '</div></section>';

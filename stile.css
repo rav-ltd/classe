@@ -857,3 +857,10 @@ html[lang="zh-Hans"] h1,html[lang="zh-Hans"] h2,html[lang="zh-Hans"] h3,html[lan
 .scrolly-cifra b.lunga{font-size:clamp(34px,4.4vw,54px);line-height:1.05}
 
 .copertina .nota-ia{font-family:var(--mono);font-size:12px;letter-spacing:.02em;color:var(--tenue);margin:14px 0 0}
+
+/* Contatto RedNote nel sito cinese, con il logo in forma di etichetta rossa (Raffaele, 22/11). */
+.rednote-link{display:inline-flex;align-items:center;gap:8px;margin-left:14px;vertical-align:middle;font-size:14px;color:var(--inchiostro);text-decoration:none;border:1px solid var(--tenue);padding:7px 12px 7px 7px}
+.rednote-link:hover{border-color:#ff2442}
+.rednote-logo{display:inline-block;background:#ff2442;color:#fff;font-weight:700;font-size:12px;line-height:1;padding:6px 7px;border-radius:6px;letter-spacing:.02em}
+.bio-rednote .rednote-link{margin-left:0}
+@media (max-width:520px){.copertina .rednote-link{margin:12px 0 0}}
