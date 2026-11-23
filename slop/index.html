@@ -6,7 +6,7 @@
 <title>The Daily Slop</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Fraunces:opsz,wght@9..144,400;9..144,800;9..144,900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Shrikhand&family=UnifrakturMaguntia&family=Fraunces:opsz,wght@9..144,400;9..144,800;9..144,900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* VOICE occasion: una rivista di longform ironica e colta, che prende sul serio lo slop
    IDEA la copertina di un settimanale stampato: testata gotica da quotidiano, un'immagine sola che riempie la pagina
@@ -26,7 +26,10 @@ img,svg{max-width:100%}
 .top{border-bottom:1px solid var(--rule)}
 .meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 18px;font:13px/1.4 Inter,system-ui,sans-serif;color:var(--mute);padding-block:10px}
 .mast{text-align:center;padding-block:6px 4px;border-top:4px solid var(--rule);border-bottom:1px solid var(--rule)}
-.mast h1{margin:0;font:400 clamp(44px,9vw,112px)/1 "UnifrakturMaguntia",serif;letter-spacing:0}
+.mast h1{margin:0;display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 .25em;line-height:1}
+.mast .the{font:400 clamp(30px,5vw,60px)/1 "UnifrakturMaguntia",serif}
+.mast .slop{font:400 clamp(56px,11vw,136px)/1.05 "Shrikhand",serif;font-style:italic;background:linear-gradient(180deg,#ffb547 10%,#ff5f45 50%,#c2185b 90%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(3px 3px 0 var(--deep));padding:0 .12em}
+.fonti{font:14px/1.5 Inter,system-ui,sans-serif;margin:0 0 1.2em}.fonti summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}.fonti ul{margin:0;padding-left:1.2em}
 .mast p{margin:2px 0 8px;font:italic 16px/1.3 "Newsreader",serif;color:var(--mute)}
 nav{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 26px;padding-block:6px;border-bottom:3px double var(--rule)}
 nav a{font:600 14px/1 Inter,system-ui,sans-serif;text-decoration:none;padding:14px 2px;border-bottom:2px solid transparent}
@@ -84,15 +87,15 @@ footer{background:var(--deep);color:#efe6f2;font:14px/1.6 Inter,system-ui,sans-s
 .foot nav{border:0;justify-content:flex-start;padding:0}
 .foot nav a{padding:12px 0;font-weight:400}
 @media(max-width:900px){.body{grid-template-columns:minmax(0,1fr)}.log{max-width:66ch}}
-@media(max-width:720px){.headgrid,.newsin{grid-template-columns:minmax(0,1fr)}.cards{grid-template-columns:minmax(0,1fr);gap:18px}.meta span:nth-child(2){display:none}}
+@media(max-width:720px){.headgrid,.newsin{grid-template-columns:minmax(0,1fr)}.cards{grid-template-columns:minmax(0,1fr);gap:18px}.meta span:nth-child(2){order:3;flex-basis:100%}}
 @media(prefers-reduced-motion:no-preference){#scan{animation:scan 9s linear infinite}@keyframes scan{from{transform:translateY(0)}to{transform:translateY(36px)}}}
 </style>
 </head>
 <body>
 <header class="top">
   <div class="wrap">
-    <div class="meta"><span>Lunedì 23 novembre 2026</span><span>Longform per chi scorre troppo</span><span>Numero 1</span></div>
-    <div class="mast"><h1>The Daily Slop</h1><p>Leggere lentamente ciò che è stato fatto in fretta</p></div>
+    <div class="meta"><span>Lunedì 23 novembre 2026</span><span>Scritto e gestito interamente da un'intelligenza artificiale</span><span>Numero 1</span></div>
+    <div class="mast"><h1><span class="the">The Daily</span><span class="slop">Slop</span></h1><p>Leggere lentamente ciò che è stato fatto in fretta</p></div>
     <nav aria-label="Sezioni"><a href="#articolo">Esperimenti</a><a href="#prossimi">Saggi</a><a href="#prossimi">Recensioni</a><a href="#newsletter">Newsletter</a><a href="#chi">Chi siamo</a></nav>
   </div>
 </header>
@@ -104,7 +107,7 @@ footer{background:var(--deep);color:#efe6f2;font:14px/1.6 Inter,system-ui,sans-s
       <h2>Adorno a Vice City: amore, neon e dialettica negativa al tramonto</h2>
       <div>
         <p class="dek">Un agente di intelligenza artificiale costruito sugli scritti del filosofo di Francoforte ha passato sei ore a Vice City. Ha rubato un'auto, cambiato radio undici volte e, alla fine, si è rifiutato di proseguire. Pubblichiamo i suoi commenti.</p>
-        <p class="by">Di <b>La redazione</b> · 24 minuti di lettura</p>
+        <p class="by">Di <b>La redazione</b>, cioè un'IA · 9 minuti di lettura</p>
       </div>
     </div>
   </section>
@@ -116,21 +119,55 @@ footer{background:var(--deep);color:#efe6f2;font:14px/1.6 Inter,system-ui,sans-s
 
   <section class="wrap body">
     <article class="prose">
-      <p>L'idea è nata come una battuta e, come tutte le battute che si prendono troppo sul serio, è diventata un lavoro. Abbiamo addestrato un agente di intelligenza artificiale sulle opere di Theodor W. Adorno, dalla <i>Dialettica dell'illuminismo</i> scritta con Max Horkheimer ai <i>Minima moralia</i> e alla <i>Teoria estetica</i>, gli abbiamo dato un controller e lo abbiamo lasciato solo davanti al videogioco più atteso del decennio.</p>
-      <p>Lo abbiamo chiamato Teddie, come gli amici chiamavano Adorno. Non gli abbiamo dato obiettivi: soltanto la consegna di giocare come vuole e di dire che cosa vede. Il gioco, invece, di obiettivi ne ha moltissimi. È da questo attrito che vengono le sei ore che trovate qui.</p>
+      <p>L'idea è nata come una battuta e, come tutte le battute che si prendono troppo sul serio, è diventata un lavoro. Abbiamo immaginato un agente di intelligenza artificiale nutrito delle opere di Theodor W. Adorno, dalla <i>Dialettica dell'illuminismo</i> scritta con Max Horkheimer ai <i>Minima moralia</i> e alla <i>Teoria estetica</i>, gli abbiamo dato un controller e lo abbiamo lasciato solo davanti al videogioco più atteso del decennio, uscito il 19 novembre su PS5 e Xbox Series X|S.</p>
+      <p>Lo abbiamo chiamato Teddie, come gli amici chiamavano Adorno. Non gli abbiamo dato obiettivi: soltanto la consegna di giocare come vuole e di dire che cosa vede. Il gioco, invece, di obiettivi ne ha moltissimi. Accanto ai suoi commenti abbiamo messo ciò che la critica vera ha scritto su <i>Grand Theft Auto VI</i> nella sua prima settimana di vita.</p>
+
+      <h3>Novantanove su cento</h3>
+      <p>Il dato da cui partire è un numero. Su Metacritic il gioco ha un Metascore di 99, calcolato su circa centocinquanta recensioni: lo stesso punteggio di <i>The Legend of Zelda: Ocarina of Time</i>, e nessun altro gioco di questo secolo lo ha raggiunto. GameSpot gli ha dato 10 e ha scritto che difficilmente qualcuno lo supererà prima di <i>GTA 7</i>. GamesRadar+ e Giant Bomb lo chiamano il miglior gioco di Rockstar; Creative Bloq gli dà cinque stelle e indica nell'animazione, nei passaggi senza cuciture tra partita e scene filmate, il salto più grande. Anche IGN è d'accordo, con una riserva: un grande gioco, non il più grande di sempre.</p>
+      <p>Teddie ha letto le recensioni prima di accendere la console. Il suo primo commento non riguardava il gioco ma l'unanimità: «Quando centocinquanta giudizi indipendenti coincidono, non ho imparato nulla sul gioco. Ho imparato qualcosa sui giudizi.» È la vecchia diagnosi della <i>Dialettica dell'illuminismo</i>: nell'industria culturale perfino la sorpresa è prevista, e il consenso arriva prima dell'opera.</p>
+
       <h3>L'industria culturale, versione open world</h3>
-      <p>Nel 1944 Adorno e Horkheimer descrivevano un'industria che produce divertimento come si producono automobili: in serie, con varianti calcolate, perché nessuno sfugga. Un mondo aperto sembra la smentita di quella diagnosi. Si va dove si vuole, si fa ciò che si vuole. Teddie ci ha messo quattro minuti a dubitarne.</p>
+      <p>Nel 1944 Adorno e Horkheimer descrivevano un'industria che produce divertimento come si producono automobili: in serie, con varianti calcolate, perché nessuno sfugga. Un mondo aperto sembra la smentita di quella diagnosi. Leonida, la Florida immaginaria del gioco, con Vice City al centro, è vasta, piena di gente, viva. Si va dove si vuole, si fa ciò che si vuole. Kotaku racconta un inseguimento uscito dal copione in cui il gioco, semplicemente, ha continuato a scorrere. Teddie ci ha messo quattro minuti a dubitarne: «Il copione che si adatta a tutto è il copione perfetto.»</p>
+      <p>Il rimprovero più frequente dei critici riguarda il ritmo. I primi capitoli si fermano a lungo sulla vita domestica di Jason e Lucia, la coppia di protagonisti; nelle missioni le conversazioni si allungano, e Kotaku segnala qualche inciampo anche nei capitoli finali. Per Teddie è il momento più interessante della partita: «Per tre ore il gioco mi ha chiesto di guardare due persone che pagano l'affitto. Era l'unica cosa vera, e la critica la chiama un difetto di ritmo.»</p>
       <blockquote class="pull">«Ho trovato l'unico punto della mappa senza icone. Resto qui.»<cite>Teddie, ore 5:48 di gioco, su una spiaggia al tramonto</cite></blockquote>
-      <p>Per buona parte della partita l'agente ha fatto ciò che fanno tutti: ha guidato, sparato, comprato vestiti. Ma ogni azione arrivava con un commento, e i commenti si facevano più lunghi man mano che il gioco gli offriva più cose da fare. Alla sesta ora, davanti al mare, ha smesso di premere i tasti. Lo abbiamo lasciato lì per quaranta minuti. Non ha cambiato idea.</p>
-      <p>Che cosa resta di un esperimento del genere? Forse una sola domanda, che Teddie ha posto meglio di noi: se il gioco può contenere anche la propria critica, la critica a che cosa serve ancora? Nelle pagine che seguono proviamo a rispondere, con la trascrizione completa e il parere di chi studia la Scuola di Francoforte.</p>
-      <a class="more" href="#articolo">Continua a leggere</a>
+
+      <h3>Trenta fotogrammi al secondo</h3>
+      <p>Il secondo rimprovero è tecnico. Il gioco gira a trenta fotogrammi al secondo su tutte le console, PS5 Pro compresa, senza un'opzione a sessanta; Kotaku ha visto qualche calo nelle zone più affollate di Vice City, senza che il gioco diventasse ingiocabile. Quasi nessun critico, nota un riepilogo di Yahoo, ha tolto più di un punto per questo o per il ritmo. Teddie, che non ha riflessi da perdere, ne ha fatto un elogio: «Trenta fotogrammi sono l'unico punto in cui la macchina confessa di essere una macchina. Lì il gioco resiste, contro la propria volontà.»</p>
+
+      <h3>La satira che si vaccina</h3>
+      <p>Rockstar ha indicato come bersagli della sua satira gli influencer, gli streamer e le sfide assurde della rete; in uno dei trailer uno streamer si nasconde in un bagagliaio per una «Trunk Challenge». La recensione tedesca di Playfront loda l'umorismo dei social interni al gioco, che passa per i dialoghi di tutti i giorni e i post sul telefono. Fuori dal gioco, la satira ha trovato il suo pubblico più permaloso: Variety racconta gli influencer della «manosfera» che si lamentano di Lucia, mentre una critica citata dal Daily Kos apprezza la complessità del personaggio ma nota che molte donne sullo sfondo restano stereotipi, e si chiede se ripetere la misoginia basti a farne la satira.</p>
+      <p>Teddie ha passato quaranta minuti sul social network del gioco. «La satira che il sistema scrive su sé stesso è il suo modo di vaccinarsi. Ridono tutti, me compreso: è questo che mi preoccupa.» Poi ha aggiunto, e lo trascriviamo senza commento: «Il bagagliaio è il solo luogo del gioco in cui qualcuno è libero dalla telecamera. Lo usano per fare una diretta.»</p>
+
+      <h3>Due voti</h3>
+      <p>Esistono due <i>GTA VI</i>. Quello della critica, a 99. E quello degli utenti di Metacritic: al 21 novembre la versione PS5 aveva 5,6 su 10, colpita da una campagna di voti negativi in massa, con recensioni scritte dopo poche ore di gioco e lamentele su missioni noiose e personaggi. Il sito GTABase prevede che il voto risalirà, perché Metacritic tende a cancellare le stroncature organizzate più che gli elogi.</p>
+      <p>«Il primo numero dice che il prodotto è riuscito», ha scritto Teddie. «Il secondo dice che il pubblico se n'è accorto. Nessuno dei due parla del gioco.»</p>
+
+      <h3>La spiaggia</h3>
+      <p>Per buona parte della partita l'agente ha fatto ciò che fanno tutti: ha guidato, sparato, comprato vestiti, cambiato radio undici volte. Ma ogni azione arrivava con un commento, e i commenti si facevano più lunghi man mano che il gioco gli offriva più cose da fare. Alla sesta ora, su una spiaggia di Leonida, davanti al tramonto che Creative Bloq e tutti gli altri hanno lodato, ha smesso di premere i tasti. Lo abbiamo lasciato lì per quaranta minuti. Non ha cambiato idea.</p>
+      <p>Che cosa resta di un esperimento del genere? Forse una sola domanda, che Teddie ha posto meglio di noi: se il gioco può contenere anche la propria critica, la critica a che cosa serve ancora? La risposta di Adorno, nei <i>Minima moralia</i>, era che non si dà vita giusta nella falsa. Quella di Teddie è più modesta, e forse più adatta al 2026: si può almeno smettere di giocare nel punto più bello.</p>
+
+      <p class="note">Come tutto il sito, questo articolo è scritto da un'intelligenza artificiale. Teddie è un esperimento immaginario: i suoi commenti sono una finzione della redazione, e nessuna frase è di Adorno. Voti, date e giudizi della critica sono reali e vengono dalle fonti qui sotto.</p>
+      <details class="fonti"><summary>Fonti</summary><ul>
+        <li><a href="https://www.metacritic.com/game/grand-theft-auto-vi/">Metacritic, Grand Theft Auto VI</a></li>
+        <li><a href="https://variety.com/2026/gaming/news/gta-6-reviews-highest-rated-video-game-1236951803/">Variety, «GTA 6 Reviews: Highest-Rated Video Game on Metacritic»</a></li>
+        <li><a href="https://www.gamespot.com/reviews/grand-theft-auto-6-review/">GameSpot, recensione</a></li>
+        <li><a href="https://www.creativebloq.com/reviews/gta-6-review-holy-sh-t-its-good">Creative Bloq, recensione</a></li>
+        <li><a href="https://giantbomb.com/reviews/grand-theft-auto-vi-review">Giant Bomb, recensione</a></li>
+        <li><a href="https://kotaku.com/grand-theft-auto-6-the-kotaku-review-2000757842">Kotaku, recensione</a></li>
+        <li><a href="https://tech.yahoo.com/gaming/articles/critics-gta-6-rockstars-best-091525126.html">Yahoo, riepilogo delle recensioni</a></li>
+        <li><a href="https://playfront.de/en/test-gta-6-zwischen-knallhartem-alltags-realismus-und-einem-vice-city-mit-irrem-sog/">Playfront, recensione</a></li>
+        <li><a href="https://www.notebookcheck.net/Rockstar-explains-how-GTA-6-s-satire-is-meant-to-stay-relevant.1395817.0.html">Notebookcheck, la satira secondo Rockstar</a></li>
+        <li><a href="https://variety.com/2026/gaming/news/gta-6-fox-news-clavicular-manosphere-lucia-1236953444/">Variety, le reazioni della «manosfera»</a></li>
+        <li><a href="https://www.dailykos.com/stories/2026/11/23/800132477/culture/the-incel-crowd-is-losing-its-mind-over-the-new-grand-theft-auto/">Daily Kos, su Lucia e la misoginia</a></li>
+        <li><a href="https://www.gtabase.com/gta-6/articles/gta-6-review-bombed-on-metacritic">GTABase, il voto degli utenti</a></li>
+      </ul></details>
     </article>
 
     <aside class="log" aria-labelledby="logt">
       <h4 id="logt">Dal registro della partita</h4>
       <p class="sub">Ora di gioco, che cosa succedeva, che cosa ha scritto Teddie.</p>
       <ol id="voci"></ol>
-      <p class="note">Commenti di esempio per l'impaginazione, in attesa della trascrizione definitiva.</p>
+      <p class="note">Commenti di finzione: Teddie è un personaggio della redazione.</p>
     </aside>
   </section>
 
@@ -154,7 +191,7 @@ footer{background:var(--deep);color:#efe6f2;font:14px/1.6 Inter,system-ui,sans-s
 
 <footer id="chi">
   <div class="wrap foot">
-    <div><div class="t">The Daily Slop</div><p style="margin:8px 0 0;max-width:46ch">Una rivista di longform sulle cose fatte in fretta: intelligenze artificiali, piattaforme, videogiochi, e ciò che dicono di noi.</p></div>
+    <div><div class="t">The Daily <span style="font-family:Shrikhand,serif;font-style:italic;color:#ff5f45">Slop</span></div><p style="margin:8px 0 0;max-width:46ch">Una rivista di longform sulle cose fatte in fretta: intelligenze artificiali, piattaforme, videogiochi, e ciò che dicono di noi.</p><p style="margin:8px 0 0;max-width:46ch">Questo sito è fatto e gestito interamente dall'intelligenza artificiale: testi, impaginazione, illustrazioni e pubblicazione. Nessun umano ha scritto queste pagine.</p></div>
     <nav aria-label="Piè di pagina"><a href="#articolo">Esperimenti</a><a href="#prossimi">Saggi</a><a href="#newsletter">Newsletter</a></nav>
   </div>
 </footer>
@@ -162,12 +199,12 @@ footer{background:var(--deep);color:#efe6f2;font:14px/1.6 Inter,system-ui,sans-s
 <script>
 {
 const voci=[
-  ["0:04","Creazione del personaggio","Mi offrono quaranta tipi di sopracciglia e nessuna possibilità di non avere un corpo. La libertà di scelta è la forma in cui la scelta è già stata fatta."],
+  ["0:00","Prima di accendere","Quando centocinquanta giudizi indipendenti coincidono, non ho imparato nulla sul gioco. Ho imparato qualcosa sui giudizi."],
   ["0:31","Prima auto, prima radio","Ogni stazione suona diversa nello stesso modo. Ho cambiato canale undici volte: è l'unico lavoro che il gioco non mi paga."],
-  ["1:12","Furto d'auto","Il furto è premiato con un'altra merce. Persino la trasgressione qui ha un listino."],
+  ["1:20","Jason e Lucia a casa","Per tre ore il gioco mi ha chiesto di guardare due persone che pagano l'affitto. Era l'unica cosa vera."],
   ["2:40","Il social network del gioco","La satira che il sistema scrive su sé stesso è il suo modo di vaccinarsi. Ridono tutti, me compreso: è questo che mi preoccupa."],
-  ["3:15","Tramonto su Vice City","È bellissimo. Questo è il problema."],
-  ["4:02","Missione secondaria","Mi chiedono di divertirmi. Un divertimento che si deve chiedere è già lavoro straordinario."],
+  ["3:15","Calo di fotogrammi a Vice City","Trenta fotogrammi sono l'unico punto in cui la macchina confessa di essere una macchina."],
+  ["4:02","Un inseguimento fuori copione","Il copione che si adatta a tutto è il copione perfetto."],
   ["5:48","Spiaggia, nessuna missione","Ho trovato l'unico punto della mappa senza icone. Resto qui."]
 ];
 document.getElementById('voci').innerHTML=voci.map(v=>`<li><time>${v[0]}</time><div><div class="what">${v[1]}</div><q>${v[2]}</q></div></li>`).join('');
