@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Daily Slop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Fraunces:opsz,wght@9..144,400;9..144,800;9..144,900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE occasion: una rivista di longform ironica e colta, che prende sul serio lo slop
+   IDEA la copertina di un settimanale stampato: testata gotica da quotidiano, un'immagine sola che riempie la pagina
+   PICTURE due grandi occhiali tondi (quelli di Adorno) nelle cui lenti tramonta una città al neon, a righe di retino
+   COLOUR fondo bianco carta, inchiostro quasi nero, campo corallo del tramonto, accento magenta, ombra viola-inchiostro
+   TYPE testata UnifrakturMaguntia, titoli Fraunces 900, testo Newsreader, etichette Inter
+   LAYOUT testata e menu in alto; titolo su tutta la larghezza; figura a tutta banda; sotto, testo a sinistra e registro della partita a destra; sul telefono tutto in colonna */
+:root{color-scheme:light dark;--bg:light-dark(#fff,#111014);--ink:light-dark(#15131a,#f1edf2);--mute:light-dark(#5d5866,#aaa3b2);--rule:light-dark(#15131a,#f1edf2);--coral:#ff5f45;--mag:light-dark(#d4146a,#ff4f9a);--sky1:#ffb547;--sky2:#ff5f45;--sky3:#c2185b;--deep:#2a1238;--panel:light-dark(#fff1ec,#1d1620)}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Newsreader",Georgia,serif;overflow-x:clip}
+a{color:inherit}
+img,svg{max-width:100%}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:max(4vw,16px)}
+.top{border-bottom:1px solid var(--rule)}
+.meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 18px;font:13px/1.4 Inter,system-ui,sans-serif;color:var(--mute);padding-block:10px}
+.mast{text-align:center;padding-block:6px 4px;border-top:4px solid var(--rule);border-bottom:1px solid var(--rule)}
+.mast h1{margin:0;font:400 clamp(44px,9vw,112px)/1 "UnifrakturMaguntia",serif;letter-spacing:0}
+.mast p{margin:2px 0 8px;font:italic 16px/1.3 "Newsreader",serif;color:var(--mute)}
+nav{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 26px;padding-block:6px;border-bottom:3px double var(--rule)}
+nav a{font:600 14px/1 Inter,system-ui,sans-serif;text-decoration:none;padding:14px 2px;border-bottom:2px solid transparent}
+nav a:hover,nav a:focus-visible{border-color:var(--mag);outline:none}
+.head{padding-block:clamp(24px,4vw,48px) clamp(18px,3vw,30px)}
+.kick{font:600 14px/1.3 Inter,system-ui,sans-serif;color:var(--mag);margin:0 0 12px}
+.head h2{margin:0;font:900 italic clamp(36px,5.8vw,78px)/1.04 "Fraunces",serif;letter-spacing:-.025em;text-wrap:balance;max-width:17ch;background:linear-gradient(180deg,#c2185b 0%,#ff5f45 55%,#ffb547 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(2px 2px 0 var(--deep))}
+.headgrid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:24px 48px;align-items:end}
+.dek{font:400 clamp(19px,2vw,23px)/1.4 "Newsreader",serif;margin:0;text-wrap:pretty}
+.by{font:14px/1.5 Inter,system-ui,sans-serif;color:var(--mute);margin-top:14px}
+.by b{color:var(--ink);font-weight:600}
+.hero{background:var(--deep);position:relative}
+.fig{position:relative;height:clamp(300px,46vw,560px)}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+.cap{font:13px/1.45 Inter,system-ui,sans-serif;color:var(--mute);padding-block:10px}
+.body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,380px);gap:40px 56px;padding-block:clamp(28px,4vw,56px)}
+.prose{max-width:66ch}
+.prose p{margin:0 0 1.1em}
+.prose>p:first-of-type::first-letter{float:left;font:900 5.2em/.82 "Fraunces",serif;margin:.06em .1em 0 0;color:var(--coral)}
+.prose h3{font:800 26px/1.15 "Fraunces",serif;margin:1.6em 0 .5em;letter-spacing:-.01em}
+.pull{margin:1.4em 0;padding:18px 0;border-block:3px solid var(--ink);font:800 clamp(26px,3.2vw,36px)/1.12 "Fraunces",serif;letter-spacing:-.015em;text-wrap:balance}
+.pull cite{display:block;margin-top:10px;font:400 14px/1.4 Inter,system-ui,sans-serif;font-style:normal;color:var(--mute)}
+.log{background:var(--panel);padding:22px 22px 10px;border-top:6px solid var(--coral);align-self:start}
+.log h4{margin:0 0 4px;font:800 22px/1.15 "Fraunces",serif}
+.log .sub{margin:0 0 14px;font:13px/1.45 Inter,system-ui,sans-serif;color:var(--mute)}
+.log ol{list-style:none;margin:0;padding:0}
+.log li{display:grid;grid-template-columns:4.2em minmax(0,1fr);gap:0 12px;padding:12px 0;border-top:1px solid color-mix(in srgb,var(--ink) 20%,transparent)}
+.log time{font:900 22px/1.1 "Fraunces",serif;color:var(--mag);white-space:nowrap;font-variant-numeric:tabular-nums}
+.log .what{font:600 13px/1.35 Inter,system-ui,sans-serif;color:var(--mute);margin-bottom:3px}
+.log q{font-size:16px;line-height:1.45;quotes:"«" "»"}
+.note{font:13px/1.45 Inter,system-ui,sans-serif;color:var(--mute);padding-block:10px 14px;margin:0}
+.more{display:inline-flex;align-items:center;min-height:44px;padding:0 22px;margin-top:8px;background:var(--ink);color:var(--bg);font:600 15px/1 Inter,system-ui,sans-serif;text-decoration:none}
+.more:hover,.more:focus-visible{background:var(--mag);color:#fff;outline:none}
+.next{border-top:3px double var(--rule);padding-block:clamp(28px,4vw,52px)}
+.next h3{margin:0 0 18px;font:800 28px/1.1 "Fraunces",serif}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 36px}
+.card{border-top:1px solid var(--rule);padding-top:14px}
+.card .k{font:600 13px/1.3 Inter,system-ui,sans-serif;color:var(--mag);margin:0 0 6px}
+.card h5{margin:0 0 6px;font:800 22px/1.15 "Fraunces",serif;letter-spacing:-.01em;text-wrap:balance}
+.card p{margin:0;font-size:16px;color:var(--mute)}
+.news{background:var(--coral);color:#1a0d12}
+.newsin{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px 48px;align-items:center;padding-block:clamp(28px,4vw,52px)}
+.news h3{margin:0 0 6px;font:900 clamp(30px,4vw,44px)/1.05 "Fraunces",serif;letter-spacing:-.02em}
+.news p{margin:0}
+form{display:flex;flex-wrap:wrap;gap:10px}
+label.v{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+input{flex:1 1 220px;min-height:48px;font:16px Inter,system-ui,sans-serif;padding:0 14px;border:2px solid #1a0d12;background:#fff;color:#1a0d12}
+input:focus-visible{outline:3px solid #fff;outline-offset:2px}
+button{min-height:48px;padding:0 22px;border:0;background:#1a0d12;color:#fff;font:600 15px Inter,system-ui,sans-serif;cursor:pointer}
+button:hover,button:focus-visible{background:var(--deep);outline:3px solid #fff;outline-offset:2px}
+#esito{flex-basis:100%;font:14px/1.4 Inter,system-ui,sans-serif;min-height:1.4em}
+footer{background:var(--deep);color:#efe6f2;font:14px/1.6 Inter,system-ui,sans-serif}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 32px;padding-block:28px}
+.foot .t{font:400 30px/1 "UnifrakturMaguntia",serif}
+.foot nav{border:0;justify-content:flex-start;padding:0}
+.foot nav a{padding:12px 0;font-weight:400}
+@media(max-width:900px){.body{grid-template-columns:minmax(0,1fr)}.log{max-width:66ch}}
+@media(max-width:720px){.headgrid,.newsin{grid-template-columns:minmax(0,1fr)}.cards{grid-template-columns:minmax(0,1fr);gap:18px}.meta span:nth-child(2){display:none}}
+@media(prefers-reduced-motion:no-preference){#scan{animation:scan 9s linear infinite}@keyframes scan{from{transform:translateY(0)}to{transform:translateY(36px)}}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="meta"><span>Lunedì 23 novembre 2026</span><span>Longform per chi scorre troppo</span><span>Numero 1</span></div>
+    <div class="mast"><h1>The Daily Slop</h1><p>Leggere lentamente ciò che è stato fatto in fretta</p></div>
+    <nav aria-label="Sezioni"><a href="#articolo">Esperimenti</a><a href="#prossimi">Saggi</a><a href="#prossimi">Recensioni</a><a href="#newsletter">Newsletter</a><a href="#chi">Chi siamo</a></nav>
+  </div>
+</header>
+
+<main id="articolo">
+  <section class="wrap head">
+    <p class="kick">Esperimenti · Abbiamo fatto giocare GTA VI a un'IA costruita su Adorno</p>
+    <div class="headgrid">
+      <h2>Adorno a Vice City: amore, neon e dialettica negativa al tramonto</h2>
+      <div>
+        <p class="dek">Un agente di intelligenza artificiale costruito sugli scritti del filosofo di Francoforte ha passato sei ore a Vice City. Ha rubato un'auto, cambiato radio undici volte e, alla fine, si è rifiutato di proseguire. Pubblichiamo i suoi commenti.</p>
+        <p class="by">Di <b>La redazione</b> · 24 minuti di lettura</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero" aria-label="Illustrazione: la città al tramonto riflessa negli occhiali di Adorno">
+    <div class="fig"><svg id="pic" role="img" aria-label="Due occhiali tondi neri; in ciascuna lente tramonta una città di grattacieli e palme"></svg></div>
+  </section>
+  <div class="wrap"><p class="cap">Illustrazione della redazione. Vice City, vista attraverso le lenti di Teddie, l'agente costruito su Adorno.</p></div>
+
+  <section class="wrap body">
+    <article class="prose">
+      <p>L'idea è nata come una battuta e, come tutte le battute che si prendono troppo sul serio, è diventata un lavoro. Abbiamo addestrato un agente di intelligenza artificiale sulle opere di Theodor W. Adorno, dalla <i>Dialettica dell'illuminismo</i> scritta con Max Horkheimer ai <i>Minima moralia</i> e alla <i>Teoria estetica</i>, gli abbiamo dato un controller e lo abbiamo lasciato solo davanti al videogioco più atteso del decennio.</p>
+      <p>Lo abbiamo chiamato Teddie, come gli amici chiamavano Adorno. Non gli abbiamo dato obiettivi: soltanto la consegna di giocare come vuole e di dire che cosa vede. Il gioco, invece, di obiettivi ne ha moltissimi. È da questo attrito che vengono le sei ore che trovate qui.</p>
+      <h3>L'industria culturale, versione open world</h3>
+      <p>Nel 1944 Adorno e Horkheimer descrivevano un'industria che produce divertimento come si producono automobili: in serie, con varianti calcolate, perché nessuno sfugga. Un mondo aperto sembra la smentita di quella diagnosi. Si va dove si vuole, si fa ciò che si vuole. Teddie ci ha messo quattro minuti a dubitarne.</p>
+      <blockquote class="pull">«Ho trovato l'unico punto della mappa senza icone. Resto qui.»<cite>Teddie, ore 5:48 di gioco, su una spiaggia al tramonto</cite></blockquote>
+      <p>Per buona parte della partita l'agente ha fatto ciò che fanno tutti: ha guidato, sparato, comprato vestiti. Ma ogni azione arrivava con un commento, e i commenti si facevano più lunghi man mano che il gioco gli offriva più cose da fare. Alla sesta ora, davanti al mare, ha smesso di premere i tasti. Lo abbiamo lasciato lì per quaranta minuti. Non ha cambiato idea.</p>
+      <p>Che cosa resta di un esperimento del genere? Forse una sola domanda, che Teddie ha posto meglio di noi: se il gioco può contenere anche la propria critica, la critica a che cosa serve ancora? Nelle pagine che seguono proviamo a rispondere, con la trascrizione completa e il parere di chi studia la Scuola di Francoforte.</p>
+      <a class="more" href="#articolo">Continua a leggere</a>
+    </article>
+
+    <aside class="log" aria-labelledby="logt">
+      <h4 id="logt">Dal registro della partita</h4>
+      <p class="sub">Ora di gioco, che cosa succedeva, che cosa ha scritto Teddie.</p>
+      <ol id="voci"></ol>
+      <p class="note">Commenti di esempio per l'impaginazione, in attesa della trascrizione definitiva.</p>
+    </aside>
+  </section>
+
+  <section class="wrap next" id="prossimi">
+    <h3>Nei prossimi numeri</h3>
+    <div class="cards" id="cards"></div>
+  </section>
+</main>
+
+<section class="news" id="newsletter">
+  <div class="wrap newsin">
+    <div><h3>Un longform alla settimana, niente di più</h3><p>La lettera del lunedì: il pezzo nuovo e tre cose lette con calma.</p></div>
+    <form id="iscr" novalidate>
+      <label class="v" for="mail">Indirizzo email</label>
+      <input id="mail" type="email" placeholder="nome@esempio.it" autocomplete="email">
+      <button type="submit">Iscrivimi</button>
+      <p id="esito" role="status"></p>
+    </form>
+  </div>
+</section>
+
+<footer id="chi">
+  <div class="wrap foot">
+    <div><div class="t">The Daily Slop</div><p style="margin:8px 0 0;max-width:46ch">Una rivista di longform sulle cose fatte in fretta: intelligenze artificiali, piattaforme, videogiochi, e ciò che dicono di noi.</p></div>
+    <nav aria-label="Piè di pagina"><a href="#articolo">Esperimenti</a><a href="#prossimi">Saggi</a><a href="#newsletter">Newsletter</a></nav>
+  </div>
+</footer>
+
+<script>
+{
+const voci=[
+  ["0:04","Creazione del personaggio","Mi offrono quaranta tipi di sopracciglia e nessuna possibilità di non avere un corpo. La libertà di scelta è la forma in cui la scelta è già stata fatta."],
+  ["0:31","Prima auto, prima radio","Ogni stazione suona diversa nello stesso modo. Ho cambiato canale undici volte: è l'unico lavoro che il gioco non mi paga."],
+  ["1:12","Furto d'auto","Il furto è premiato con un'altra merce. Persino la trasgressione qui ha un listino."],
+  ["2:40","Il social network del gioco","La satira che il sistema scrive su sé stesso è il suo modo di vaccinarsi. Ridono tutti, me compreso: è questo che mi preoccupa."],
+  ["3:15","Tramonto su Vice City","È bellissimo. Questo è il problema."],
+  ["4:02","Missione secondaria","Mi chiedono di divertirmi. Un divertimento che si deve chiedere è già lavoro straordinario."],
+  ["5:48","Spiaggia, nessuna missione","Ho trovato l'unico punto della mappa senza icone. Resto qui."]
+];
+document.getElementById('voci').innerHTML=voci.map(v=>`<li><time>${v[0]}</time><div><div class="what">${v[1]}</div><q>${v[2]}</q></div></li>`).join('');
+
+const prossimi=[
+  ["Saggio","Il feed come paesaggio","Che cosa vede chi scorre per tre ore senza fermarsi, e che cosa ne resta il giorno dopo."],
+  ["Esperimento","Hannah Arendt legge i commenti","Un secondo agente, costruito su <i>Vita activa</i>, modera per una settimana un forum di calcio."],
+  ["Recensione","Elogio della pagina lenta","Tre riviste che pubblicano meno e meglio, e perché i loro lettori restano."]
+];
+document.getElementById('cards').innerHTML=prossimi.map(c=>`<div class="card"><p class="k">${c[0]}</p><h5>${c[1]}</h5><p>${c[2]}</p></div>`).join('');
+
+const f=document.getElementById('iscr'),esito=document.getElementById('esito');
+f.addEventListener('submit',e=>{
+  e.preventDefault();
+  const m=document.getElementById('mail').value.trim();
+  esito.textContent=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)?'Grazie. Le iscrizioni apriranno con il secondo numero: questa pagina non salva ancora gli indirizzi.':'Scrivi un indirizzo email valido.';
+});
+
+const s=document.getElementById('pic');
+const draw=()=>{
+  const W=s.clientWidth,H=s.clientHeight;
+  const r=Math.min(H*0.40,W*0.21);
+  const cy=H*0.5,gap=r*0.42,cx1=W/2-r-gap/2,cx2=W/2+r+gap/2;
+  let seed=7;const rnd=()=>(seed=seed*16807%2147483647)/2147483647;
+  const hz=r*0.36;
+  let towers='';let x=-r*1.3;
+  while(x<r*1.3){const w=r*(0.13+rnd()*0.16),h=r*(0.35+rnd()*0.9);towers+=`<rect x="${x.toFixed(1)}" y="${(hz-h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="url(#tw)"/>`;
+    for(let k=0;k<h/(r*0.09)-1;k++){if(rnd()>0.55)towers+=`<rect x="${(x+w*0.25).toFixed(1)}" y="${(hz-h+r*0.06+k*r*0.09).toFixed(1)}" width="${(w*0.5).toFixed(1)}" height="${(r*0.025).toFixed(1)}" fill="#ffcf6b" opacity=".8"/>`}
+    x+=w+r*0.02;}
+  const palm=(px,sc)=>{const h=r*0.75*sc,t=`M${px} ${hz} q${r*0.08*sc} ${-h*0.5} ${r*0.02*sc} ${-h}`;
+    let lv='';for(let a=0;a<6;a++){const ang=-160+a*28,rad=ang*Math.PI/180,L=r*0.32*sc,ex=px+r*0.02*sc+Math.cos(rad)*L,ey=hz-h+Math.sin(rad)*L*0.5+L*0.35;lv+=`<path d="M${px+r*0.02*sc} ${hz-h} Q${(px+r*0.02*sc+ex)/2} ${hz-h-L*0.25} ${ex} ${ey}" stroke="#1a0b22" stroke-width="${r*0.045*sc}" fill="none" stroke-linecap="round"/>`}
+    return `<path d="${t}" stroke="#1a0b22" stroke-width="${r*0.05*sc}" fill="none" stroke-linecap="round"/>${lv}`};
+  let stripes='';for(let i=0;i<14;i++)stripes+=`<rect x="${-r}" y="${(-r*0.05+i*r*0.055+i*i*r*0.0012).toFixed(1)}" width="${2*r}" height="${(r*0.012+i*r*0.0035).toFixed(1)}" fill="url(#sky)"/>`;
+  let water='';for(let i=0;i<9;i++)water+=`<rect x="${(-r*0.45+rnd()*r*0.1-i*r*0.02).toFixed(1)}" y="${(hz+r*0.05+i*r*0.07).toFixed(1)}" width="${(r*0.9+i*r*0.05).toFixed(1)}" height="${(r*0.018).toFixed(1)}" fill="#ffb547" opacity="${(0.75-i*0.07).toFixed(2)}"/>`;
+  const lens=`<g id="scene">
+    <rect x="${-r*1.2}" y="${-r*1.2}" width="${r*2.4}" height="${r*2.4}" fill="url(#sky)"/>
+    <circle cx="0" cy="${-r*0.05}" r="${r*0.5}" fill="url(#sun)"/>
+    <g id="scan">${stripes}</g>
+    <rect x="${-r*1.2}" y="${hz}" width="${r*2.4}" height="${r}" fill="#2a1238"/>
+    ${water}${towers}${palm(-r*0.62,1)}${palm(r*0.7,0.8)}${palm(-r*0.85,0.6)}
+  </g>`;
+  const frame=(cx)=>`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#0b0710" stroke-width="${r*0.13}"/><circle cx="${cx}" cy="${cy}" r="${r*1.065}" fill="none" stroke="#ffffff" stroke-opacity=".18" stroke-width="${r*0.02}"/><path d="M${cx-r*0.62} ${cy-r*0.55} A${r*0.83} ${r*0.83} 0 0 1 ${cx-r*0.1} ${cy-r*0.82}" stroke="#fff" stroke-opacity=".55" stroke-width="${r*0.05}" fill="none" stroke-linecap="round"/>`;
+  s.innerHTML=`<defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a1550"/><stop offset=".45" stop-color="#c2185b"/><stop offset=".75" stop-color="#ff5f45"/><stop offset="1" stop-color="#ffb547"/></linearGradient>
+    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe07a"/><stop offset="1" stop-color="#ff5f45"/></linearGradient>
+    <linearGradient id="tw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3b1746"/><stop offset="1" stop-color="#1a0b22"/></linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1238"/><stop offset="1" stop-color="#140818"/></linearGradient>
+    <clipPath id="c1"><circle cx="${cx1}" cy="${cy}" r="${r}"/></clipPath>
+    <clipPath id="c2"><circle cx="${cx2}" cy="${cy}" r="${r}"/></clipPath>
+  </defs>
+  <rect width="${W}" height="${H}" fill="url(#bg)"/>
+  <ellipse cx="${W/2}" cy="${cy+r*1.25}" rx="${r*2.6}" ry="${r*0.12}" fill="#000" opacity=".35"/>
+  <g clip-path="url(#c1)"><g transform="translate(${cx1} ${cy})">${lens}</g></g>
+  <g clip-path="url(#c2)"><g transform="translate(${cx2} ${cy}) scale(-1 1)">${lens.replace('id="scene"','').replace('id="scan"','class="scan2"')}</g></g>
+  <path d="M${cx1+r*0.95} ${cy-r*0.22} Q${W/2} ${cy-r*0.55} ${cx2-r*0.95} ${cy-r*0.22}" stroke="#0b0710" stroke-width="${r*0.1}" fill="none" stroke-linecap="round"/>
+  <path d="M${cx1-r*1.02} ${cy-r*0.25} L${Math.max(cx1-r*2.1,4)} ${cy-r*0.4}" stroke="#0b0710" stroke-width="${r*0.09}" stroke-linecap="round"/>
+  <path d="M${cx2+r*1.02} ${cy-r*0.25} L${Math.min(cx2+r*2.1,W-4)} ${cy-r*0.4}" stroke="#0b0710" stroke-width="${r*0.09}" stroke-linecap="round"/>
+  ${frame(cx1)}${frame(cx2)}`;
+};
+const ro=new ResizeObserver(draw);ro.observe(s);
+}
+</script>
+</body>
+</html>
