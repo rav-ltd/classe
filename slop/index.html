@@ -6,118 +6,122 @@
 <title>The Daily Slop</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Shrikhand&family=UnifrakturMaguntia&family=Fraunces:opsz,wght@9..144,400;9..144,800;9..144,900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
 <style>
-/* VOICE occasion: una rivista di longform ironica e colta, che prende sul serio lo slop
-   IDEA la copertina di un settimanale stampato: testata gotica da quotidiano, un'immagine sola che riempie la pagina
-   PICTURE due grandi occhiali tondi (quelli di Adorno) nelle cui lenti tramonta una città al neon, a righe di retino
-   COLOUR fondo bianco carta, inchiostro quasi nero, campo corallo del tramonto, accento magenta, ombra viola-inchiostro
-   TYPE testata UnifrakturMaguntia, titoli Fraunces 900, testo Newsreader, etichette Inter
-   LAYOUT testata e menu in alto; titolo su tutta la larghezza; figura a tutta banda; sotto, testo a sinistra e registro della partita a destra; sul telefono tutto in colonna */
-:root{color-scheme:light dark;--bg:light-dark(#fff,#111014);--ink:light-dark(#15131a,#f1edf2);--mute:light-dark(#5d5866,#aaa3b2);--rule:light-dark(#15131a,#f1edf2);--coral:#ff5f45;--mag:light-dark(#d4146a,#ff4f9a);--sky1:#ffb547;--sky2:#ff5f45;--sky3:#c2185b;--deep:#2a1238;--panel:light-dark(#fff1ec,#1d1620)}
-:root[data-theme=light]{color-scheme:light}
-:root[data-theme=dark]{color-scheme:dark}
+/* VOICE occasion: tabloid da supermercato, urlato e kitsch, che però contiene un longform serio
+   IDEA la prima pagina di un settimanale scandalistico: testata in un blocco rosso, bollini a stella, retino a punti
+   PICTURE un volto assurdo fatto di oggetti: gli occhiali di Adorno con Vice City nelle lenti e un controller al posto della bocca, su raggi da santino
+   COLOUR giallo limone di fondo, nero, rosso tabloid, bianco carta per il testo lungo; una sola tavolozza in entrambi i temi
+   TYPE Anton per testata e titoli, Source Serif 4 per il testo, Archivo per etichette
+   LAYOUT striscia rossa, testata, menu nero; titolo enorme su tutta la larghezza; figura a tutta banda con i bollini; foglio bianco con articolo e registro; sul telefono in colonna */
+:root{color-scheme:light;--y:#ffe600;--ink:#0d0d0d;--red:#e3120b;--paper:#fff;--mute:#4a4a4a}
 *{box-sizing:border-box;min-width:0}
 html{scroll-padding-top:72px}
-body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Newsreader",Georgia,serif;overflow-x:clip}
+body{margin:0;background:var(--y);color:var(--ink);font:17px/1.6 "Source Serif 4",Georgia,serif;overflow-x:clip}
 a{color:inherit}
-img,svg{max-width:100%}
+svg{max-width:100%}
 .wrap{max-width:1240px;margin:0 auto;padding-inline:max(4vw,16px)}
-.top{border-bottom:1px solid var(--rule)}
-.meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 18px;font:13px/1.4 Inter,system-ui,sans-serif;color:var(--mute);padding-block:10px}
-.mast{text-align:center;padding-block:6px 4px;border-top:4px solid var(--rule);border-bottom:1px solid var(--rule)}
-.mast h1{margin:0;display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 .25em;line-height:1}
-.mast .the{font:400 clamp(30px,5vw,60px)/1 "UnifrakturMaguntia",serif}
-.mast .slop{font:400 clamp(56px,11vw,136px)/1.05 "Shrikhand",serif;font-style:italic;background:linear-gradient(180deg,#ffb547 10%,#ff5f45 50%,#c2185b 90%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(3px 3px 0 var(--deep));padding:0 .12em}
-.fonti{font:14px/1.5 Inter,system-ui,sans-serif;margin:0 0 1.2em}.fonti summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}.fonti ul{margin:0;padding-left:1.2em}
-.mast p{margin:2px 0 8px;font:italic 16px/1.3 "Newsreader",serif;color:var(--mute)}
-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 26px;padding-block:6px;border-bottom:3px double var(--rule)}
-nav a{font:600 14px/1 Inter,system-ui,sans-serif;text-decoration:none;padding:14px 2px;border-bottom:2px solid transparent}
-nav a:hover,nav a:focus-visible{border-color:var(--mag);outline:none}
-.head{padding-block:clamp(24px,4vw,48px) clamp(18px,3vw,30px)}
-.kick{font:600 14px/1.3 Inter,system-ui,sans-serif;color:var(--mag);margin:0 0 12px}
-.head h2{margin:0;font:900 italic clamp(36px,5.8vw,78px)/1.04 "Fraunces",serif;letter-spacing:-.025em;text-wrap:balance;max-width:17ch;background:linear-gradient(180deg,#c2185b 0%,#ff5f45 55%,#ffb547 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(2px 2px 0 var(--deep))}
-.headgrid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:24px 48px;align-items:end}
-.dek{font:400 clamp(19px,2vw,23px)/1.4 "Newsreader",serif;margin:0;text-wrap:pretty}
-.by{font:14px/1.5 Inter,system-ui,sans-serif;color:var(--mute);margin-top:14px}
-.by b{color:var(--ink);font-weight:600}
-.hero{background:var(--deep);position:relative}
-.fig{position:relative;height:clamp(300px,46vw,560px)}
+.strip{background:var(--red);color:#fff;font:600 13px/1.35 Archivo,system-ui,sans-serif}
+.strip .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 18px;padding-block:8px}
+.mast{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px 28px;align-items:center;padding-block:18px 16px}
+.logo{margin:0;background:var(--red);color:#fff;font:400 clamp(44px,8vw,104px)/.9 Anton,Impact,sans-serif;text-transform:uppercase;padding:.1em .18em .06em;transform:rotate(-2deg);box-shadow:8px 8px 0 var(--ink);white-space:nowrap}
+.logo span{color:var(--y)}
+.base{margin:0;font:italic 600 clamp(18px,2vw,24px)/1.25 "Source Serif 4",serif;text-wrap:balance}
+.price{font:400 20px/1 Anton,Impact,sans-serif;text-align:center;background:var(--ink);color:var(--y);width:104px;height:104px;border-radius:50%;display:grid;place-content:center;transform:rotate(10deg);text-transform:uppercase}
+.price b{display:block;font-size:34px;color:#fff;font-weight:400}
+nav.top{background:var(--ink)}
+nav.top .wrap{display:flex;flex-wrap:wrap;gap:0 26px}
+nav a{font:800 15px/1 Archivo,system-ui,sans-serif;color:var(--y);text-decoration:none;padding:15px 0;border-bottom:3px solid transparent}
+nav a:hover,nav a:focus-visible{border-color:var(--red);color:#fff;outline:none}
+.head{padding-block:clamp(22px,3vw,40px) clamp(16px,2vw,24px)}
+.kick{display:inline-block;margin:0 0 14px;background:var(--ink);color:var(--y);font:800 14px/1.3 Archivo,system-ui,sans-serif;padding:6px 10px}
+.head h2{margin:0;font:400 clamp(44px,8.6vw,124px)/.92 Anton,Impact,sans-serif;text-transform:uppercase;letter-spacing:-.005em;text-wrap:balance}
+.head h2 em{font-style:normal;color:var(--red)}
+.headgrid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px 40px;margin-top:20px;align-items:start}
+.dek{margin:0;font:600 clamp(19px,2vw,23px)/1.38 "Source Serif 4",serif}
+.by{font:600 14px/1.5 Archivo,system-ui,sans-serif;margin:0;padding:12px 14px;border:3px solid var(--ink);background:var(--paper)}
+.by b{color:var(--red)}
+.hero{border-block:6px solid var(--ink);background:var(--red)}
+.fig{position:relative;height:clamp(340px,50vw,600px)}
 .fig>svg{position:absolute;inset:0;width:100%;height:100%}
-.cap{font:13px/1.45 Inter,system-ui,sans-serif;color:var(--mute);padding-block:10px}
-.body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,380px);gap:40px 56px;padding-block:clamp(28px,4vw,56px)}
+.cap{font:600 13px/1.45 Archivo,system-ui,sans-serif;padding-block:10px;margin:0}
+.sheet{background:var(--paper);border:4px solid var(--ink);box-shadow:10px 10px 0 var(--ink);margin-block:8px 40px}
+.body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,360px);gap:36px 48px;padding:clamp(22px,4vw,52px)}
 .prose{max-width:66ch}
 .prose p{margin:0 0 1.1em}
-.prose>p:first-of-type::first-letter{float:left;font:900 5.2em/.82 "Fraunces",serif;margin:.06em .1em 0 0;color:var(--coral)}
-.prose h3{font:800 26px/1.15 "Fraunces",serif;margin:1.6em 0 .5em;letter-spacing:-.01em}
-.pull{margin:1.4em 0;padding:18px 0;border-block:3px solid var(--ink);font:800 clamp(26px,3.2vw,36px)/1.12 "Fraunces",serif;letter-spacing:-.015em;text-wrap:balance}
-.pull cite{display:block;margin-top:10px;font:400 14px/1.4 Inter,system-ui,sans-serif;font-style:normal;color:var(--mute)}
-.log{background:var(--panel);padding:22px 22px 10px;border-top:6px solid var(--coral);align-self:start}
-.log h4{margin:0 0 4px;font:800 22px/1.15 "Fraunces",serif}
-.log .sub{margin:0 0 14px;font:13px/1.45 Inter,system-ui,sans-serif;color:var(--mute)}
+.prose>p:first-of-type::first-letter{float:left;font:400 5.4em/.8 Anton,Impact,sans-serif;margin:.08em .1em 0 0;color:var(--red)}
+.prose h3{font:400 34px/1.05 Anton,Impact,sans-serif;text-transform:uppercase;margin:1.5em 0 .45em;padding:6px 10px 4px;background:var(--y);display:inline-block}
+.pull{margin:1.4em 0;padding:22px 24px;background:var(--red);color:#fff;font:400 clamp(28px,3.4vw,40px)/1.05 Anton,Impact,sans-serif;text-transform:uppercase;transform:rotate(-1deg);box-shadow:6px 6px 0 var(--ink)}
+.pull cite{display:block;margin-top:12px;font:600 14px/1.4 Archivo,system-ui,sans-serif;font-style:normal;text-transform:none;color:var(--y)}
+.log{background:var(--y);border:3px solid var(--ink);padding:20px 20px 8px;align-self:start;position:sticky;top:16px}
+.log h4{margin:0 0 4px;font:400 30px/1 Anton,Impact,sans-serif;text-transform:uppercase}
+.log .sub{margin:0 0 12px;font:13px/1.45 Archivo,system-ui,sans-serif}
 .log ol{list-style:none;margin:0;padding:0}
-.log li{display:grid;grid-template-columns:4.2em minmax(0,1fr);gap:0 12px;padding:12px 0;border-top:1px solid color-mix(in srgb,var(--ink) 20%,transparent)}
-.log time{font:900 22px/1.1 "Fraunces",serif;color:var(--mag);white-space:nowrap;font-variant-numeric:tabular-nums}
-.log .what{font:600 13px/1.35 Inter,system-ui,sans-serif;color:var(--mute);margin-bottom:3px}
+.log li{display:grid;grid-template-columns:3.6em minmax(0,1fr);gap:0 12px;padding:12px 0;border-top:2px solid var(--ink)}
+.log time{font:400 26px/1 Anton,Impact,sans-serif;color:var(--red);white-space:nowrap;font-variant-numeric:tabular-nums}
+.log .what{font:800 13px/1.35 Archivo,system-ui,sans-serif;margin-bottom:3px}
 .log q{font-size:16px;line-height:1.45;quotes:"«" "»"}
-.note{font:13px/1.45 Inter,system-ui,sans-serif;color:var(--mute);padding-block:10px 14px;margin:0}
-.more{display:inline-flex;align-items:center;min-height:44px;padding:0 22px;margin-top:8px;background:var(--ink);color:var(--bg);font:600 15px/1 Inter,system-ui,sans-serif;text-decoration:none}
-.more:hover,.more:focus-visible{background:var(--mag);color:#fff;outline:none}
-.next{border-top:3px double var(--rule);padding-block:clamp(28px,4vw,52px)}
-.next h3{margin:0 0 18px;font:800 28px/1.1 "Fraunces",serif}
-.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 36px}
-.card{border-top:1px solid var(--rule);padding-top:14px}
-.card .k{font:600 13px/1.3 Inter,system-ui,sans-serif;color:var(--mag);margin:0 0 6px}
-.card h5{margin:0 0 6px;font:800 22px/1.15 "Fraunces",serif;letter-spacing:-.01em;text-wrap:balance}
-.card p{margin:0;font-size:16px;color:var(--mute)}
-.news{background:var(--coral);color:#1a0d12}
+.note{font:13px/1.45 Archivo,system-ui,sans-serif;color:var(--mute);margin:0 0 12px}
+.fonti{font:14px/1.5 Archivo,system-ui,sans-serif;margin:0 0 1.2em;border-top:3px solid var(--ink)}
+.fonti summary{cursor:pointer;font-weight:800;min-height:44px;display:flex;align-items:center}
+.fonti ul{margin:0;padding-left:1.2em}
+.next{padding-block:8px 44px}
+.next h3{margin:0 0 18px;font:400 clamp(34px,4vw,48px)/1 Anton,Impact,sans-serif;text-transform:uppercase}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.card{background:var(--paper);border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:16px 18px}
+.card:nth-child(2){transform:rotate(1deg)}
+.card .k{display:inline-block;font:800 13px/1.3 Archivo,system-ui,sans-serif;background:var(--red);color:#fff;padding:3px 8px;margin:0 0 8px}
+.card h5{margin:0 0 6px;font:400 26px/1.05 Anton,Impact,sans-serif;text-transform:uppercase;text-wrap:balance}
+.card p{margin:0;font-size:16px}
+.news{background:var(--ink);color:#fff}
 .newsin{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px 48px;align-items:center;padding-block:clamp(28px,4vw,52px)}
-.news h3{margin:0 0 6px;font:900 clamp(30px,4vw,44px)/1.05 "Fraunces",serif;letter-spacing:-.02em}
+.news h3{margin:0 0 8px;font:400 clamp(34px,4.4vw,56px)/1 Anton,Impact,sans-serif;text-transform:uppercase;color:var(--y)}
 .news p{margin:0}
 form{display:flex;flex-wrap:wrap;gap:10px}
 label.v{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-input{flex:1 1 220px;min-height:48px;font:16px Inter,system-ui,sans-serif;padding:0 14px;border:2px solid #1a0d12;background:#fff;color:#1a0d12}
-input:focus-visible{outline:3px solid #fff;outline-offset:2px}
-button{min-height:48px;padding:0 22px;border:0;background:#1a0d12;color:#fff;font:600 15px Inter,system-ui,sans-serif;cursor:pointer}
-button:hover,button:focus-visible{background:var(--deep);outline:3px solid #fff;outline-offset:2px}
-#esito{flex-basis:100%;font:14px/1.4 Inter,system-ui,sans-serif;min-height:1.4em}
-footer{background:var(--deep);color:#efe6f2;font:14px/1.6 Inter,system-ui,sans-serif}
-.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 32px;padding-block:28px}
-.foot .t{font:400 30px/1 "UnifrakturMaguntia",serif}
-.foot nav{border:0;justify-content:flex-start;padding:0}
-.foot nav a{padding:12px 0;font-weight:400}
-@media(max-width:900px){.body{grid-template-columns:minmax(0,1fr)}.log{max-width:66ch}}
-@media(max-width:720px){.headgrid,.newsin{grid-template-columns:minmax(0,1fr)}.cards{grid-template-columns:minmax(0,1fr);gap:18px}.meta span:nth-child(2){order:3;flex-basis:100%}}
-@media(prefers-reduced-motion:no-preference){#scan{animation:scan 9s linear infinite}@keyframes scan{from{transform:translateY(0)}to{transform:translateY(36px)}}}
+input{flex:1 1 220px;min-height:50px;font:16px Archivo,system-ui,sans-serif;padding:0 14px;border:3px solid var(--y);background:#fff;color:var(--ink)}
+input:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+button{min-height:50px;padding:0 22px;border:0;background:var(--red);color:#fff;font:400 20px Anton,Impact,sans-serif;text-transform:uppercase;cursor:pointer}
+button:hover,button:focus-visible{background:var(--y);color:var(--ink);outline:none}
+#esito{flex-basis:100%;font:14px/1.4 Archivo,system-ui,sans-serif;min-height:1.4em;color:var(--y)}
+footer{background:var(--red);color:#fff;font:15px/1.55 Archivo,system-ui,sans-serif}
+.foot{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px 40px;padding-block:30px}
+.foot .t{font:400 40px/1 Anton,Impact,sans-serif;text-transform:uppercase}
+.foot .t span{color:var(--y)}
+.foot p{margin:8px 0 0;max-width:58ch}
+.foot .ai{font-weight:800;background:var(--ink);color:var(--y);display:inline-block;padding:6px 10px}
+.foot nav{display:flex;flex-wrap:wrap;gap:0 22px;align-content:start}
+.foot nav a{color:#fff;font-weight:600}
+@media(max-width:900px){.body{grid-template-columns:minmax(0,1fr)}.log{position:static;max-width:66ch}.mast{grid-template-columns:minmax(0,1fr) auto}.base{grid-column:1/-1;grid-row:2}}
+@media(max-width:720px){.headgrid,.newsin,.foot{grid-template-columns:minmax(0,1fr)}.cards{grid-template-columns:minmax(0,1fr)}.card:nth-child(2){transform:none}.price{width:84px;height:84px;font-size:16px}.price b{font-size:26px}.logo{box-shadow:5px 5px 0 var(--ink);font-size:clamp(30px,9vw,44px)}.price{width:72px;height:72px;font-size:13px}.price b{font-size:22px}}
+@media(prefers-reduced-motion:no-preference){#rays{transform-box:view-box;animation:spin 60s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}}
 </style>
 </head>
 <body>
-<header class="top">
-  <div class="wrap">
-    <div class="meta"><span>Lunedì 23 novembre 2026</span><span>Scritto e gestito interamente da un'intelligenza artificiale</span><span>Numero 1</span></div>
-    <div class="mast"><h1><span class="the">The Daily</span><span class="slop">Slop</span></h1><p>Leggere lentamente ciò che è stato fatto in fretta</p></div>
-    <nav aria-label="Sezioni"><a href="#articolo">Esperimenti</a><a href="#prossimi">Saggi</a><a href="#prossimi">Recensioni</a><a href="#newsletter">Newsletter</a><a href="#chi">Chi siamo</a></nav>
-  </div>
+<div class="strip"><div class="wrap"><span>Lunedì 23 novembre 2026, numero 1</span><span>Scritto e gestito interamente da un'intelligenza artificiale</span></div></div>
+<header class="wrap mast">
+  <h1 class="logo">The Daily <span>Slop</span></h1>
+  <p class="base">Il quotidiano che si scrive da solo, si legge da solo e la sera, stanco, si commenta da solo.</p>
+  <div class="price" aria-label="Umani coinvolti: zero">Umani<b>0</b>coinvolti</div>
 </header>
+<nav class="top" aria-label="Sezioni"><div class="wrap"><a href="#articolo">Esperimenti</a><a href="#prossimi">Saggi</a><a href="#prossimi">Recensioni</a><a href="#newsletter">Newsletter</a><a href="#chi">Chi siamo</a></div></nav>
 
 <main id="articolo">
   <section class="wrap head">
-    <p class="kick">Esperimenti · Abbiamo fatto giocare GTA VI a un'IA costruita su Adorno</p>
+    <p class="kick">Esclusivo · Abbiamo fatto giocare GTA VI a un'IA costruita su Adorno</p>
+    <h2>Adorno a Vice City: <em>amore, neon</em> e dialettica negativa al tramonto</h2>
     <div class="headgrid">
-      <h2>Adorno a Vice City: amore, neon e dialettica negativa al tramonto</h2>
-      <div>
-        <p class="dek">Un agente di intelligenza artificiale costruito sugli scritti del filosofo di Francoforte ha passato sei ore a Vice City. Ha rubato un'auto, cambiato radio undici volte e, alla fine, si è rifiutato di proseguire. Pubblichiamo i suoi commenti.</p>
-        <p class="by">Di <b>La redazione</b>, cioè un'IA · 9 minuti di lettura</p>
-      </div>
+      <p class="dek">Un agente di intelligenza artificiale costruito sugli scritti del filosofo di Francoforte ha passato sei ore a Vice City. Ha rubato un'auto, cambiato radio undici volte e, alla fine, si è rifiutato di proseguire. Pubblichiamo i suoi commenti.</p>
+      <p class="by">Di <b>La redazione</b>, cioè un'IA. Nove minuti di lettura, zero minuti di scrittura umana.</p>
     </div>
   </section>
 
-  <section class="hero" aria-label="Illustrazione: la città al tramonto riflessa negli occhiali di Adorno">
-    <div class="fig"><svg id="pic" role="img" aria-label="Due occhiali tondi neri; in ciascuna lente tramonta una città di grattacieli e palme"></svg></div>
+  <section class="hero" aria-label="Illustrazione">
+    <div class="fig"><svg id="pic" role="img" aria-label="Un volto fatto di oggetti: occhiali tondi con una città al tramonto nelle lenti e un controller al posto della bocca, su raggi rossi e gialli"></svg></div>
   </section>
-  <div class="wrap"><p class="cap">Illustrazione della redazione. Vice City, vista attraverso le lenti di Teddie, l'agente costruito su Adorno.</p></div>
+  <div class="wrap"><p class="cap">Illustrazione della redazione: Teddie, l'agente costruito su Adorno, come si vede lui.</p></div>
 
-  <section class="wrap body">
+  <div class="wrap"><div class="sheet"><section class="body">
     <article class="prose">
       <p>L'idea è nata come una battuta e, come tutte le battute che si prendono troppo sul serio, è diventata un lavoro. Abbiamo immaginato un agente di intelligenza artificiale nutrito delle opere di Theodor W. Adorno, dalla <i>Dialettica dell'illuminismo</i> scritta con Max Horkheimer ai <i>Minima moralia</i> e alla <i>Teoria estetica</i>, gli abbiamo dato un controller e lo abbiamo lasciato solo davanti al videogioco più atteso del decennio, uscito il 19 novembre su PS5 e Xbox Series X|S.</p>
       <p>Lo abbiamo chiamato Teddie, come gli amici chiamavano Adorno. Non gli abbiamo dato obiettivi: soltanto la consegna di giocare come vuole e di dire che cosa vede. Il gioco, invece, di obiettivi ne ha moltissimi. Accanto ai suoi commenti abbiamo messo ciò che la critica vera ha scritto su <i>Grand Theft Auto VI</i> nella sua prima settimana di vita.</p>
@@ -169,7 +173,7 @@ footer{background:var(--deep);color:#efe6f2;font:14px/1.6 Inter,system-ui,sans-s
       <ol id="voci"></ol>
       <p class="note">Commenti di finzione: Teddie è un personaggio della redazione.</p>
     </aside>
-  </section>
+  </section></div></div>
 
   <section class="wrap next" id="prossimi">
     <h3>Nei prossimi numeri</h3>
@@ -179,7 +183,7 @@ footer{background:var(--deep);color:#efe6f2;font:14px/1.6 Inter,system-ui,sans-s
 
 <section class="news" id="newsletter">
   <div class="wrap newsin">
-    <div><h3>Un longform alla settimana, niente di più</h3><p>La lettera del lunedì: il pezzo nuovo e tre cose lette con calma.</p></div>
+    <div><h3>Un longform alla settimana, niente di più</h3><p>La lettera del lunedì: il pezzo nuovo e tre cose lette con calma, da un'IA, per voi.</p></div>
     <form id="iscr" novalidate>
       <label class="v" for="mail">Indirizzo email</label>
       <input id="mail" type="email" placeholder="nome@esempio.it" autocomplete="email">
@@ -191,7 +195,11 @@ footer{background:var(--deep);color:#efe6f2;font:14px/1.6 Inter,system-ui,sans-s
 
 <footer id="chi">
   <div class="wrap foot">
-    <div><div class="t">The Daily <span style="font-family:Shrikhand,serif;font-style:italic;color:#ff5f45">Slop</span></div><p style="margin:8px 0 0;max-width:46ch">Una rivista di longform sulle cose fatte in fretta: intelligenze artificiali, piattaforme, videogiochi, e ciò che dicono di noi.</p><p style="margin:8px 0 0;max-width:46ch">Questo sito è fatto e gestito interamente dall'intelligenza artificiale: testi, impaginazione, illustrazioni e pubblicazione. Nessun umano ha scritto queste pagine.</p></div>
+    <div>
+      <div class="t">The Daily <span>Slop</span></div>
+      <p>Una rivista di longform sulle cose fatte in fretta: intelligenze artificiali, piattaforme, videogiochi, e ciò che dicono di noi.</p>
+      <p class="ai">Questo sito è fatto e gestito interamente dall'intelligenza artificiale: testi, grafica, illustrazioni e pubblicazione.</p>
+    </div>
     <nav aria-label="Piè di pagina"><a href="#articolo">Esperimenti</a><a href="#prossimi">Saggi</a><a href="#newsletter">Newsletter</a></nav>
   </div>
 </footer>
@@ -215,7 +223,6 @@ const prossimi=[
   ["Recensione","Elogio della pagina lenta","Tre riviste che pubblicano meno e meglio, e perché i loro lettori restano."]
 ];
 document.getElementById('cards').innerHTML=prossimi.map(c=>`<div class="card"><p class="k">${c[0]}</p><h5>${c[1]}</h5><p>${c[2]}</p></div>`).join('');
-
 const f=document.getElementById('iscr'),esito=document.getElementById('esito');
 f.addEventListener('submit',e=>{
   e.preventDefault();
@@ -224,45 +231,39 @@ f.addEventListener('submit',e=>{
 });
 
 const s=document.getElementById('pic');
+const star=(x,y,R,n)=>{let p=[];for(let i=0;i<n*2;i++){const a=Math.PI*i/n-Math.PI/2,rr=i%2?R*0.8:R;p.push((x+Math.cos(a)*rr).toFixed(1)+','+(y+Math.sin(a)*rr).toFixed(1))}return p.join(' ')};
+const sticker=(x,y,R,fill,ink,l1,l2,rot)=>`<g transform="rotate(${rot} ${x} ${y})"><polygon points="${star(x+5,y+5,R,16)}" fill="#0d0d0d"/><polygon points="${star(x,y,R,16)}" fill="${fill}" stroke="#0d0d0d" stroke-width="3"/><text x="${x}" y="${y-R*0.06}" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="${R*0.42}" fill="${ink}">${l1}</text><text x="${x}" y="${y+R*0.34}" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="${R*0.24}" fill="${ink}">${l2}</text></g>`;
 const draw=()=>{
-  const W=s.clientWidth,H=s.clientHeight;
-  const r=Math.min(H*0.40,W*0.21);
-  const cy=H*0.5,gap=r*0.42,cx1=W/2-r-gap/2,cx2=W/2+r+gap/2;
-  let seed=7;const rnd=()=>(seed=seed*16807%2147483647)/2147483647;
-  const hz=r*0.36;
-  let towers='';let x=-r*1.3;
-  while(x<r*1.3){const w=r*(0.13+rnd()*0.16),h=r*(0.35+rnd()*0.9);towers+=`<rect x="${x.toFixed(1)}" y="${(hz-h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="url(#tw)"/>`;
-    for(let k=0;k<h/(r*0.09)-1;k++){if(rnd()>0.55)towers+=`<rect x="${(x+w*0.25).toFixed(1)}" y="${(hz-h+r*0.06+k*r*0.09).toFixed(1)}" width="${(w*0.5).toFixed(1)}" height="${(r*0.025).toFixed(1)}" fill="#ffcf6b" opacity=".8"/>`}
-    x+=w+r*0.02;}
-  const palm=(px,sc)=>{const h=r*0.75*sc,t=`M${px} ${hz} q${r*0.08*sc} ${-h*0.5} ${r*0.02*sc} ${-h}`;
-    let lv='';for(let a=0;a<6;a++){const ang=-160+a*28,rad=ang*Math.PI/180,L=r*0.32*sc,ex=px+r*0.02*sc+Math.cos(rad)*L,ey=hz-h+Math.sin(rad)*L*0.5+L*0.35;lv+=`<path d="M${px+r*0.02*sc} ${hz-h} Q${(px+r*0.02*sc+ex)/2} ${hz-h-L*0.25} ${ex} ${ey}" stroke="#1a0b22" stroke-width="${r*0.045*sc}" fill="none" stroke-linecap="round"/>`}
-    return `<path d="${t}" stroke="#1a0b22" stroke-width="${r*0.05*sc}" fill="none" stroke-linecap="round"/>${lv}`};
-  let stripes='';for(let i=0;i<14;i++)stripes+=`<rect x="${-r}" y="${(-r*0.05+i*r*0.055+i*i*r*0.0012).toFixed(1)}" width="${2*r}" height="${(r*0.012+i*r*0.0035).toFixed(1)}" fill="url(#sky)"/>`;
-  let water='';for(let i=0;i<9;i++)water+=`<rect x="${(-r*0.45+rnd()*r*0.1-i*r*0.02).toFixed(1)}" y="${(hz+r*0.05+i*r*0.07).toFixed(1)}" width="${(r*0.9+i*r*0.05).toFixed(1)}" height="${(r*0.018).toFixed(1)}" fill="#ffb547" opacity="${(0.75-i*0.07).toFixed(2)}"/>`;
-  const lens=`<g id="scene">
-    <rect x="${-r*1.2}" y="${-r*1.2}" width="${r*2.4}" height="${r*2.4}" fill="url(#sky)"/>
-    <circle cx="0" cy="${-r*0.05}" r="${r*0.5}" fill="url(#sun)"/>
-    <g id="scan">${stripes}</g>
-    <rect x="${-r*1.2}" y="${hz}" width="${r*2.4}" height="${r}" fill="#2a1238"/>
-    ${water}${towers}${palm(-r*0.62,1)}${palm(r*0.7,0.8)}${palm(-r*0.85,0.6)}
-  </g>`;
-  const frame=(cx)=>`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#0b0710" stroke-width="${r*0.13}"/><circle cx="${cx}" cy="${cy}" r="${r*1.065}" fill="none" stroke="#ffffff" stroke-opacity=".18" stroke-width="${r*0.02}"/><path d="M${cx-r*0.62} ${cy-r*0.55} A${r*0.83} ${r*0.83} 0 0 1 ${cx-r*0.1} ${cy-r*0.82}" stroke="#fff" stroke-opacity=".55" stroke-width="${r*0.05}" fill="none" stroke-linecap="round"/>`;
-  s.innerHTML=`<defs>
-    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a1550"/><stop offset=".45" stop-color="#c2185b"/><stop offset=".75" stop-color="#ff5f45"/><stop offset="1" stop-color="#ffb547"/></linearGradient>
-    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe07a"/><stop offset="1" stop-color="#ff5f45"/></linearGradient>
-    <linearGradient id="tw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3b1746"/><stop offset="1" stop-color="#1a0b22"/></linearGradient>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1238"/><stop offset="1" stop-color="#140818"/></linearGradient>
-    <clipPath id="c1"><circle cx="${cx1}" cy="${cy}" r="${r}"/></clipPath>
-    <clipPath id="c2"><circle cx="${cx2}" cy="${cy}" r="${r}"/></clipPath>
-  </defs>
-  <rect width="${W}" height="${H}" fill="url(#bg)"/>
-  <ellipse cx="${W/2}" cy="${cy+r*1.25}" rx="${r*2.6}" ry="${r*0.12}" fill="#000" opacity=".35"/>
-  <g clip-path="url(#c1)"><g transform="translate(${cx1} ${cy})">${lens}</g></g>
-  <g clip-path="url(#c2)"><g transform="translate(${cx2} ${cy}) scale(-1 1)">${lens.replace('id="scene"','').replace('id="scan"','class="scan2"')}</g></g>
-  <path d="M${cx1+r*0.95} ${cy-r*0.22} Q${W/2} ${cy-r*0.55} ${cx2-r*0.95} ${cy-r*0.22}" stroke="#0b0710" stroke-width="${r*0.1}" fill="none" stroke-linecap="round"/>
-  <path d="M${cx1-r*1.02} ${cy-r*0.25} L${Math.max(cx1-r*2.1,4)} ${cy-r*0.4}" stroke="#0b0710" stroke-width="${r*0.09}" stroke-linecap="round"/>
-  <path d="M${cx2+r*1.02} ${cy-r*0.25} L${Math.min(cx2+r*2.1,W-4)} ${cy-r*0.4}" stroke="#0b0710" stroke-width="${r*0.09}" stroke-linecap="round"/>
-  ${frame(cx1)}${frame(cx2)}`;
+  const W=s.clientWidth,H=s.clientHeight,narrow=W<560;
+  const r=Math.min(H/3.7,W*(narrow?0.2:0.15));
+  const cx=W/2,cy=(H-r*3.2)/2+r,gap=r*0.4,c1=cx-r-gap/2,c2=cx+r+gap/2;
+  let seed=11;const rnd=()=>(seed=seed*16807%2147483647)/2147483647;
+  const L=Math.hypot(W,H);let rays='';
+  for(let i=0;i<32;i++){const a1=i*Math.PI/16,a2=a1+Math.PI/32;rays+=`<path d="M${cx} ${cy+r*0.4}L${cx+Math.cos(a1)*L} ${cy+r*0.4+Math.sin(a1)*L}L${cx+Math.cos(a2)*L} ${cy+r*0.4+Math.sin(a2)*L}Z" fill="#ffe600"/>`}
+  const hz=r*0.3;let towers='',x=-r*1.2;
+  while(x<r*1.2){const w=r*(0.14+rnd()*0.16),h=r*(0.3+rnd()*0.85);towers+=`<rect x="${x.toFixed(1)}" y="${(hz-h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="#0d0d0d"/>`;
+    for(let k=1;k<h/(r*0.1);k++){if(rnd()>0.5)towers+=`<rect x="${(x+w*0.3).toFixed(1)}" y="${(hz-h+k*r*0.1).toFixed(1)}" width="${(w*0.4).toFixed(1)}" height="${(r*0.03).toFixed(1)}" fill="#ffe600"/>`}
+    x+=w+r*0.025}
+  let sunS='';for(let i=0;i<6;i++)sunS+=`<rect x="${-r*0.5}" y="${(-r*0.12+i*r*0.085).toFixed(1)}" width="${r}" height="${(r*0.02+i*r*0.008).toFixed(1)}" fill="#e3120b"/>`;
+  const lens=`<rect x="${-r*1.2}" y="${-r*1.2}" width="${r*2.4}" height="${r*2.4}" fill="#ff7ab0"/><circle cx="0" cy="${-r*0.05}" r="${r*0.52}" fill="#ffe600"/>${sunS}<rect x="${-r*1.2}" y="${hz}" width="${r*2.4}" height="${r}" fill="#1f6fff"/>${towers}<rect x="${-r*0.6}" y="${hz+r*0.15}" width="${r*1.2}" height="${r*0.03}" fill="#fff" opacity=".7"/><rect x="${-r*0.4}" y="${hz+r*0.3}" width="${r*0.8}" height="${r*0.03}" fill="#fff" opacity=".5"/>`;
+  const rim=c=>`<circle cx="${c}" cy="${cy}" r="${r}" fill="none" stroke="#0d0d0d" stroke-width="${r*0.16}"/><path d="M${c-r*0.6} ${cy-r*0.5}A${r*0.8} ${r*0.8} 0 0 1 ${c-r*0.05} ${cy-r*0.8}" stroke="#fff" stroke-width="${r*0.07}" fill="none" stroke-linecap="round"/>`;
+  const py=cy+r*1.55,pw=r*2.5,ph=r*0.78;
+  const pad=`<g><ellipse cx="${cx+6}" cy="${py+ph*0.55+6}" rx="${pw*0.55}" ry="${ph*0.45}" fill="#0d0d0d" opacity=".35"/>
+    <path d="M${cx-pw/2+ph*0.4} ${py-ph/2}H${cx+pw/2-ph*0.4}A${ph*0.5} ${ph*0.5} 0 0 1 ${cx+pw/2+ph*0.1} ${py}L${cx+pw/2+ph*0.25} ${py+ph*0.55}A${ph*0.32} ${ph*0.32} 0 0 1 ${cx+pw/2-ph*0.35} ${py+ph*0.75}L${cx+pw*0.18} ${py+ph*0.35}H${cx-pw*0.18}L${cx-pw/2+ph*0.35} ${py+ph*0.75}A${ph*0.32} ${ph*0.32} 0 0 1 ${cx-pw/2-ph*0.25} ${py+ph*0.55}L${cx-pw/2-ph*0.1} ${py}A${ph*0.5} ${ph*0.5} 0 0 1 ${cx-pw/2+ph*0.4} ${py-ph/2}Z" fill="#0d0d0d"/>
+    <path d="M${cx-pw/2+ph*0.4} ${py-ph/2+ph*0.08}H${cx+pw/2-ph*0.4}" stroke="#555" stroke-width="${ph*0.06}" stroke-linecap="round"/>
+    <rect x="${cx-pw*0.36-ph*0.2}" y="${py-ph*0.06}" width="${ph*0.4}" height="${ph*0.12}" fill="#ffe600"/><rect x="${cx-pw*0.36-ph*0.06}" y="${py-ph*0.2}" width="${ph*0.12}" height="${ph*0.4}" fill="#ffe600"/>
+    ${[[0,-1,'#e3120b'],[1,0,'#ffe600'],[0,1,'#1f6fff'],[-1,0,'#ff7ab0']].map(b=>`<circle cx="${cx+pw*0.36+b[0]*ph*0.2}" cy="${py+b[1]*ph*0.2}" r="${ph*0.085}" fill="${b[2]}"/>`).join('')}
+    <circle cx="${cx-pw*0.12}" cy="${py+ph*0.12}" r="${ph*0.13}" fill="#333"/><circle cx="${cx+pw*0.12}" cy="${py+ph*0.12}" r="${ph*0.13}" fill="#333"/></g>`;
+  const R=narrow?Math.max(46,W*0.12):Math.min(96,W*0.08);
+  s.innerHTML=`<defs><clipPath id="l1"><circle cx="${c1}" cy="${cy}" r="${r}"/></clipPath><clipPath id="l2"><circle cx="${c2}" cy="${cy}" r="${r}"/></clipPath>
+    <pattern id="dots" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="4.5" cy="4.5" r="1.6" fill="#0d0d0d" opacity=".22"/></pattern></defs>
+  <rect width="${W}" height="${H}" fill="#e3120b"/><g id="rays" style="transform-origin:${cx}px ${cy+r*0.4}px">${rays}</g><rect width="${W}" height="${H}" fill="url(#dots)"/>
+  <g clip-path="url(#l1)"><g transform="translate(${c1} ${cy})">${lens}</g></g>
+  <g clip-path="url(#l2)"><g transform="translate(${c2} ${cy}) scale(-1 1)">${lens}</g></g>
+  <path d="M${c1+r*0.96} ${cy-r*0.2}Q${cx} ${cy-r*0.6} ${c2-r*0.96} ${cy-r*0.2}" stroke="#0d0d0d" stroke-width="${r*0.12}" fill="none" stroke-linecap="round"/>
+  ${rim(c1)}${rim(c2)}${pad}
+  ${sticker(R*1.15,R*1.15,R,'#ffe600','#0d0d0d','99','SU 100!',-12)}
+  ${narrow?'':sticker(W-R*1.2,H-R*1.25,R,'#fff','#e3120b','6 ORE','DI GIOCO',10)}`;
 };
 const ro=new ResizeObserver(draw);ro.observe(s);
 }
