@@ -23,6 +23,9 @@ h1{font-stretch:118%;font-weight:800;font-size:clamp(20px,2.4vw,28px);line-heigh
 .goal{font-size:14.5px;color:var(--mut)}
 .goal b{color:var(--ink)}
 .top{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.cours{border:2px solid var(--ink);color:var(--ink);text-decoration:none;font-size:16px;padding:7px 12px;min-height:40px;display:inline-flex;align-items:center}
+.cours:hover{background:var(--pane)}
+.cours:focus-visible{outline:3px solid var(--red);outline-offset:2px}
 .scen{font-size:14.5px;color:var(--mut);display:flex;align-items:center;gap:6px}
 .scen select:disabled{opacity:.6;cursor:not-allowed}
 .scen select{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:2px solid var(--ink);min-height:40px;padding:4px 8px}
@@ -136,6 +139,7 @@ summary{cursor:pointer;font-weight:700}
   <div class="top">
     <button id="replay" class="prim" type="button" data-t="replay">Rejouer la même partie</button>
     <button id="fresh" class="quiet" type="button" data-t="fresh">Nouvelle partie</button>
+    <a class="cours" id="cours" href="https://docs.google.com/document/d/1ay_agWhVPo04YwCAmICAyyNbqJaypyfLS0xQ11O9Esw/edit?usp=sharing" target="_blank" rel="noopener">Révision du cours</a>
     <label class="scen"><span id="scenL">Scénario</span> <select id="scen"></select></label>
     <button id="lang" type="button">IT</button>
   </div>
@@ -168,7 +172,7 @@ summary{cursor:pointer;font-weight:700}
 const P={mh:150,dec:.35,H:400,invK:1600,ef:.3,p0:.5,rev:3,wh:12,errC:25,backC:8,fixA:8000,fixB:35000,team:2200,priceM:2.5,outFail:.9,aiUpd:300,
  actFix:1500,actRev:.2,leakF:.5,cyberE:.08,srvMin:50,srvMig:4000,sovM:1.5,kMin:.3,kRate:.3,kTeam:.3,kErr:.03,nAI:5,nF:3,rareP:.12,inspF:60,inspBad:.02,suitA:4000,suitF:.25,quotaE:.02,autoR:.1,fitR:.06,needsE:.02,hallE:.03,paidM:1.2,GOAL:95000,CONF:.95,BACK:500};
 const T={
-fr:{title:"La règle face à la complexité",replay:"Rejouer la même partie",fresh:"Nouvelle partie",scenL:"Scénario",scenLock:"Scénario bloqué pendant le cycle de parties : rechargez la page pour en changer.",attL:"Modélisation rigide",attS:"atténuer la variété",ampL:"Système d'IA",ampS:"amplifier la variété",
+fr:{title:"La règle face à la complexité",replay:"Rejouer la même partie",fresh:"Nouvelle partie",scenL:"Scénario",coursL:"Révision du cours",scenLock:"Scénario bloqué pendant le cycle de parties : rechargez la page pour en changer.",attL:"Modélisation rigide",attS:"atténuer la variété",ampL:"Système d'IA",ampS:"amplifier la variété",
 defsS:"Que fait concrètement chaque pôle ?",
 phases:["Phase 1 · croisière","Phase 2 · turbulences","Phase 3 · tempête"],
 qsub:(q,v)=>`trimestre ${q}/12 · ${v} {U} à traiter`,
@@ -225,7 +229,7 @@ decSrv:n=>`<p><b>Votre fournisseur d'IA est suspendu.</b> Ses serveurs relèvent
 decSrvO:[k=>`<b>Migrer vers un fournisseur européen</b><b>${k}</b> tout de suite, puis 50 % plus cher à l'unité`,()=>`<b>Revenir au formulaire</b>deux trimestres sans IA ; le curseur repart vers la modélisation, à reconstruire`,()=>`<b>Attendre</b>deux trimestres sans IA ; l'équipe absorbe ce qu'elle peut, le reste s'accumule`],
 fixB:k=>`Refaire la règle maintenant (${k}) : votre formulaire dépassé bloque une partie du flux`,
 tag:{law:"loi",price:"prix",srv:"serveurs",surge:"afflux",kpi:"délais",novel:"cas inédits",act:"loi IA",leak:"fuite",cyber:"cyber",insp:"contrôle",suit:"procès",quota:"fraude",auto:"RGPD",pand:"pandémie",fit:"hors cases",needs:"besoins",halluc:"hallucination",paid:"fin d'essai",strike:"grève",clos:"fermeture",climate:"canicule",pol:"politique"}},
-it:{title:"La regola di fronte alla complessità",replay:"Rigioca la stessa partita",fresh:"Nuova partita",scenL:"Scenario",scenLock:"Scenario bloccato durante il ciclo di partite: ricaricate la pagina per cambiarlo.",attL:"Modellizzazione rigida",attS:"attenuare la varietà",ampL:"Sistema di IA",ampS:"amplificare la varietà",
+it:{title:"La regola di fronte alla complessità",replay:"Rigioca la stessa partita",fresh:"Nuova partita",scenL:"Scenario",coursL:"Ripasso del corso",scenLock:"Scenario bloccato durante il ciclo di partite: ricaricate la pagina per cambiarlo.",attL:"Modellizzazione rigida",attS:"attenuare la varietà",ampL:"Sistema di IA",ampS:"amplificare la varietà",
 defsS:"Che cosa fa concretamente ciascun polo?",
 phases:["Fase 1 · crociera","Fase 2 · turbolenze","Fase 3 · tempesta"],
 qsub:(q,v)=>`trimestre ${q}/12 · ${v} {U} da trattare`,
@@ -530,7 +534,7 @@ function chart(p){const s=$('chart'),W=s.clientWidth,H=s.clientHeight;if(!W)retu
   if(b.bn){const yb=H-5,c=x0+bwid/2;if(b.bn.r)g+=`<rect x="${c-13}" y="${yb-8}" width="8" height="8" fill="var(--blu)"><title>${t.bnN[0]}</title></rect>`;if(b.bn.a)g+=`<circle cx="${c}" cy="${yb-4}" r="4.5" fill="var(--ai)"><title>${t.bnN[1]}</title></circle>`;if(b.bn.t)g+=`<path d="M${c+5} ${yb}L${c+14} ${yb}L${c+9.5} ${yb-9}Z" fill="var(--ink)"><title>${t.bnN[2]}</title></path>`}});
  s.innerHTML=g}
 function render(){const t=tx();document.documentElement.lang=L;
- $('scenL').textContent=t.scenL;$('scen').innerHTML=SC.map(k=>`<option value="${k}"${k===st.sc?' selected':''}>${S[L][k].name}</option>`).join('');{const lk=st.hist.length>0||st.tries.length>0;$('scen').disabled=lk;$('scen').title=lk?t.scenLock:''}
+ $('scenL').textContent=t.scenL;$('cours').textContent=t.coursL;$('scen').innerHTML=SC.map(k=>`<option value="${k}"${k===st.sc?' selected':''}>${S[L][k].name}</option>`).join('');{const lk=st.hist.length>0||st.tries.length>0;$('scen').disabled=lk;$('scen').title=lk?t.scenLock:''}
  document.querySelectorAll('[data-t]').forEach(e=>{const v=t[e.dataset.t];if(typeof v==='string')e.textContent=v});
  $('attL').innerHTML=`${t.attL}<small>${t.attS}</small>`;$('ampL').innerHTML=`${t.ampL}<small>${t.ampS}</small>`;
  $('lang').textContent=L==='fr'?'IT':'FR';$('goal').innerHTML=t.goal;$('defA').innerHTML=t.defA;$('defsS').textContent=t.defsS;if(st.q===1&&!st.hist.length)$('defsW').open=true;$('defB').innerHTML=t.defB;$('x').value=st.x;
