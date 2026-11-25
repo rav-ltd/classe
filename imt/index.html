@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La règle face à la complexité</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap" rel="stylesheet">
+<style>
+/* VOICE a short management game for a class: one office, one lever, a result every quarter, a target to beat
+   IDEA the internship office's quarterly P&L: each quarter a bar above or below zero, the season's target on top
+   PICTURE the P&L chart: quarterly result as bars above/below zero, surprises flagged, the coming quarter drawn live as the slider moves
+   COLOUR white ground; blue for rigid modelling (attenuation) and its shocks, violet for the AI system (amplification) and its shocks, amber for rare events; red only for alerts and losses, green for gains
+   TYPE Archivo wide 800 for figures, Archivo for text
+   LAYOUT one screen: slim header with target and replay; left the decision and what it means now; right the P&L chart and the attempts */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0e0e0e);--ink:light-dark(#111111,#f2f2f2);--mut:light-dark(#5c5c5c,#a8a8a8);--line:light-dark(#dcdcdc,#2e2e2e);--red:light-dark(#e4002b,#ff4d6a);--grn:light-dark(#0a7a3d,#4cc985);--pane:light-dark(#f4f4f4,#171717);--amb:light-dark(#b85c00,#ffa24d);--deep:light-dark(#7d0a1c,#ff8a9a);--blu:light-dark(#1d5fb4,#7fb0ff);--ai:light-dark(#6b3fa0,#c29bff)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:16.5px/1.55 Archivo,system-ui,sans-serif;overflow-x:clip;display:flex;flex-direction:column}
+header{border-top:6px solid var(--ink);border-image:linear-gradient(90deg,var(--blu),var(--ai)) 1;border-bottom-color:var(--line);padding:12px max(3vw,18px) 10px;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+h1{font-stretch:118%;font-weight:800;font-size:clamp(20px,2.4vw,28px);line-height:1.05;margin:0}
+.goal{font-size:14.5px;color:var(--mut)}
+.goal b{color:var(--ink)}
+.top{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.scen{font-size:14.5px;color:var(--mut);display:flex;align-items:center;gap:6px}
+.scen select:disabled{opacity:.6;cursor:not-allowed}
+.scen select{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:2px solid var(--ink);min-height:40px;padding:4px 8px}
+button{font:inherit;font-size:16px;min-height:40px;border:2px solid var(--ink);background:var(--bg);color:var(--ink);padding:4px 12px;border-radius:0;cursor:pointer}
+button.main{background:var(--ink);color:var(--bg);font-weight:800;font-size:17px;min-height:48px;width:100%}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+button:disabled{opacity:.35;cursor:default}
+button.main:disabled{opacity:1;background:var(--line);color:var(--mut);border-color:var(--line)}
+main{flex:1;display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:clamp(24px,3vw,40px);padding:16px max(3vw,18px) 14px;min-height:0}
+.col{display:flex;flex-direction:column;gap:14px;min-height:0}
+.stage{--ph:var(--ink)}
+.clock{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;background:var(--ph);color:var(--bg);padding:10px 14px}
+.clock .note{color:inherit;opacity:.85}
+.clock .q{font-stretch:125%;font-weight:800;font-size:34px;line-height:1}
+.note{font-size:14.5px;color:var(--mut)}
+.alert{border-left:6px solid var(--ph);background:var(--pane);padding:10px 14px;font-size:14px;line-height:1.45;min-height:40px}
+.alert .ah{display:block;font-size:15.5px;margin-bottom:2px}
+.alert p{margin:4px 0 0}
+.alert p.poly{font-style:italic}
+.cpt{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.01em;padding:0 6px;border:1px solid currentColor;border-radius:9px;opacity:.9;white-space:nowrap}
+.reading{margin:8px 0;padding:8px 12px;background:var(--pane);font-size:15px}
+.reading ul{margin:4px 0 0;padding-left:18px}
+.alert.on{border-left-color:var(--ph);background:var(--red);color:var(--bg);font-weight:500;animation:pop .35s ease-out}
+.alert.on b{color:var(--bg);font-weight:800}
+.alert.on.calm{background:var(--pane);color:var(--ink);font-weight:400}
+.alert.on.calm b{color:var(--ink)}
+@keyframes pop{from{opacity:0}to{opacity:1}}
+.ends{display:flex;justify-content:space-between;gap:10px;font-weight:800;font-stretch:112%;font-size:16.5px}
+.ends span:first-child{color:var(--blu)}
+.ends span:last-child{color:var(--ai);text-align:right}
+.ends small{display:block;font-weight:400;font-size:13px;color:var(--mut);font-stretch:100%}
+button.prim{background:var(--ink);color:var(--bg);font-weight:800}
+button.quiet{border:0;background:none;color:var(--mut);font-size:13px;text-decoration:underline;min-height:32px;padding:4px 6px}
+.invite{font-size:15px;border-left:6px solid var(--grn);background:var(--pane);padding:6px 10px;margin:8px 0}
+.card h3{font-size:15px;margin:14px 0 2px}
+.slider{position:relative}
+.ticks{display:flex;justify-content:space-between;margin-top:-6px}
+.ticks button{border:0;background:none;padding:2px;min-height:0;width:32px;display:flex;justify-content:center;color:var(--mut);cursor:pointer}
+.ticks button.on{color:var(--ink)}
+.ticks svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}
+.tip{position:absolute;top:calc(100% + 6px);transform:translateX(-50%);width:300px;background:var(--ink);color:var(--bg);padding:9px 12px;font-size:14px;line-height:1.4;box-shadow:0 6px 18px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .15s;z-index:4}
+.tip.on{opacity:1}
+.tip b{display:block;margin-bottom:2px}
+input[type=range]{width:100%;height:10px;margin:13px 0;-webkit-appearance:none;appearance:none;background:linear-gradient(90deg,var(--blu),var(--ai));border-radius:5px;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--bg);border:5px solid var(--ink)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--bg);border:5px solid var(--ink)}
+.defsW summary{cursor:pointer;font-size:14.5px;font-weight:700;min-height:28px}
+.col.left,.col.right{overflow:auto;padding-bottom:4px;scrollbar-width:none}
+.col.left::-webkit-scrollbar,.col.right::-webkit-scrollbar{display:none}
+#next{position:sticky;bottom:0;z-index:2;box-shadow:0 -8px 12px var(--bg)}
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:10px 0 14px}
+.steps button{border:1px solid var(--line);background:var(--bg);padding:8px 9px;font-size:13.2px;line-height:1.4;color:var(--mut);text-align:left;min-height:0;display:block;width:100%;height:100%}
+.steps button:hover{border-color:var(--ink)}
+.steps b{display:block;color:var(--ink);font-size:13.8px;margin-bottom:4px}
+.steps .on{border:2px solid var(--ink);color:var(--ink);background:var(--pane)}
+.defs{display:grid;grid-template-columns:1fr 1fr;gap:20px;font-size:14px;color:var(--mut);line-height:1.5}
+.defs p{margin:0}
+.defs b{color:var(--ink)}
+.doing{border:2px solid var(--ink);padding:12px 16px;font-size:15.5px;line-height:1.55}
+.doing h3{margin:0 0 8px;font-size:14.5px;color:var(--blu);font-weight:800}
+.rev{color:var(--grn)}.cost{color:var(--red)}
+.doing p{margin:0}
+.nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.nums div{font-size:13.5px;color:var(--mut)}
+.nums b{display:block;font-size:19px;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;font-stretch:112%}
+.dec{display:none;border:3px solid var(--red);padding:12px 14px;font-size:15.5px;line-height:1.5}
+.dec.on{display:block}
+.dec p{margin:0 0 12px}
+.dec .opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.dec button{font-size:14.5px;line-height:1.35;padding:8px 10px;min-height:58px;text-align:left}
+.dec button b{display:block;font-size:15.5px;color:var(--c)}
+.dec button{border-color:var(--c);border-left-width:6px;background:color-mix(in srgb,var(--c) 7%,var(--bg))}
+.fix{display:none;border:2px dashed var(--red);color:var(--red);font-weight:700}
+.fix.on{display:block}
+.fig{position:relative;flex:1;min-height:150px}
+.bnl{font-size:13.5px;color:var(--mut);margin-top:-6px}.bnl span{margin-right:8px;white-space:nowrap}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+svg text{font-family:Archivo,sans-serif;font-size:13px;fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:4px}
+.verdict{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;font-size:15.5px}
+.verdict .w{font-stretch:120%;font-weight:800;font-size:24px}
+.good{color:var(--grn)}.bad{color:var(--red)}
+.score{font-size:14.5px;max-height:none;overflow:auto;border-top:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:700;color:var(--mut)}
+tr.best td{font-weight:800;background:color-mix(in srgb,var(--grn) 10%,var(--bg))}
+th{border-bottom:2px solid var(--ink)}
+.ok{color:var(--grn)}.ko{color:var(--red)}
+#report{position:fixed;inset:0;background:color-mix(in srgb,var(--bg) 70%,transparent);display:none;align-items:center;justify-content:center;padding:14px;z-index:5}
+#report.on{display:flex}
+.card{background:var(--bg);border:3px solid var(--ink);max-width:760px;width:100%;max-height:100%;overflow:auto;padding:16px 18px}
+.card h2{font-stretch:115%;font-weight:800;font-size:24px;margin:0 0 6px}
+.checks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0}
+.checks div{border:2px solid var(--line);padding:6px 8px;font-size:14.5px}
+.checks b{display:block;font-size:20px;font-stretch:115%}
+.card ol{padding-left:20px;margin:8px 0}
+.card li{margin-bottom:8px}
+details{margin-top:8px;font-size:14.5px}
+summary{cursor:pointer;font-weight:700}
+@media(max-width:760px){.dec .opts{grid-template-columns:1fr}body{display:block;height:auto}main{grid-template-columns:minmax(0,1fr)}.fig{min-height:240px}.defs,.steps{grid-template-columns:1fr}.nums{grid-template-columns:repeat(2,minmax(0,1fr))}.checks{grid-template-columns:1fr}#next{position:sticky;bottom:8px}}
+@media(prefers-reduced-motion:reduce){.alert.on{animation:none}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1 data-t="title">La règle face à la complexité</h1>
+    <div class="goal" id="goal"></div>
+  </div>
+  <div class="top">
+    <button id="replay" class="prim" type="button" data-t="replay">Rejouer la même partie</button>
+    <button id="fresh" class="quiet" type="button" data-t="fresh">Nouvelle partie</button>
+    <label class="scen"><span id="scenL">Scénario</span> <select id="scen"></select></label>
+    <button id="lang" type="button">IT</button>
+  </div>
+</header>
+<main>
+  <div class="col left">
+    <div class="dec" id="dec"></div>
+    <button class="fix" id="fixBtn" type="button"></button>
+    <div class="ends"><span id="attL">Modélisation rigide</span><span id="ampL">Système d'IA</span></div>
+    <div class="slider"><input type="range" id="x" min="0" max="100" step="5" aria-label="Modélisation rigide ou système d'IA"><div class="ticks" id="ticks"></div><div class="tip" id="tip" role="status"></div></div>
+    <details class="defsW" id="defsW"><summary id="defsS"></summary><div class="defs"><p id="defA"></p><p id="defB"></p></div></details>
+    <div class="doing"><h3 id="doingT"></h3><p id="doing"></p><div class="nums" id="nums"></div></div>
+    <div class="score"><table id="score"></table></div>
+    <button class="main" id="next" type="button"></button>
+  </div>
+  <div class="col right">
+    <div class="stage" id="stage">
+      <div class="clock"><span class="q" id="qlabel">T1</span><span><b id="phase"></b> · <span class="note" id="qsub"></span></span></div>
+      <div class="alert" id="alert" role="status"></div>
+    </div>
+    <div class="verdict" id="verdict"></div>
+    <div class="fig" id="box"><svg id="chart" role="img" aria-label="Résultat par trimestre"></svg></div>
+    <div class="bnl" id="bnl"></div>
+  </div>
+</main>
+<div id="report"><div class="card" id="card"></div></div>
+
+<script>
+{
+const P={mh:150,dec:.35,H:400,invK:1600,ef:.3,p0:.5,rev:3,wh:12,errC:25,backC:8,fixA:8000,fixB:35000,team:2200,priceM:2.5,outFail:.9,aiUpd:300,
+ actFix:1500,actRev:.2,leakF:.5,cyberE:.08,srvMin:50,srvMig:4000,sovM:1.5,kMin:.3,kRate:.3,kTeam:.3,kErr:.03,nAI:5,nF:3,rareP:.12,inspF:60,inspBad:.02,suitA:4000,suitF:.25,quotaE:.02,autoR:.1,fitR:.06,needsE:.02,hallE:.03,paidM:1.2,GOAL:95000,CONF:.95,BACK:500};
+const T={
+fr:{title:"La règle face à la complexité",replay:"Rejouer la même partie",fresh:"Nouvelle partie",scenL:"Scénario",scenLock:"Scénario bloqué pendant le cycle de parties : rechargez la page pour en changer.",attL:"Modélisation rigide",attS:"atténuer la variété",ampL:"Système d'IA",ampS:"amplifier la variété",
+defsS:"Que fait concrètement chaque pôle ?",
+phases:["Phase 1 · croisière","Phase 2 · turbulences","Phase 3 · tempête"],
+qsub:(q,v)=>`trimestre ${q}/12 · ${v} {U} à traiter`,
+doingT:"Ce trimestre, concrètement",
+doing:(h,c,f,a,m,k)=>`Vous consacrez <b>${h} h</b> au formulaire fermé (il couvre <b>${c}</b> du flux standard). Ce trimestre, <b>${f}</b> {U} passent par le formulaire, l'assistant IA en lit <b>${a}</b>, l'équipe en vérifie <b>${m}</b> à la main. Compétences de l'équipe : <b>${k}</b>.`,
+doingAI:(a,m,k)=>`Le formulaire fermé est abandonné : l'assistant IA lit <b>${a}</b> {U} ce trimestre, l'équipe en vérifie <b>${m}</b> à la main. Un changement de règle ne demandera qu'une mise à jour de l'assistant. Compétences de l'équipe : <b>${k}</b>.`,
+nums:["Recettes prévues","Coûts prévus","Résultat prévu","Résultat cumulé"],
+next:q=>`Jouer le trimestre ${q} →`,end:"Voir le bilan",
+first:"Choisissez un réglage et jouez le premier trimestre.",better:"Mieux",worse:"Moins bien",
+vline:(r,c)=>`résultat du trimestre <b>${r}</b> · cumulé <b>${c}</b>`,
+alertT:"Imprévu !",alertN:"imprévu sans effet pour vous.",calm:"Rien d'imprévu au dernier trimestre.",target:"objectif",
+score:["Essai","Partie","Résultat","Sans erreur","Retard","Objectif"],
+rep:"Bilan après trois ans",checks:["Résultat cumulé","Traités sans erreur","En retard à la fin"],
+win:"Objectif atteint.",lose:"Objectif manqué.",
+invite:"Reportez ce bilan sur votre feuille, puis <b>rejouez la même partie</b> : mêmes imprévus, aux mêmes dates. Que changez-vous, et à quel trimestre ?",
+qsT:"Pour le bilan en classe",
+qs:["Qu'avez-vous payé au début (modéliser ou dépendre), et à partir de quand cela a-t-il rapporté ?","Quel imprévu vous a coûté le plus ? Lisez-le avec un concept du cours : polycrise, hyper-couplage, loi d'Ashby, Goodhart-Campbell, obsolescence des normes, goulet d'étranglement…","D'un essai à l'autre, avez-vous gardé des marges et de la redondance (preparedness) ou cherché l'hyper-efficience ? Qu'est-ce que cela a changé ?"],
+copy:"Copier le bilan",copied:"Copié.",nocopy:"Copie refusée.",close:"Fermer",howS:"Comment fonctionne le modèle",
+how:"Le curseur reprend la loi de la variété requise d'Ashby, appliquée au management par Stafford Beer : face à un environnement varié, on peut atténuer la variété (modélisation rigide : catégories, formulaires) ou amplifier sa capacité de réponse (système d'IA : un modèle qui traite chaque cas tel qu'il est). Les cinq scénarios ont les mêmes chiffres ; seuls le métier et le récit des imprévus changent. Le formulaire couvre au plus 85 % du flux standard ; sans entretien (jusqu'à environ 150 h par trimestre), il s'use. Un changement de règle bloque une partie de ce que traite le formulaire : on choisit entre le refaire (8 000 € plus jusqu'à 30 000 € selon la couverture), passer à l'IA (le formulaire est abandonné) ou attendre (ce qui est bloqué s'accumule en retard). L'assistant coûte 0,50 € par {u} (moins chaque trimestre) et se trompe davantage sur les cas inédits. Il peut voir ses prix multipliés par 2,5 ; être suspendu deux trimestres (on choisit : fournisseur européen, 4 000 € puis 50 % plus cher ; retour au formulaire ; attente) ; être piégé par une cyberattaque ; faire fuir des données (amende de 0,50 € pour chaque dossier envoyé dans l'année) ; tomber sous une loi sur l'IA (contrôle humain de 20 % de ce qu'il lit, 1 500 € par trimestre). D'autres imprévus frappent surtout le formulaire, qui ne voit que ce qui est déclaré : {legal} ; et les refus décidés par l'IA peuvent être contestés (RGPD), il faut alors les réexaminer à la main. Dès les premiers trimestres arrivent de petits imprévus : {early}, un assistant qui « hallucine », une offre d'essai qui se termine. Chaque partie tire ses imprévus au hasard, à des trimestres différents ; parfois s'ajoute un événement rare : {rare}. Plus l'IA fait le travail, plus l'équipe perd la main : ses compétences descendent jusqu'à 30 %, et alors elle traite moins de dossiers et se trompe davantage ; elles remontent lentement. L'équipe a 2 200 heures, 0,6 h par {u} ; le reste passe en retard (8 € par trimestre). Une erreur coûte 25 €. Chiffres fictifs, pour comparer des stratégies.",
+ev:{price:"Choc énergétique : le fournisseur d'IA multiplie ses prix par 2,5, durablement.",
+ act:"Nouvelle loi sur l'IA, sur le modèle de l'AI Act européen : votre usage est classé à haut risque. Un humain doit contrôler 20 % de ce que lit l'assistant, et l'audit de conformité coûte 1 500 € par trimestre, durablement.",
+ leak:k=>`Fuite de données : des dossiers envoyés à l'assistant se retrouvent en ligne, comme le code de Samsung collé dans ChatGPT en 2023. Amende RGPD : ${k}.`,
+ cyber:"Cyberattaque : des documents piégés cachent des instructions pour l'assistant (« injection de prompt ») ; il valide de faux dossiers. Beaucoup plus d'erreurs ce trimestre.",
+ auto:k=>`{Who} contestent des refus décidés par l'assistant : le RGPD leur donne droit à un examen humain. Il faut réexaminer à la main ${k} décisions de l'IA.`,
+ strike:"Grève générale : l'équipe ne travaille qu'à moitié ce trimestre. L'assistant, lui, ne fait pas grève.",
+ climate:"Canicule extrême : le centre de données du fournisseur d'IA surchauffe et coupe la moitié de ses serveurs, comme ceux de Google et d'Oracle à Londres le 19 juillet 2022. L'équipe, dans des bureaux à 38 °C, ralentit aussi.",
+ halluc:"L'assistant « hallucine » : il invente une clause et se trompe sur des montants. Un peu plus d'erreurs ce trimestre.",
+ paid:"Fin de l'offre de lancement : l'outil d'IA passe à la formule payante, le prix par {u} augmente de 20 %, durablement.",
+ poly:"Polycrise : deux chocs le même trimestre s'amplifient mutuellement (erreurs et retards ×1,3) ; ce n'est pas une simple multicrise."},
+lawAI:"<b>Cela ne vous touche presque pas</b> : votre formulaire est abandonné, l'assistant absorbe le changement, il suffit de mettre à jour ses instructions (300 €). C'est le point fort de l'IA face à une règle qui change.",
+lawDone:["Vous refaites la règle.","Vous passez à l'IA, le formulaire est abandonné.","Vous gardez le formulaire dépassé, ce qu'il bloque s'accumule."],
+lawSmall:"Votre formulaire est encore trop petit pour bloquer quoi que ce soit : <b>cela ne vous touche pas</b>.",
+lawAIok:"<b>Cela ne vous touche presque pas</b> : votre formulaire est encore trop petit pour bloquer quoi que ce soit, et l'assistant absorbe le changement ; il suffit de mettre à jour ses instructions (300 €). C'est le point fort de l'IA face à une règle qui change.",
+waitDec:"Une décision vous attend à gauche.",
+cpt:{law:"Obsolescence des normes",pol:"Incertitude knightienne",kpi:"Goodhart-Campbell",novel:"Loi d'Ashby",surge:"Hyper-couplage",insp:"Goodhart-Campbell",suit:"Régulation vs légitimité",quota:"Émergence",fit:"Simplification mutilante",needs:"Simplification mutilante",price:"Socle biophysique",climate:"Socle biophysique",srv:"Monoculture et dépendance",cyber:"Surface d'attaque",leak:"Effet iatrogène",act:"Régulation vs légitimité",auto:"Boîte noire et légitimité",halluc:"Boîte noire",paid:"Verrouillage structurel",pand:"Cygne noir",strike:"Défiance sociétale",clos:"Défiance sociétale"},
+readT:"Lecture de votre partie avec les concepts du cours",readPoly:"Polycrise",readBn:["Goulet de la règle (obsolescence des normes)","Goulet du fournisseur (monoculture et dépendance)","Hyper-couplage : équipe débordée, sans marge"],readNone:"Aucun choc ne vous a touché : regardez ce que vous avez payé pour cette tranquillité.",
+bnT:"Goulets d'étranglement :",bnN:["la règle bloque","le fournisseur d'IA lâche","l'équipe est débordée"],
+autoNone:"ailleurs, {who} contestent des refus décidés par une IA (RGPD). <b>Cela ne vous touche pas</b> : vous n'avez rien fait décider par l'assistant.",
+leakNone:"fuite de données chez le fournisseur d'IA. <b>Cela ne vous touche pas</b> : vous ne lui avez rien envoyé, pas d'amende.",
+srvNone:"l'autorité de protection des données suspend le fournisseur d'IA pour deux trimestres. <b>Cela ne vous touche pas</b> : vous n'utilisez pas l'assistant.",
+srvSmall:"L'autorité de protection des données suspend votre fournisseur d'IA pour deux trimestres. Vous en dépendez peu : le peu que lisait l'assistant repasse à la main.",
+srvSov:"l'autorité de protection des données suspend le fournisseur d'IA américain. <b>Cela ne vous touche pas</b> : vous avez migré vers un fournisseur européen.",
+fitN:"des cas qui ne rentrent dans aucune case arrivent. <b>Cela ne vous touche pas</b> : sans formulaire, chaque dossier est lu tel qu'il est.",
+needsN:"des cas aux besoins particuliers arrivent. <b>Cela ne vous touche pas</b> : sans formulaire, rien ne les force dans des cases.",
+hallucN:"ailleurs, des assistants d'IA « hallucinent » : clauses inventées, montants faux. <b>Cela ne vous touche pas</b> : vous n'utilisez pas l'assistant.",
+paidN:"l'offre de lancement des outils d'IA se termine (+20 %). <b>Cela ne vous touche pas</b> : vous n'utilisez pas l'assistant.",
+priceN:"choc énergétique, le fournisseur d'IA multiplie ses prix par 2,5. <b>Cela ne vous touche pas</b> : vous n'utilisez pas l'assistant.",
+actN:"nouvelle loi sur l'IA, sur le modèle de l'AI Act européen : les assistants qui traitent ces dossiers sont classés à haut risque (contrôle humain, audit). <b>Cela ne vous touche pas</b> : vous avez choisi le formulaire et n'utilisez pas l'assistant.",
+cyberN:"ailleurs, cyberattaque contre des assistants d'IA (« injection de prompt »). <b>Cela ne vous touche pas</b> : vous n'utilisez pas l'assistant.",
+srvDone:["Fournisseur d'IA suspendu : vous migrez vers un fournisseur européen.","Fournisseur d'IA suspendu : vous revenez au formulaire, deux trimestres sans IA.","Fournisseur d'IA suspendu : vous attendez, deux trimestres sans IA."],
+decLaw:(h,p,n,k)=>`<p><b>${h}</b> Votre formulaire fermé ne connaît pas les nouvelles règles : ${p} de ce qu'il traitait est désormais à l'arrêt. Comme l'Ever Given en travers du canal de Suez en mars 2021, une seule pièce inadaptée arrête tout le flux : environ <b>${n}</b> {U} par trimestre vont s'entasser derrière. Que faites-vous ?</p>`,
+decLawO:[k=>`<b>Refaire la règle</b>réécrire formulaire et script maintenant : <b>${k}</b>, tout de suite`,()=>`<b>Passer à l'IA</b>abandonner le formulaire ; l'assistant prend tout, payé à l'unité`,()=>`<b>Attendre</b>garder le formulaire dépassé ; ce qui est bloqué s'accumule`],
+decSrv:n=>`<p><b>Votre fournisseur d'IA est suspendu.</b> Ses serveurs relèvent du droit américain : le Cloud Act permet aux autorités des États-Unis d'exiger {data}. L'autorité de protection des données suspend le service pour deux trimestres, comme le Garante italien a bloqué ChatGPT de mars à avril 2023. Environ <b>${n}</b> {U} par trimestre restent sans lecteur. Que faites-vous ?</p>`,
+decSrvO:[k=>`<b>Migrer vers un fournisseur européen</b><b>${k}</b> tout de suite, puis 50 % plus cher à l'unité`,()=>`<b>Revenir au formulaire</b>deux trimestres sans IA ; le curseur repart vers la modélisation, à reconstruire`,()=>`<b>Attendre</b>deux trimestres sans IA ; l'équipe absorbe ce qu'elle peut, le reste s'accumule`],
+fixB:k=>`Refaire la règle maintenant (${k}) : votre formulaire dépassé bloque une partie du flux`,
+tag:{law:"loi",price:"prix",srv:"serveurs",surge:"afflux",kpi:"délais",novel:"cas inédits",act:"loi IA",leak:"fuite",cyber:"cyber",insp:"contrôle",suit:"procès",quota:"fraude",auto:"RGPD",pand:"pandémie",fit:"hors cases",needs:"besoins",halluc:"hallucination",paid:"fin d'essai",strike:"grève",clos:"fermeture",climate:"canicule",pol:"politique"}},
+it:{title:"La regola di fronte alla complessità",replay:"Rigioca la stessa partita",fresh:"Nuova partita",scenL:"Scenario",scenLock:"Scenario bloccato durante il ciclo di partite: ricaricate la pagina per cambiarlo.",attL:"Modellizzazione rigida",attS:"attenuare la varietà",ampL:"Sistema di IA",ampS:"amplificare la varietà",
+defsS:"Che cosa fa concretamente ciascun polo?",
+phases:["Fase 1 · crociera","Fase 2 · turbolenze","Fase 3 · tempesta"],
+qsub:(q,v)=>`trimestre ${q}/12 · ${v} {U} da trattare`,
+doingT:"In questo trimestre, concretamente",
+doing:(h,c,f,a,m,k)=>`Dedicate <b>${h} h</b> al modulo chiuso (copre il <b>${c}</b> del flusso standard). In questo trimestre <b>${f}</b> {U} passano dal modulo, l'assistente IA ne legge <b>${a}</b>, la squadra ne verifica <b>${m}</b> a mano. Competenze della squadra: <b>${k}</b>.`,
+doingAI:(a,m,k)=>`Il modulo chiuso è abbandonato: l'assistente IA legge <b>${a}</b> {U} in questo trimestre, la squadra ne verifica <b>${m}</b> a mano. Un cambio di regola richiederà solo un aggiornamento dell'assistente. Competenze della squadra: <b>${k}</b>.`,
+nums:["Ricavi previsti","Costi previsti","Risultato previsto","Risultato cumulato"],
+next:q=>`Gioca il trimestre ${q} →`,end:"Vedi il bilancio",
+first:"Scegliete una posizione e giocate il primo trimestre.",better:"Meglio",worse:"Peggio",
+vline:(r,c)=>`risultato del trimestre <b>${r}</b> · cumulato <b>${c}</b>`,
+alertT:"Imprevisto!",alertN:"imprevisto senza effetto per voi.",calm:"Nessun imprevisto nell'ultimo trimestre.",target:"obiettivo",
+score:["Prova","Partita","Risultato","Senza errori","Arretrato","Obiettivo"],
+rep:"Bilancio dopo tre anni",checks:["Risultato cumulato","Trattati senza errori","In arretrato alla fine"],
+win:"Obiettivo raggiunto.",lose:"Obiettivo mancato.",
+invite:"Riportate questo bilancio sul vostro foglio, poi <b>rigiocate la stessa partita</b>: stessi imprevisti, alle stesse date. Che cosa cambiate, e a quale trimestre?",
+qsT:"Per il bilancio in classe",
+qs:["Che cosa avete pagato all'inizio (modellizzare o dipendere), e da quando ha cominciato a rendere?","Quale imprevisto vi è costato di più? Leggetelo con un concetto del corso: policrisi, iper-accoppiamento, legge di Ashby, Goodhart-Campbell, obsolescenza delle norme, collo di bottiglia…","Da una prova all'altra, avete tenuto margini e ridondanza (preparedness) o cercato l'iper-efficienza? Che cosa è cambiato?"],
+copy:"Copia il bilancio",copied:"Copiato.",nocopy:"Copia rifiutata.",close:"Chiudi",howS:"Come funziona il modello",
+how:"Il cursore riprende la legge della varietà necessaria di Ashby, applicata al management da Stafford Beer: davanti a un ambiente vario si può attenuare la varietà (modellizzazione rigida: categorie, moduli) o amplificare la propria capacità di risposta (sistema di IA: un modello che tratta ogni caso così com'è). I cinque scenari hanno gli stessi numeri; cambiano solo il mestiere e il racconto degli imprevisti. Il modulo copre al massimo l'85% del flusso standard; senza manutenzione (fino a circa 150 h a trimestre) si consuma. Un cambio di regola blocca una parte di ciò che tratta il modulo: si sceglie fra rifarlo (8.000 € più fino a 30.000 € secondo la copertura), passare all'IA (il modulo si abbandona) o aspettare (ciò che è bloccato si accumula in arretrato). L'assistente costa 0,50 € a unità (meno ogni trimestre) e sbaglia di più sui casi inediti. Può moltiplicare i prezzi per 2,5; essere sospeso per due trimestri (si sceglie: fornitore europeo, 4.000 € e poi il 50% più caro; ritorno al modulo; attesa); cadere in un attacco informatico; far trapelare dati (multa di 0,50 € per ogni pratica inviata nell'ultimo anno); ricadere sotto una legge sull'IA (controllo umano del 20% di ciò che legge, 1.500 € a trimestre). Altri imprevisti colpiscono soprattutto il modulo, che vede solo ciò che è dichiarato: {legal}; e i rifiuti decisi dall'IA possono essere contestati (RGPD), e allora vanno riesaminati a mano. Fin dai primi trimestri arrivano piccoli imprevisti: {early}, un assistente che «allucina», un'offerta di prova che finisce. Ogni partita estrae i suoi imprevisti a caso, in trimestri diversi; a volte si aggiunge un evento raro: {rare}. Più l'IA fa il lavoro, più la squadra perde la mano: le competenze scendono fino al 30%, e allora tratta meno pratiche e sbaglia di più; risalgono lentamente. La squadra ha 2.200 ore, 0,6 h a unità; il resto passa in arretrato (8 € a trimestre). Un errore costa 25 €. Numeri fittizi, per confrontare strategie.",
+ev:{price:"Choc energetico: il fornitore di IA moltiplica i prezzi per 2,5, in modo durevole.",
+ act:"Nuova legge sull'IA, sul modello dell'AI Act europeo: il vostro uso è classificato ad alto rischio. Un umano deve controllare il 20% di ciò che legge l'assistente, e l'audit di conformità costa 1.500 € a trimestre, in modo durevole.",
+ leak:k=>`Fuga di dati: pratiche inviate all'assistente finiscono in rete, come il codice di Samsung incollato in ChatGPT nel 2023. Multa RGPD: ${k}.`,
+ cyber:"Attacco informatico: documenti truccati nascondono istruzioni per l'assistente («prompt injection»); l'assistente convalida pratiche false. Molti più errori in questo trimestre.",
+ auto:k=>`{Who} contestano rifiuti decisi dall'assistente: il RGPD dà loro diritto a un esame umano. Bisogna riesaminare a mano ${k} decisioni dell'IA.`,
+ strike:"Sciopero generale: la squadra lavora solo a metà in questo trimestre. L'assistente, lui, non sciopera.",
+ climate:"Canicola estrema: il centro dati del fornitore di IA si surriscalda e spegne metà dei server, come quelli di Google e di Oracle a Londra il 19 luglio 2022. Anche la squadra, in uffici a 38 °C, rallenta.",
+ halluc:"L'assistente «allucina»: inventa una clausola e sbaglia degli importi. Qualche errore in più in questo trimestre.",
+ paid:"Fine dell'offerta di lancio: lo strumento di IA passa alla formula a pagamento, il prezzo a unità sale del 20%, in modo durevole.",
+ poly:"Policrisi: due choc nello stesso trimestre si amplificano a vicenda (errori e arretrati ×1,3); non è una semplice multicrisi."},
+lawAI:"<b>Non vi tocca quasi</b>: il vostro modulo è abbandonato, l'assistente assorbe il cambiamento, basta aggiornare le sue istruzioni (300 €). È il punto forte dell'IA davanti a una regola che cambia.",
+lawDone:["Rifate la regola.","Passate all'IA, il modulo è abbandonato.","Tenete il modulo superato, ciò che blocca si accumula."],
+lawSmall:"Il vostro modulo è ancora troppo piccolo per bloccare qualcosa: <b>non vi tocca</b>.",
+lawAIok:"<b>Non vi tocca quasi</b>: il vostro modulo è ancora troppo piccolo per bloccare qualcosa, e l'assistente assorbe il cambiamento; basta aggiornare le sue istruzioni (300 €). È il punto forte dell'IA davanti a una regola che cambia.",
+waitDec:"Vi aspetta una decisione a sinistra.",
+cpt:{law:"Obsolescenza delle norme",pol:"Incertezza knightiana",kpi:"Goodhart-Campbell",novel:"Legge di Ashby",surge:"Iper-accoppiamento",insp:"Goodhart-Campbell",suit:"Regolazione vs legittimità",quota:"Emergenza",fit:"Semplificazione mutilante",needs:"Semplificazione mutilante",price:"Base biofisica",climate:"Base biofisica",srv:"Monocultura e dipendenza",cyber:"Superficie d'attacco",leak:"Effetto iatrogeno",act:"Regolazione vs legittimità",auto:"Scatola nera e legittimità",halluc:"Scatola nera",paid:"Blocco strutturale",pand:"Cigno nero",strike:"Sfiducia sociale",clos:"Sfiducia sociale"},
+readT:"Lettura della vostra partita con i concetti del corso",readPoly:"Policrisi",readBn:["Collo di bottiglia della regola (obsolescenza delle norme)","Collo di bottiglia del fornitore (monocultura e dipendenza)","Iper-accoppiamento: squadra sommersa, senza margini"],readNone:"Nessun choc vi ha toccato: guardate che cosa avete pagato per questa tranquillità.",
+bnT:"Colli di bottiglia:",bnN:["la regola blocca","il fornitore di IA cede","la squadra è sommersa"],
+autoNone:"altrove, {who} contestano rifiuti decisi da un'IA (RGPD). <b>Non vi tocca</b>: non avete fatto decidere nulla all'assistente.",
+leakNone:"fuga di dati presso il fornitore di IA. <b>Non vi tocca</b>: non gli avete mandato nulla, niente multa.",
+srvNone:"l'autorità per la protezione dei dati sospende il fornitore di IA per due trimestri. <b>Non vi tocca</b>: non usate l'assistente.",
+srvSmall:"L'autorità per la protezione dei dati sospende il vostro fornitore di IA per due trimestri. Ne dipendete poco: il poco che leggeva l'assistente torna a mano.",
+srvSov:"l'autorità per la protezione dei dati sospende il fornitore di IA americano. <b>Non vi tocca</b>: siete passati a un fornitore europeo.",
+fitN:"arrivano casi che non entrano in nessuna casella. <b>Non vi tocca</b>: senza modulo, ogni pratica si legge così com'è.",
+needsN:"arrivano casi con bisogni particolari. <b>Non vi tocca</b>: senza modulo, niente li costringe in caselle.",
+hallucN:"altrove degli assistenti di IA «allucinano»: clausole inventate, importi sbagliati. <b>Non vi tocca</b>: non usate l'assistente.",
+paidN:"finisce l'offerta di lancio degli strumenti di IA (+20%). <b>Non vi tocca</b>: non usate l'assistente.",
+priceN:"choc energetico, il fornitore di IA moltiplica i prezzi per 2,5. <b>Non vi tocca</b>: non usate l'assistente.",
+actN:"nuova legge sull'IA, sul modello dell'AI Act europeo: gli assistenti che trattano queste pratiche sono classificati ad alto rischio (controllo umano, audit). <b>Non vi tocca</b>: avete scelto il modulo e non usate l'assistente.",
+cyberN:"altrove, attacco informatico contro assistenti di IA («prompt injection»). <b>Non vi tocca</b>: non usate l'assistente.",
+srvDone:["Fornitore di IA sospeso: migrate su un fornitore europeo.","Fornitore di IA sospeso: tornate al modulo, due trimestri senza IA.","Fornitore di IA sospeso: aspettate, due trimestri senza IA."],
+decLaw:(h,p,n,k)=>`<p><b>${h}</b> Il vostro modulo chiuso non conosce le nuove regole: il ${p} di ciò che trattava è ora fermo. Come la Ever Given di traverso nel canale di Suez nel marzo 2021, un solo pezzo inadatto ferma tutto il flusso: circa <b>${n}</b> {U} a trimestre si accumuleranno dietro. Che cosa fate?</p>`,
+decLawO:[k=>`<b>Rifare la regola</b>riscrivere modulo e script adesso: <b>${k}</b>, subito`,()=>`<b>Passare all'IA</b>abbandonare il modulo; l'assistente prende tutto, pagato a unità`,()=>`<b>Aspettare</b>tenere il modulo superato; ciò che è bloccato si accumula`],
+decSrv:n=>`<p><b>Il vostro fornitore di IA è sospeso.</b> I suoi server ricadono sotto il diritto americano: il Cloud Act permette alle autorità degli Stati Uniti di esigere {data}. L'autorità per la protezione dei dati sospende il servizio per due trimestri, come il Garante italiano bloccò ChatGPT da marzo ad aprile 2023. Circa <b>${n}</b> {U} a trimestre restano senza lettore. Che cosa fate?</p>`,
+decSrvO:[k=>`<b>Migrare su un fornitore europeo</b><b>${k}</b> subito, poi il 50% più caro a unità`,()=>`<b>Tornare al modulo</b>due trimestri senza IA; il cursore torna verso la modellizzazione, da ricostruire`,()=>`<b>Aspettare</b>due trimestri senza IA; la squadra assorbe ciò che può, il resto si accumula`],
+fixB:k=>`Rifare la regola adesso (${k}): il vostro modulo superato blocca una parte del flusso`,
+tag:{law:"legge",price:"prezzo",srv:"server",surge:"afflusso",kpi:"tempi",novel:"casi inediti",act:"legge IA",leak:"fuga",cyber:"cyber",insp:"controllo",suit:"causa",quota:"frode",auto:"RGPD",pand:"pandemia",fit:"fuori casella",needs:"bisogni",halluc:"allucinazione",paid:"fine prova",strike:"sciopero",clos:"chiusura",climate:"canicola",pol:"politica"}}};
+const S={
+fr:{
+stages:{name:"Bureau des stages",u:"convention",U:"conventions",Who:"Des étudiants",who:"des étudiants",data:"les données des étudiants",
+ legal:"contrôle de l'inspection du travail sur des stages qui cachent des heures en plus, procès d'une stagiaire, entreprise qui dépasse le quota de stagiaires",early:"des étudiants que le formulaire ne sait pas classer",rare:"pandémie, grève générale, fermeture de l'université, canicule, loi sur les étudiants étrangers",
+ goal:`Bureau des stages d'une grande université · chaque convention bien traitée rapporte <b>3 €</b> · objectif sur 3 ans : <b>résultat ≥ 95 k€</b>, <b>≥ 95 % de conventions sans erreur</b>, <b>≤ 500 en retard</b> à la fin · <b>notez sur une feuille, à chaque trimestre, votre réglage et le résultat</b>`,
+ defA:"<b>Modélisation rigide : un formulaire fermé.</b> Les étudiants remplissent un formulaire en ligne à listes (pays, durée en semaines, gratification calculée) ; un script vérifie. Ce qui n'entre pas est renvoyé : on simplifie le réel pour le rendre calculable. Coûte des heures à construire et à entretenir ; ensuite presque gratuit. À chaque changement de loi, il faut refaire formulaire et script.",
+ defB:"<b>Système d'IA : un assistant d'IA générative.</b> Les conventions arrivent telles qu'elles sont (PDF d'entreprise, langues, avenants) ; l'assistant les lit, extrait, vérifie et rédige la réponse. Le réel reste complexe, le modèle l'absorbe. Rien à construire ; chaque convention est payée au fournisseur, qui fixe ses prix, dépend de ses serveurs et des lois qui s'appliquent à eux. Plus l'assistant travaille, moins l'équipe sait faire le travail elle-même.",
+ steps:[["0 · Tout en règles","Formulaire en ligne à listes déroulantes, script qui calcule gratification et durée, un seul modèle de convention. Ce qui n'entre pas est renvoyé ou vérifié à la main."],["25 · Règles et tableur","Formulaire pour les cas courants ; pour le reste, un fichier Excel partagé avec formules et macros. L'assistant IA lit seulement quelques PDF étrangers."],["50 · Mixte","Formulaire pour les cas standard ; l'assistant IA lit les PDF d'entreprise et les avenants, l'équipe relit ce qu'il produit."],["75 · IA d'abord","Les conventions arrivent par courriel ; l'assistant les lit et prépare la réponse, l'équipe valide. Le formulaire n'est presque plus entretenu."],["100 · Tout IA","Un agent IA branché sur la boîte de courriel et le logiciel de scolarité traite tout ; l'équipe ne voit que les cas signalés. Le formulaire s'use et disparaît."]],
+ decH:{std:"La loi sur les stages change.",pol:"Une nouvelle loi sur les étudiants étrangers entre en vigueur."},
+ ev:{law:"La loi sur les stages change (gratification, durée maximale).",surge:"Rentrée décalée : +25 % de conventions d'un coup.",kpi:"La présidence exige une réponse en 48 heures : plus d'erreurs ce trimestre.",novel:"Arrivent des stages hors d'Europe et des alternances : 20 % de conventions en plus ne rentrent plus dans aucun formulaire.",
+  insp:k=>`Contrôle de l'inspection du travail : des stagiaires font des heures en plus, le soir et le week-end, alors que leur convention dit 35 heures. Les entreprises paient l'amende (jusqu'à 2 000 € par stagiaire) ; l'université reprend les conventions validées sans vraiment les lire : ${k}.`,
+  suit:k=>`Une stagiaire attaque son entreprise et l'université : soirées non payées, tâches d'un salarié. L'affaire fait la une ; avocat et révision à la main des conventions de cette entreprise : ${k}, d'autant plus que vous les avez laissées passer par le formulaire.`,
+  quota:"Une entreprise accueille bien plus de stagiaires que la loi ne le permet (15 % de l'effectif au plus) : chaque convention, prise seule, est en règle. Le formulaire et l'assistant regardent une convention à la fois et laissent passer ; une équipe expérimentée s'en aperçoit. Plus d'erreurs ce trimestre.",
+  pand:"Pandémie : les entreprises annulent des stages (−20 % de conventions) et l'équipe, malade ou confinée, travaille à 75 %, pendant deux trimestres. En 2020, le nombre de stages en entreprise a baissé de 22 % en France.",
+  clos:"L'université est occupée puis fermée après des manifestations : l'équipe travaille à distance, à 70 %, pendant deux trimestres. Le formulaire en ligne continue à tourner.",
+  fit:"Des étudiants aux profils particuliers (double diplôme, temps partiel, stage fractionné) ne rentrent dans aucune case du formulaire : 6 % des conventions du formulaire reviennent à la main ce trimestre.",
+  needs:"Des étudiants avec des besoins particuliers (handicap, aménagements d'horaires) : le formulaire n'a pas de case pour eux, et le script valide des conventions incomplètes. Un peu plus d'erreurs ce trimestre.",
+  pol:"Changement de gouvernement : une loi durcit les titres de séjour des étudiants étrangers ; leurs conventions demandent de nouvelles pièces, et 10 % de conventions en plus ne rentrent plus dans aucun formulaire."},
+ tag:{surge:"rentrée",kpi:"48 h",insp:"inspection",quota:"quotas",fit:"profils",pol:"étrangers"}},
+logi:{name:"Logistique",u:"commande",U:"commandes",Who:"Des clients",who:"des clients",data:"les données de vos clients",
+ legal:"contrôle des douanes sur des marchandises mal déclarées, procès d'un client dont la marchandise a été bloquée, expéditeur qui fractionne ses envois pour passer sous les seuils",early:"des commandes hors normes",rare:"pandémie, grève générale, inondation de l'entrepôt, canicule, guerre commerciale",
+ goal:`Service clients d'un grand logisticien · chaque commande bien traitée rapporte <b>3 €</b> · objectif sur 3 ans : <b>résultat ≥ 95 k€</b>, <b>≥ 95 % de commandes sans erreur</b>, <b>≤ 500 en retard</b> à la fin · <b>notez sur une feuille, à chaque trimestre, votre réglage et le résultat</b>`,
+ defA:"<b>Modélisation rigide : un portail de commande fermé.</b> Les clients saisissent leurs commandes dans un portail à listes (code produit, Incoterm, code douanier, créneau) ; un script vérifie et prépare les documents. Ce qui n'entre pas est refusé : on simplifie le réel pour le rendre calculable. Coûte des heures à construire et à entretenir ; ensuite presque gratuit. À chaque changement des règles douanières, il faut refaire portail et script.",
+ defB:"<b>Système d'IA : un agent d'IA générative.</b> Les commandes arrivent telles qu'elles sont (courriels, PDF, factures en plusieurs langues) ; l'agent les lit, vérifie les codes et rédige les documents de douane. Le réel reste complexe, le modèle l'absorbe. Rien à construire ; chaque commande est payée au fournisseur, qui fixe ses prix, dépend de ses serveurs et des lois qui s'appliquent à eux. Plus l'agent travaille, moins l'équipe sait faire le travail elle-même.",
+ steps:[["0 · Tout en règles","Portail à listes déroulantes, codes produit et douaniers imposés, script qui prépare les documents. Ce qui n'entre pas est refusé ou traité à la main."],["25 · Règles et tableur","Portail pour les clients réguliers ; pour le reste, un fichier Excel partagé avec les tarifs douaniers et des macros. L'IA lit seulement quelques factures étrangères."],["50 · Mixte","Portail pour les commandes standard ; l'IA lit les courriels et les factures, l'équipe relit les documents de douane."],["75 · IA d'abord","Les commandes arrivent par courriel ; l'agent les lit et prépare documents et réservations, l'équipe valide. Le portail n'est presque plus entretenu."],["100 · Tout IA","Un agent IA branché sur la messagerie, l'entrepôt et le portail des douanes traite tout ; l'équipe ne voit que les alertes. Le portail s'use et disparaît."]],
+ decH:{std:"Le code des douanes change.",pol:"Une guerre commerciale impose de nouveaux droits de douane."},
+ ev:{law:"Le code des douanes change (nouvelle nomenclature, taxe carbone aux frontières).",surge:"Black Friday : +25 % de commandes d'un coup.",kpi:"Un gros client exige une confirmation en deux heures : plus d'erreurs ce trimestre.",novel:"Le commerce en ligne transfrontalier explose (petits colis, retours, places de marché) : 20 % de commandes en plus ne rentrent dans aucun portail.",
+  insp:k=>`Contrôle des douanes : des marchandises déclarées « pièces détachées » étaient soumises à licence. Les expéditeurs paient l'amende ; vous reprenez les commandes validées sans vraiment les lire : ${k}.`,
+  suit:k=>`Un client attaque : sa marchandise périssable est restée bloquée à la frontière, le contrat avait été mal lu. L'affaire fait la une de la presse spécialisée ; avocat et révision à la main de ses commandes : ${k}, d'autant plus que vous les avez laissées passer par le portail.`,
+  quota:"Un expéditeur fractionne ses envois pour rester sous les seuils de déclaration : chaque commande, prise seule, est en règle. Le portail et l'agent regardent une commande à la fois et laissent passer ; une équipe expérimentée s'en aperçoit. Plus d'erreurs ce trimestre.",
+  pand:"Pandémie : usines à l'arrêt, −20 % de commandes, et l'équipe, malade ou confinée, travaille à 75 %, pendant deux trimestres.",
+  clos:"Inondation : l'entrepôt et les bureaux sont fermés, l'équipe travaille à distance, à 70 %, pendant deux trimestres. Le portail en ligne continue à tourner.",
+  fit:"Des commandes hors normes (convoi exceptionnel, œuvres d'art, animaux vivants) ne rentrent dans aucune case du portail : 6 % des commandes du portail reviennent à la main ce trimestre.",
+  needs:"Des clients aux exigences particulières (température dirigée, créneaux de nuit, matières dangereuses) : le portail n'a pas de case, et le script valide des commandes incomplètes. Un peu plus d'erreurs ce trimestre.",
+  pol:"Guerre commerciale : un pays impose de nouveaux droits de douane ; ses commandes demandent de nouvelles pièces, et 10 % de commandes en plus ne rentrent plus dans aucun portail."},
+ tag:{law:"douane",surge:"Black Friday",kpi:"2 h",insp:"douanes",quota:"fractionnement",fit:"hors normes",clos:"inondation",pol:"droits de douane"}},
+it_:{name:"Informatique",u:"ticket",U:"tickets",Who:"Des employés",who:"des employés",data:"les données des employés",
+ legal:"audit de licences d'un éditeur, procès d'un client après une panne, utilisateur qui obtient des droits par petites demandes successives",early:"des postes atypiques",rare:"pandémie, grève générale, fermeture du siège, canicule, directive européenne sur la cybersécurité",
+ goal:`Support informatique d'un grand groupe · chaque ticket bien résolu rapporte <b>3 €</b> · objectif sur 3 ans : <b>résultat ≥ 95 k€</b>, <b>≥ 95 % de tickets sans erreur</b>, <b>≤ 500 en retard</b> à la fin · <b>notez sur une feuille, à chaque trimestre, votre réglage et le résultat</b>`,
+ defA:"<b>Modélisation rigide : un catalogue de services fermé.</b> Les employés choisissent leur demande dans un catalogue à listes (type de panne, logiciel, priorité) ; des scripts appliquent la solution prévue. Ce qui n'entre pas est renvoyé : on simplifie le réel pour le rendre calculable. Coûte des heures à construire et à entretenir ; ensuite presque gratuit. À chaque changement de système, il faut refaire catalogue et scripts.",
+ defB:"<b>Système d'IA : un assistant d'IA générative.</b> Les tickets arrivent tels qu'ils sont (courriels, captures d'écran, journaux d'erreur) ; l'assistant les lit, diagnostique et propose la correction. Le réel reste complexe, le modèle l'absorbe. Rien à construire ; chaque ticket est payé au fournisseur, qui fixe ses prix, dépend de ses serveurs et des lois qui s'appliquent à eux. Plus l'assistant travaille, moins l'équipe sait faire le travail elle-même.",
+ steps:[["0 · Tout en règles","Catalogue à listes déroulantes, scripts de résolution automatiques, une procédure par panne. Ce qui n'entre pas est renvoyé ou traité par un technicien."],["25 · Règles et tableur","Catalogue pour les demandes courantes ; pour le reste, un fichier Excel partagé de pannes connues et de macros. L'IA lit seulement quelques journaux d'erreur."],["50 · Mixte","Catalogue pour les demandes standard ; l'IA lit les courriels et les captures d'écran, l'équipe relit ses diagnostics."],["75 · IA d'abord","Les tickets arrivent par courriel et messagerie ; l'assistant diagnostique et prépare la correction, l'équipe valide. Le catalogue n'est presque plus entretenu."],["100 · Tout IA","Un agent IA branché sur la messagerie et les serveurs corrige tout seul ; l'équipe ne voit que les alertes. Le catalogue s'use et disparaît."]],
+ decH:{std:"Le groupe change de système d'information.",pol:"Une directive européenne sur la cybersécurité entre en vigueur."},
+ ev:{law:"Le groupe change de système d'information (nouveau logiciel de gestion, nouvelle messagerie).",surge:"Faille « zero-day » dans un logiciel courant : +25 % de tickets d'un coup.",kpi:"La direction impose une résolution en quatre heures : plus d'erreurs ce trimestre.",novel:"Télétravail massif et appareils personnels : 20 % de tickets en plus ne rentrent dans aucune catégorie du catalogue.",
+  insp:k=>`Audit de licences d'un éditeur : des postes déclarés conformes utilisaient des logiciels sans licence. Le groupe paie ; vous reprenez les tickets validés sans vraiment les lire : ${k}.`,
+  suit:k=>`Un client attaque après une panne de deux jours : le contrat de service promettait quatre heures. L'affaire fait la une ; avocat et révision à la main de ses tickets : ${k}, d'autant plus que vous les avez laissés passer par le catalogue.`,
+  quota:"Un utilisateur ouvre des dizaines de petites demandes d'accès, chacune légitime, et finit administrateur : chaque ticket, pris seul, est en règle. Le catalogue et l'assistant regardent un ticket à la fois et laissent passer ; une équipe expérimentée s'en aperçoit. Plus d'erreurs ce trimestre.",
+  pand:"Pandémie : projets gelés (−20 % de tickets) et l'équipe, malade ou confinée, travaille à 75 %, pendant deux trimestres.",
+  clos:"Le siège est fermé après un incendie : l'équipe travaille à distance, à 70 %, pendant deux trimestres. Le catalogue en ligne continue à tourner.",
+  fit:"Des postes atypiques (laboratoires, machines industrielles, vieux logiciels) ne rentrent dans aucune catégorie : 6 % des tickets du catalogue reviennent à la main ce trimestre.",
+  needs:"Des utilisateurs aux besoins particuliers (lecteurs d'écran, accessibilité) : le catalogue n'a pas de case, et les scripts ferment des tickets non résolus. Un peu plus d'erreurs ce trimestre.",
+  pol:"Une directive européenne sur la cybersécurité (NIS 2) impose de nouvelles étapes aux tickets de sécurité ; 10 % de tickets en plus ne rentrent plus dans aucune catégorie."},
+ tag:{law:"migration",surge:"zero-day",kpi:"4 h",insp:"licences",quota:"droits",fit:"postes",clos:"incendie",pol:"NIS 2"}},
+assur:{name:"Assurance",u:"sinistre",U:"sinistres",Who:"Des assurés",who:"des assurés",data:"les données des assurés",
+ legal:"contrôle du régulateur sur des indemnités mal calculées, procès d'un assuré sous-indemnisé, réseau qui déclare de petits sinistres sous le seuil de contrôle",early:"des biens atypiques",rare:"pandémie, grève générale, fermeture du siège, canicule, nouvelle obligation de couverture",
+ goal:`Service sinistres d'un assureur · chaque sinistre bien traité rapporte <b>3 €</b> · objectif sur 3 ans : <b>résultat ≥ 95 k€</b>, <b>≥ 95 % de sinistres sans erreur</b>, <b>≤ 500 en retard</b> à la fin · <b>notez sur une feuille, à chaque trimestre, votre réglage et le résultat</b>`,
+ defA:"<b>Modélisation rigide : un barème fermé.</b> Les assurés déclarent leur sinistre dans un formulaire à listes (type de dommage, montant, franchise) ; un script calcule l'indemnité au barème. Ce qui n'entre pas est renvoyé : on simplifie le réel pour le rendre calculable. Coûte des heures à construire et à entretenir ; ensuite presque gratuit. À chaque changement des règles d'indemnisation, il faut refaire formulaire et barème.",
+ defB:"<b>Système d'IA : un assistant d'IA générative.</b> Les déclarations arrivent telles qu'elles sont (photos, devis, lettres) ; l'assistant les lit, estime le dommage et rédige la réponse. Le réel reste complexe, le modèle l'absorbe. Rien à construire ; chaque sinistre est payé au fournisseur, qui fixe ses prix, dépend de ses serveurs et des lois qui s'appliquent à eux. Plus l'assistant travaille, moins l'équipe sait faire le travail elle-même.",
+ steps:[["0 · Tout en règles","Formulaire de déclaration à listes, barème fixe, script qui calcule l'indemnité. Ce qui n'entre pas est renvoyé ou expertisé à la main."],["25 · Règles et tableur","Barème pour les sinistres courants ; pour le reste, un fichier Excel partagé de cas et de macros. L'IA lit seulement quelques devis."],["50 · Mixte","Barème pour les sinistres standard ; l'IA lit photos, devis et lettres, l'équipe relit ses estimations."],["75 · IA d'abord","Les déclarations arrivent par courriel et application ; l'assistant estime et prépare l'offre, l'équipe valide. Le barème n'est presque plus entretenu."],["100 · Tout IA","Un agent IA branché sur l'application et les virements indemnise tout seul ; l'équipe ne voit que les cas signalés. Le barème s'use et disparaît."]],
+ decH:{std:"Les règles d'indemnisation changent.",pol:"Une nouvelle obligation de couverture entre en vigueur."},
+ ev:{law:"Une loi change les règles d'indemnisation (catastrophes naturelles, franchises).",surge:"Grêle géante sur la région : +25 % de sinistres d'un coup.",kpi:"Le régulateur exige une indemnisation sous dix jours : plus d'erreurs ce trimestre.",novel:"Les sinistres climatiques se multiplient (fissures dues à la sécheresse, inondations) : 20 % de sinistres en plus ne rentrent dans aucun barème.",
+  insp:k=>`Contrôle du régulateur des assurances : des sinistres indemnisés au barème étaient sous-évalués ou frauduleux. L'assureur doit corriger ; vous reprenez les dossiers validés sans vraiment les lire : ${k}.`,
+  suit:k=>`Un assuré attaque : son indemnité, calculée au barème, couvre un tiers du dommage réel. L'affaire fait la une ; avocat et révision à la main des dossiers semblables : ${k}, d'autant plus que vous les avez laissés passer par le barème.`,
+  quota:"Fraude organisée : un réseau déclare de nombreux petits sinistres sous le seuil de contrôle : chaque dossier, pris seul, est en règle. Le barème et l'assistant regardent un dossier à la fois et laissent passer ; une équipe expérimentée s'en aperçoit. Plus d'erreurs ce trimestre.",
+  pand:"Pandémie : moins de déplacements, −20 % de sinistres, et l'équipe, malade ou confinée, travaille à 75 %, pendant deux trimestres.",
+  clos:"Le siège est fermé après une alerte à la bombe puis des travaux : l'équipe travaille à distance, à 70 %, pendant deux trimestres. Le formulaire en ligne continue à tourner.",
+  fit:"Des biens atypiques (œuvres d'art, panneaux solaires, vélos cargo) ne rentrent dans aucune case du barème : 6 % des sinistres du formulaire reviennent à la main ce trimestre.",
+  needs:"Des assurés vulnérables (personnes âgées, handicap) qui ont besoin d'être accompagnés : le formulaire n'a pas de case, et le script clôt des dossiers incomplets. Un peu plus d'erreurs ce trimestre.",
+  pol:"Changement de gouvernement : une loi impose de couvrir les émeutes et les catastrophes climatiques ; ces dossiers demandent de nouvelles pièces, et 10 % de sinistres en plus ne rentrent plus dans aucun barème."},
+ tag:{law:"indemnisation",surge:"grêle",kpi:"10 jours",insp:"régulateur",quota:"fraude",fit:"biens atypiques",pol:"couverture"}},
+hosp:{name:"Hôpital",u:"séjour",U:"séjours",Who:"Des patients",who:"des patients",data:"les données de santé des patients",
+ legal:"contrôle de l'Assurance maladie sur le codage, procès d'un patient pour une facture erronée, service qui fractionne les séjours",early:"des patients aux parcours atypiques",rare:"pandémie, grève générale, fermeture d'un bâtiment, canicule, restriction de l'aide médicale aux étrangers",
+ goal:`Service de codage d'un grand hôpital · chaque séjour bien codé rapporte <b>3 €</b> · objectif sur 3 ans : <b>résultat ≥ 95 k€</b>, <b>≥ 95 % de séjours sans erreur</b>, <b>≤ 500 en retard</b> à la fin · <b>notez sur une feuille, à chaque trimestre, votre réglage et le résultat</b>`,
+ defA:"<b>Modélisation rigide : une nomenclature fermée.</b> Les médecins remplissent une fiche à listes de codes (diagnostics, actes) ; un script groupe le séjour et prépare la facture. Ce qui n'entre pas est renvoyé : on simplifie le réel pour le rendre calculable. Coûte des heures à construire et à entretenir ; ensuite presque gratuit. À chaque nouvelle version de la nomenclature, il faut refaire fiche et script.",
+ defB:"<b>Système d'IA : un assistant d'IA générative.</b> Les dossiers arrivent tels qu'ils sont (comptes rendus, ordonnances, lettres) ; l'assistant les lit et propose les codes. Le réel reste complexe, le modèle l'absorbe. Rien à construire ; chaque séjour est payé au fournisseur, qui fixe ses prix, dépend de ses serveurs et des lois qui s'appliquent à eux. Plus l'assistant travaille, moins l'équipe sait faire le travail elle-même.",
+ steps:[["0 · Tout en règles","Fiche de codage à listes, script qui groupe et facture, une règle par acte. Ce qui n'entre pas est renvoyé au médecin ou codé à la main."],["25 · Règles et tableur","Fiche pour les séjours courants ; pour le reste, un fichier Excel partagé de codes et de macros. L'IA lit seulement quelques comptes rendus."],["50 · Mixte","Fiche pour les séjours standard ; l'IA lit les comptes rendus, l'équipe relit les codes proposés."],["75 · IA d'abord","Les dossiers arrivent du logiciel de soins ; l'assistant propose tous les codes, l'équipe valide. La fiche n'est presque plus entretenue."],["100 · Tout IA","Un agent IA branché sur le dossier patient code et facture tout seul ; l'équipe ne voit que les alertes. La fiche s'use et disparaît."]],
+ decH:{std:"La nomenclature change.",pol:"L'aide médicale aux étrangers est restreinte."},
+ ev:{law:"La nomenclature change (nouvelle version de la classification des maladies).",surge:"Épidémie de grippe : +25 % de séjours d'un coup.",kpi:"La direction exige un codage sous 48 heures pour la trésorerie : plus d'erreurs ce trimestre.",novel:"Nouvelles prises en charge (chirurgie ambulatoire, télésurveillance) : 20 % de séjours en plus ne rentrent dans aucun code.",
+  insp:k=>`Contrôle de l'Assurance maladie : des séjours codés « complexes » ne l'étaient pas. L'hôpital rembourse ; vous reprenez les dossiers validés sans vraiment les lire : ${k}.`,
+  suit:k=>`Un patient attaque : facture erronée, séjour mal codé. L'affaire fait la une ; avocat et révision à la main des séjours du même service : ${k}, d'autant plus que vous les avez laissés passer par la fiche.`,
+  quota:"Un service multiplie les courts séjours pour un même patient : chaque séjour, pris seul, est en règle. La fiche et l'assistant regardent un séjour à la fois et laissent passer ; une équipe expérimentée s'en aperçoit. Plus d'erreurs ce trimestre.",
+  pand:"Pandémie : les opérations programmées sont reportées (−20 % de séjours à coder) et l'équipe, malade ou réquisitionnée, travaille à 75 %, pendant deux trimestres.",
+  clos:"Un bâtiment de l'hôpital est fermé après une inondation : l'équipe travaille à distance, à 70 %, pendant deux trimestres. La fiche en ligne continue à tourner.",
+  fit:"Des patients aux parcours atypiques (maladies rares, polyhandicap, séjours multiples) ne rentrent dans aucune case : 6 % des séjours de la fiche reviennent à la main ce trimestre.",
+  needs:"Des patients aux besoins particuliers (interprète, accompagnement) : la fiche n'a pas de case, et le script facture des séjours incomplets. Un peu plus d'erreurs ce trimestre.",
+  pol:"Changement de gouvernement : l'aide médicale aux étrangers est restreinte ; leurs séjours demandent de nouvelles pièces, et 10 % de séjours en plus ne rentrent plus dans aucun code."},
+ tag:{law:"nomenclature",surge:"grippe",kpi:"48 h",insp:"contrôle",quota:"fractionnement",fit:"parcours",clos:"inondation",pol:"aide médicale"}}},
+it:{
+stages:{name:"Ufficio stage",u:"convenzione",U:"convenzioni",Who:"Degli studenti",who:"degli studenti",data:"i dati degli studenti",
+ legal:"controllo dell'ispettorato del lavoro su stage che nascondono ore in più, causa di una stagista, azienda che supera la quota di stagisti",early:"studenti che il modulo non sa classificare",rare:"pandemia, sciopero generale, chiusura dell'università, canicola, legge sugli studenti stranieri",
+ goal:`Ufficio stage di una grande università · ogni convenzione trattata bene rende <b>3 €</b> · obiettivo in 3 anni: <b>risultato ≥ 95 k€</b>, <b>≥ 95% di convenzioni senza errori</b>, <b>≤ 500 in arretrato</b> alla fine · <b>annotate su un foglio, a ogni trimestre, la vostra scelta e il risultato</b>`,
+ defA:"<b>Modellizzazione rigida: un modulo chiuso.</b> Gli studenti compilano un modulo online a liste (paese, durata in settimane, compenso calcolato); uno script verifica. Ciò che non entra viene rimandato: si semplifica il reale per renderlo calcolabile. Costa ore per costruirlo e mantenerlo; poi quasi gratis. A ogni cambio di legge bisogna rifare modulo e script.",
+ defB:"<b>Sistema di IA: un assistente di IA generativa.</b> Le convenzioni arrivano così come sono (PDF delle aziende, lingue, allegati); l'assistente le legge, estrae, verifica e scrive la risposta. Il reale resta complesso, lo assorbe il modello. Niente da costruire; ogni convenzione si paga al fornitore, che fissa i prezzi, dipende dai suoi server e dalle leggi che li regolano. Più l'assistente lavora, meno la squadra sa fare il lavoro da sé.",
+ steps:[["0 · Tutto in regole","Modulo online a menu a tendina, script che calcola compenso e durata, un solo modello di convenzione. Ciò che non entra viene rimandato o verificato a mano."],["25 · Regole e foglio di calcolo","Modulo per i casi correnti; per il resto, un file Excel condiviso con formule e macro. L'assistente IA legge solo qualche PDF straniero."],["50 · Misto","Modulo per i casi standard; l'assistente IA legge i PDF delle aziende e gli allegati, la squadra rilegge ciò che produce."],["75 · Prima l'IA","Le convenzioni arrivano per posta elettronica; l'assistente le legge e prepara la risposta, la squadra convalida. Il modulo non si mantiene quasi più."],["100 · Tutto IA","Un agente IA collegato alla casella di posta e al gestionale della didattica tratta tutto; la squadra vede solo i casi segnalati. Il modulo si consuma e scompare."]],
+ decH:{std:"La legge sugli stage cambia.",pol:"Entra in vigore una nuova legge sugli studenti stranieri."},
+ ev:{law:"La legge sugli stage cambia (compenso, durata massima).",surge:"Rientro sfasato: +25% di convenzioni tutte insieme.",kpi:"Il rettorato esige una risposta in 48 ore: più errori in questo trimestre.",novel:"Arrivano stage fuori Europa e apprendistati: un 20% in più di convenzioni non entra in nessun modulo.",
+  insp:k=>`Controllo dell'ispettorato del lavoro: stagisti fanno ore in più, la sera e nel fine settimana, mentre la convenzione dice 35 ore. Le aziende pagano la multa (fino a 2.000 € per stagista); l'università riprende le convenzioni convalidate senza leggerle davvero: ${k}.`,
+  suit:k=>`Una stagista fa causa alla sua azienda e all'università: sere non pagate, mansioni da dipendente. Il caso finisce sui giornali; avvocato e revisione a mano delle convenzioni di quell'azienda: ${k}, tanto più che le avete fatte passare dal modulo.`,
+  quota:"Un'azienda ospita molti più stagisti di quanti la legge consenta (al massimo il 15% dell'organico): ogni convenzione, presa da sola, è in regola. Il modulo e l'assistente guardano una convenzione alla volta e lasciano passare; una squadra esperta se ne accorge. Più errori in questo trimestre.",
+  pand:"Pandemia: le aziende annullano stage (−20% di convenzioni) e la squadra, malata o in confinamento, lavora al 75%, per due trimestri. Nel 2020 gli stage in azienda sono calati del 22% in Francia.",
+  clos:"L'università è occupata e poi chiusa dopo delle manifestazioni: la squadra lavora a distanza, al 70%, per due trimestri. Il modulo online continua a funzionare.",
+  fit:"Studenti con profili particolari (doppio titolo, tempo parziale, stage frazionato) non entrano in nessuna casella del modulo: il 6% delle convenzioni del modulo torna a mano in questo trimestre.",
+  needs:"Studenti con bisogni particolari (disabilità, orari adattati): il modulo non ha una casella per loro, e lo script convalida convenzioni incomplete. Qualche errore in più in questo trimestre.",
+  pol:"Cambio di governo: una legge stringe i permessi di soggiorno degli studenti stranieri; le loro convenzioni richiedono nuovi documenti, e un 10% in più di convenzioni non entra in nessun modulo."},
+ tag:{surge:"rientro",kpi:"48 h",insp:"ispettorato",quota:"quote",fit:"profili",pol:"stranieri"}},
+logi:{name:"Logistica",u:"ordine",U:"ordini",Who:"Dei clienti",who:"dei clienti",data:"i dati dei vostri clienti",
+ legal:"controllo doganale su merci dichiarate male, causa di un cliente la cui merce è rimasta bloccata, spedizioniere che frammenta gli invii per restare sotto le soglie",early:"ordini fuori standard",rare:"pandemia, sciopero generale, alluvione del magazzino, canicola, guerra commerciale",
+ goal:`Servizio clienti di un grande operatore logistico · ogni ordine trattato bene rende <b>3 €</b> · obiettivo in 3 anni: <b>risultato ≥ 95 k€</b>, <b>≥ 95% di ordini senza errori</b>, <b>≤ 500 in arretrato</b> alla fine · <b>annotate su un foglio, a ogni trimestre, la vostra scelta e il risultato</b>`,
+ defA:"<b>Modellizzazione rigida: un portale d'ordine chiuso.</b> I clienti inseriscono gli ordini in un portale a liste (codice prodotto, Incoterm, codice doganale, fascia oraria); uno script verifica e prepara i documenti. Ciò che non entra viene rifiutato: si semplifica il reale per renderlo calcolabile. Costa ore per costruirlo e mantenerlo; poi quasi gratis. A ogni cambio delle regole doganali bisogna rifare portale e script.",
+ defB:"<b>Sistema di IA: un agente di IA generativa.</b> Gli ordini arrivano così come sono (email, PDF, fatture in più lingue); l'agente li legge, verifica i codici e scrive i documenti doganali. Il reale resta complesso, lo assorbe il modello. Niente da costruire; ogni ordine si paga al fornitore, che fissa i prezzi, dipende dai suoi server e dalle leggi che li regolano. Più l'agente lavora, meno la squadra sa fare il lavoro da sé.",
+ steps:[["0 · Tutto in regole","Portale a menu a tendina, codici prodotto e doganali obbligati, script che prepara i documenti. Ciò che non entra viene rifiutato o trattato a mano."],["25 · Regole e foglio di calcolo","Portale per i clienti abituali; per il resto, un file Excel condiviso con le tariffe doganali e delle macro. L'IA legge solo qualche fattura straniera."],["50 · Misto","Portale per gli ordini standard; l'IA legge email e fatture, la squadra rilegge i documenti doganali."],["75 · Prima l'IA","Gli ordini arrivano per email; l'agente li legge e prepara documenti e prenotazioni, la squadra convalida. Il portale non si mantiene quasi più."],["100 · Tutto IA","Un agente IA collegato alla posta, al magazzino e al portale delle dogane tratta tutto; la squadra vede solo gli allarmi. Il portale si consuma e scompare."]],
+ decH:{std:"Il codice doganale cambia.",pol:"Una guerra commerciale impone nuovi dazi."},
+ ev:{law:"Il codice doganale cambia (nuova nomenclatura, tassa sul carbonio alle frontiere).",surge:"Black Friday: +25% di ordini tutti insieme.",kpi:"Un grande cliente esige una conferma in due ore: più errori in questo trimestre.",novel:"Esplode il commercio online transfrontaliero (pacchi piccoli, resi, marketplace): un 20% in più di ordini non entra in nessun portale.",
+  insp:k=>`Controllo doganale: merci dichiarate «pezzi di ricambio» erano soggette a licenza. Gli spedizionieri pagano la multa; riprendete gli ordini convalidati senza leggerli davvero: ${k}.`,
+  suit:k=>`Un cliente fa causa: la sua merce deperibile è rimasta bloccata alla frontiera, il contratto era stato letto male. Il caso finisce sulla stampa di settore; avvocato e revisione a mano dei suoi ordini: ${k}, tanto più che li avete fatti passare dal portale.`,
+  quota:"Uno spedizioniere frammenta gli invii per restare sotto le soglie di dichiarazione: ogni ordine, preso da solo, è in regola. Il portale e l'agente guardano un ordine alla volta e lasciano passare; una squadra esperta se ne accorge. Più errori in questo trimestre.",
+  pand:"Pandemia: fabbriche ferme, −20% di ordini, e la squadra, malata o in confinamento, lavora al 75%, per due trimestri.",
+  clos:"Alluvione: magazzino e uffici chiusi, la squadra lavora a distanza, al 70%, per due trimestri. Il portale online continua a funzionare.",
+  fit:"Ordini fuori standard (trasporti eccezionali, opere d'arte, animali vivi) non entrano in nessuna casella del portale: il 6% degli ordini del portale torna a mano in questo trimestre.",
+  needs:"Clienti con esigenze particolari (temperatura controllata, consegne notturne, merci pericolose): il portale non ha la casella, e lo script convalida ordini incompleti. Qualche errore in più in questo trimestre.",
+  pol:"Guerra commerciale: un paese impone nuovi dazi; i suoi ordini richiedono nuovi documenti, e un 10% in più di ordini non entra in nessun portale."},
+ tag:{law:"dogana",surge:"Black Friday",kpi:"2 h",insp:"dogane",quota:"frammentazione",fit:"fuori standard",clos:"alluvione",pol:"dazi"}},
+it_:{name:"Informatica",u:"ticket",U:"ticket",Who:"Dei dipendenti",who:"dei dipendenti",data:"i dati dei dipendenti",
+ legal:"verifica delle licenze da parte di un fornitore di software, causa di un cliente dopo un guasto, utente che ottiene diritti con piccole richieste successive",early:"postazioni atipiche",rare:"pandemia, sciopero generale, chiusura della sede, canicola, direttiva europea sulla cibersicurezza",
+ goal:`Assistenza informatica di un grande gruppo · ogni ticket risolto bene rende <b>3 €</b> · obiettivo in 3 anni: <b>risultato ≥ 95 k€</b>, <b>≥ 95% di ticket senza errori</b>, <b>≤ 500 in arretrato</b> alla fine · <b>annotate su un foglio, a ogni trimestre, la vostra scelta e il risultato</b>`,
+ defA:"<b>Modellizzazione rigida: un catalogo di servizi chiuso.</b> I dipendenti scelgono la richiesta in un catalogo a liste (tipo di guasto, software, priorità); degli script applicano la soluzione prevista. Ciò che non entra viene rimandato: si semplifica il reale per renderlo calcolabile. Costa ore per costruirlo e mantenerlo; poi quasi gratis. A ogni cambio di sistema bisogna rifare catalogo e script.",
+ defB:"<b>Sistema di IA: un assistente di IA generativa.</b> I ticket arrivano così come sono (email, schermate, log di errore); l'assistente li legge, fa la diagnosi e propone la correzione. Il reale resta complesso, lo assorbe il modello. Niente da costruire; ogni ticket si paga al fornitore, che fissa i prezzi, dipende dai suoi server e dalle leggi che li regolano. Più l'assistente lavora, meno la squadra sa fare il lavoro da sé.",
+ steps:[["0 · Tutto in regole","Catalogo a menu a tendina, script di risoluzione automatici, una procedura per guasto. Ciò che non entra viene rimandato o trattato da un tecnico."],["25 · Regole e foglio di calcolo","Catalogo per le richieste correnti; per il resto, un file Excel condiviso di guasti noti e macro. L'IA legge solo qualche log di errore."],["50 · Misto","Catalogo per le richieste standard; l'IA legge email e schermate, la squadra rilegge le sue diagnosi."],["75 · Prima l'IA","I ticket arrivano per email e chat; l'assistente fa la diagnosi e prepara la correzione, la squadra convalida. Il catalogo non si mantiene quasi più."],["100 · Tutto IA","Un agente IA collegato alla posta e ai server corregge da solo; la squadra vede solo gli allarmi. Il catalogo si consuma e scompare."]],
+ decH:{std:"Il gruppo cambia sistema informativo.",pol:"Entra in vigore una direttiva europea sulla cibersicurezza."},
+ ev:{law:"Il gruppo cambia sistema informativo (nuovo gestionale, nuova posta).",surge:"Falla «zero-day» in un software comune: +25% di ticket tutti insieme.",kpi:"La direzione impone la risoluzione in quattro ore: più errori in questo trimestre.",novel:"Telelavoro di massa e dispositivi personali: un 20% in più di ticket non entra in nessuna categoria del catalogo.",
+  insp:k=>`Verifica delle licenze da parte di un fornitore di software: postazioni dichiarate in regola usavano software senza licenza. Il gruppo paga; riprendete i ticket convalidati senza leggerli davvero: ${k}.`,
+  suit:k=>`Un cliente fa causa dopo un guasto di due giorni: il contratto di servizio prometteva quattro ore. Il caso finisce sui giornali; avvocato e revisione a mano dei suoi ticket: ${k}, tanto più che li avete fatti passare dal catalogo.`,
+  quota:"Un utente apre decine di piccole richieste di accesso, ciascuna legittima, e finisce amministratore: ogni ticket, preso da solo, è in regola. Il catalogo e l'assistente guardano un ticket alla volta e lasciano passare; una squadra esperta se ne accorge. Più errori in questo trimestre.",
+  pand:"Pandemia: progetti congelati (−20% di ticket) e la squadra, malata o in confinamento, lavora al 75%, per due trimestri.",
+  clos:"La sede è chiusa dopo un incendio: la squadra lavora a distanza, al 70%, per due trimestri. Il catalogo online continua a funzionare.",
+  fit:"Postazioni atipiche (laboratori, macchine industriali, vecchi software) non entrano in nessuna categoria: il 6% dei ticket del catalogo torna a mano in questo trimestre.",
+  needs:"Utenti con bisogni particolari (lettori di schermo, accessibilità): il catalogo non ha la casella, e gli script chiudono ticket non risolti. Qualche errore in più in questo trimestre.",
+  pol:"Una direttiva europea sulla cibersicurezza (NIS 2) impone nuovi passaggi ai ticket di sicurezza; un 10% in più di ticket non entra in nessuna categoria."},
+ tag:{law:"migrazione",surge:"zero-day",kpi:"4 h",insp:"licenze",quota:"diritti",fit:"postazioni",clos:"incendio",pol:"NIS 2"}},
+assur:{name:"Assicurazioni",u:"sinistro",U:"sinistri",Who:"Degli assicurati",who:"degli assicurati",data:"i dati degli assicurati",
+ legal:"controllo dell'autorità di vigilanza su indennizzi calcolati male, causa di un assicurato risarcito poco, rete che denuncia piccoli sinistri sotto la soglia di controllo",early:"beni atipici",rare:"pandemia, sciopero generale, chiusura della sede, canicola, nuovo obbligo di copertura",
+ goal:`Ufficio sinistri di una compagnia di assicurazioni · ogni sinistro trattato bene rende <b>3 €</b> · obiettivo in 3 anni: <b>risultato ≥ 95 k€</b>, <b>≥ 95% di sinistri senza errori</b>, <b>≤ 500 in arretrato</b> alla fine · <b>annotate su un foglio, a ogni trimestre, la vostra scelta e il risultato</b>`,
+ defA:"<b>Modellizzazione rigida: una tabella di indennizzo chiusa.</b> Gli assicurati denunciano il sinistro in un modulo a liste (tipo di danno, importo, franchigia); uno script calcola l'indennizzo secondo tabella. Ciò che non entra viene rimandato: si semplifica il reale per renderlo calcolabile. Costa ore per costruirlo e mantenerlo; poi quasi gratis. A ogni cambio delle regole di indennizzo bisogna rifare modulo e tabella.",
+ defB:"<b>Sistema di IA: un assistente di IA generativa.</b> Le denunce arrivano così come sono (foto, preventivi, lettere); l'assistente le legge, stima il danno e scrive la risposta. Il reale resta complesso, lo assorbe il modello. Niente da costruire; ogni sinistro si paga al fornitore, che fissa i prezzi, dipende dai suoi server e dalle leggi che li regolano. Più l'assistente lavora, meno la squadra sa fare il lavoro da sé.",
+ steps:[["0 · Tutto in regole","Modulo di denuncia a liste, tabella fissa, script che calcola l'indennizzo. Ciò che non entra viene rimandato o periziato a mano."],["25 · Regole e foglio di calcolo","Tabella per i sinistri correnti; per il resto, un file Excel condiviso di casi e macro. L'IA legge solo qualche preventivo."],["50 · Misto","Tabella per i sinistri standard; l'IA legge foto, preventivi e lettere, la squadra rilegge le sue stime."],["75 · Prima l'IA","Le denunce arrivano per email e app; l'assistente stima e prepara l'offerta, la squadra convalida. La tabella non si mantiene quasi più."],["100 · Tutto IA","Un agente IA collegato all'app e ai bonifici indennizza da solo; la squadra vede solo i casi segnalati. La tabella si consuma e scompare."]],
+ decH:{std:"Le regole di indennizzo cambiano.",pol:"Entra in vigore un nuovo obbligo di copertura."},
+ ev:{law:"Una legge cambia le regole di indennizzo (catastrofi naturali, franchigie).",surge:"Grandinata enorme sulla regione: +25% di sinistri tutti insieme.",kpi:"L'autorità di vigilanza esige l'indennizzo entro dieci giorni: più errori in questo trimestre.",novel:"Si moltiplicano i sinistri climatici (crepe da siccità, alluvioni): un 20% in più di sinistri non entra in nessuna tabella.",
+  insp:k=>`Controllo dell'autorità di vigilanza sulle assicurazioni: sinistri indennizzati secondo tabella erano sottostimati o fraudolenti. La compagnia deve correggere; riprendete le pratiche convalidate senza leggerle davvero: ${k}.`,
+  suit:k=>`Un assicurato fa causa: il suo indennizzo, calcolato secondo tabella, copre un terzo del danno reale. Il caso finisce sui giornali; avvocato e revisione a mano delle pratiche simili: ${k}, tanto più che le avete fatte passare dalla tabella.`,
+  quota:"Frode organizzata: una rete denuncia molti piccoli sinistri sotto la soglia di controllo: ogni pratica, presa da sola, è in regola. La tabella e l'assistente guardano una pratica alla volta e lasciano passare; una squadra esperta se ne accorge. Più errori in questo trimestre.",
+  pand:"Pandemia: meno spostamenti, −20% di sinistri, e la squadra, malata o in confinamento, lavora al 75%, per due trimestri.",
+  clos:"La sede è chiusa dopo un allarme bomba e poi dei lavori: la squadra lavora a distanza, al 70%, per due trimestri. Il modulo online continua a funzionare.",
+  fit:"Beni atipici (opere d'arte, pannelli solari, cargo bike) non entrano in nessuna casella della tabella: il 6% dei sinistri del modulo torna a mano in questo trimestre.",
+  needs:"Assicurati vulnerabili (anziani, persone con disabilità) che hanno bisogno di essere accompagnati: il modulo non ha la casella, e lo script chiude pratiche incomplete. Qualche errore in più in questo trimestre.",
+  pol:"Cambio di governo: una legge impone di coprire sommosse e catastrofi climatiche; queste pratiche richiedono nuovi documenti, e un 10% in più di sinistri non entra in nessuna tabella."},
+ tag:{law:"indennizzo",surge:"grandine",kpi:"10 giorni",insp:"vigilanza",quota:"frode",fit:"beni atipici",pol:"copertura"}},
+hosp:{name:"Ospedale",u:"ricovero",U:"ricoveri",Who:"Dei pazienti",who:"dei pazienti",data:"i dati sanitari dei pazienti",
+ legal:"controllo del servizio sanitario sulla codifica, causa di un paziente per una fattura sbagliata, reparto che frammenta i ricoveri",early:"pazienti con percorsi atipici",rare:"pandemia, sciopero generale, chiusura di un padiglione, canicola, restrizione dell'assistenza sanitaria agli stranieri",
+ goal:`Ufficio codifica di un grande ospedale · ogni ricovero codificato bene rende <b>3 €</b> · obiettivo in 3 anni: <b>risultato ≥ 95 k€</b>, <b>≥ 95% di ricoveri senza errori</b>, <b>≤ 500 in arretrato</b> alla fine · <b>annotate su un foglio, a ogni trimestre, la vostra scelta e il risultato</b>`,
+ defA:"<b>Modellizzazione rigida: una nomenclatura chiusa.</b> I medici compilano una scheda a liste di codici (diagnosi, prestazioni); uno script raggruppa il ricovero e prepara la fattura. Ciò che non entra viene rimandato: si semplifica il reale per renderlo calcolabile. Costa ore per costruirlo e mantenerlo; poi quasi gratis. A ogni nuova versione della nomenclatura bisogna rifare scheda e script.",
+ defB:"<b>Sistema di IA: un assistente di IA generativa.</b> Le cartelle arrivano così come sono (referti, prescrizioni, lettere); l'assistente le legge e propone i codici. Il reale resta complesso, lo assorbe il modello. Niente da costruire; ogni ricovero si paga al fornitore, che fissa i prezzi, dipende dai suoi server e dalle leggi che li regolano. Più l'assistente lavora, meno la squadra sa fare il lavoro da sé.",
+ steps:[["0 · Tutto in regole","Scheda di codifica a liste, script che raggruppa e fattura, una regola per prestazione. Ciò che non entra viene rimandato al medico o codificato a mano."],["25 · Regole e foglio di calcolo","Scheda per i ricoveri correnti; per il resto, un file Excel condiviso di codici e macro. L'IA legge solo qualche referto."],["50 · Misto","Scheda per i ricoveri standard; l'IA legge i referti, la squadra rilegge i codici proposti."],["75 · Prima l'IA","Le cartelle arrivano dal gestionale clinico; l'assistente propone tutti i codici, la squadra convalida. La scheda non si mantiene quasi più."],["100 · Tutto IA","Un agente IA collegato alla cartella clinica codifica e fattura da solo; la squadra vede solo gli allarmi. La scheda si consuma e scompare."]],
+ decH:{std:"La nomenclatura cambia.",pol:"L'assistenza sanitaria agli stranieri viene ristretta."},
+ ev:{law:"La nomenclatura cambia (nuova versione della classificazione delle malattie).",surge:"Epidemia di influenza: +25% di ricoveri tutti insieme.",kpi:"La direzione esige la codifica entro 48 ore per la cassa: più errori in questo trimestre.",novel:"Nuove prese in carico (chirurgia ambulatoriale, telemonitoraggio): un 20% in più di ricoveri non entra in nessun codice.",
+  insp:k=>`Controllo del servizio sanitario: ricoveri codificati come «complessi» non lo erano. L'ospedale rimborsa; riprendete le pratiche convalidate senza leggerle davvero: ${k}.`,
+  suit:k=>`Un paziente fa causa: fattura sbagliata, ricovero codificato male. Il caso finisce sui giornali; avvocato e revisione a mano dei ricoveri dello stesso reparto: ${k}, tanto più che li avete fatti passare dalla scheda.`,
+  quota:"Un reparto moltiplica i ricoveri brevi per uno stesso paziente: ogni ricovero, preso da solo, è in regola. La scheda e l'assistente guardano un ricovero alla volta e lasciano passare; una squadra esperta se ne accorge. Più errori in questo trimestre.",
+  pand:"Pandemia: gli interventi programmati vengono rinviati (−20% di ricoveri da codificare) e la squadra, malata o requisita, lavora al 75%, per due trimestri.",
+  clos:"Un padiglione dell'ospedale è chiuso dopo un'alluvione: la squadra lavora a distanza, al 70%, per due trimestri. La scheda online continua a funzionare.",
+  fit:"Pazienti con percorsi atipici (malattie rare, pluridisabilità, ricoveri multipli) non entrano in nessuna casella: il 6% dei ricoveri della scheda torna a mano in questo trimestre.",
+  needs:"Pazienti con bisogni particolari (interprete, accompagnamento): la scheda non ha la casella, e lo script fattura ricoveri incompleti. Qualche errore in più in questo trimestre.",
+  pol:"Cambio di governo: l'assistenza sanitaria agli stranieri viene ristretta; i loro ricoveri richiedono nuovi documenti, e un 10% in più di ricoveri non entra in nessun codice."},
+ tag:{law:"nomenclatura",surge:"influenza",kpi:"48 h",insp:"controllo",quota:"frammentazione",fit:"percorsi",clos:"alluvione",pol:"assistenza"}}}};
+const SC=['stages','logi','it_','assur','hosp'];
+const ICONS=[`<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M8 8h8M8 12h8M8 16h5"/>`, `<rect x="3" y="4" width="18" height="16"/><path d="M3 9h18M3 14h18M9 4v16M15 4v16"/>`, `<rect x="3" y="5" width="10" height="14"/><path d="M6 9h4M6 13h4M18 5l1.2 2.8L22 9l-2.8 1.2L18 13l-1.2-2.8L14 9l2.8-1.2z"/>`, `<path d="M4 5h16v10H9l-5 4z"/><path d="M12 7l.9 1.6 1.6.9-1.6.9-.9 1.6-.9-1.6-1.6-.9 1.6-.9z"/>`, `<rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 4.5V8M9 12.5v1M15 12.5v1M9 16h6"/><circle cx="12" cy="3.5" r="1"/>`];
+function sub(v,s){return v.replace(/\{U\}/g,s.U).replace(/\{u\}/g,s.u).replace(/\{Who\}/g,s.Who).replace(/\{who\}/g,s.who).replace(/\{data\}/g,s.data).replace(/\{legal\}/g,s.legal).replace(/\{early\}/g,s.early).replace(/\{rare\}/g,s.rare)}
+function deep(v,s){if(typeof v==='string')return sub(v,s);if(typeof v==='function')return(...a)=>{const r=v(...a);return typeof r==='string'?sub(r,s):r};if(Array.isArray(v))return v.map(x=>deep(x,s));if(v&&typeof v==='object'){const o={};for(const k in v)o[k]=deep(v[k],s);return o}return v}
+const TX={};
+function tx(){const sc=(st&&st.sc)||'stages',key=L+'|'+sc;if(!TX[key]){const b=T[L],s=S[L][sc];TX[key]=deep(Object.assign({},b,s,{ev:Object.assign({},b.ev,s.ev),tag:Object.assign({},b.tag,s.tag)}),s)}return TX[key]}
+function rng(seed){let s=seed%2147483646+1;return()=>(s=s*16807%2147483647)/2147483647}
+const AIPOOL=['price','act','leak','cyber','auto'],FPOOL=['kpi','novel','surge','insp','suit','quota'],LATE=['leak','insp','suit','auto'],RARE=['pand','strike','clos','climate','pol'],EARLY_F=['fit','needs'],EARLY_AI=['halluc','paid'];
+function plan(seed){const r=rng(seed),ri=(a,b)=>a+Math.floor(r()*(b-a+1)),ev={};
+ const place=(e,a,b,avoid=[])=>{let q=ri(a,b);for(let t=0;t<40;t++){const L=ev[q]||[];if(L.length<3&&!L.some(x=>avoid.includes(x[0])))break;q=ri(a,b)}(ev[q]=ev[q]||[]).push(e)};
+ const l1=ri(4,7);(ev[l1]=ev[l1]||[]).push(["law",.4,"std"]);const l2=ri(Math.max(l1+2,8),12);(ev[l2]=ev[l2]||[]).push(["law",.35,"std"]);
+ place(["srv"],7,11,["law"]);
+ for(const [pool0,n] of [[AIPOOL,P.nAI],[FPOOL,P.nF]]){const pool=pool0.slice();for(let i=pool.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+  for(const k of pool.slice(0,n))place([k],LATE.includes(k)?6:4,12,AIPOOL.includes(k)?['law']:[])}
+ for(const k of RARE)if(r()<P.rareP){place(k==='pol'?["law",.25,"pol"]:[k],5,12,k==='pol'?['law','srv'].concat(AIPOOL):[]);break}
+ const fk=EARLY_F[Math.floor(r()*2)];place([fk],2,3);const ak=EARLY_AI[Math.floor(r()*2)];place([ak],2,3,[fk]);
+ return ev}
+const $=id=>document.getElementById(id);
+let L='fr',st;
+function newGame(seed,tries,sc){return{sc:sc||'stages',seed:seed||Math.floor(Math.random()*900000)+1000,q:1,C:.05,N:.05,back:0,pm:1,outL:0,cum:0,good:0,proc:0,x:30,hist:[],tries:tries||[],alert:null,over:false,stale:0,fixNow:0,pend:[],noForm:false,K:1,act:0,sov:0,aiH:[],covH:[],humH:[],pandL:0,closL:0,lawHit:false}}
+const last4=h=>h.slice(-4).reduce((a,b)=>a+b,0);
+const leakFine=s=>P.leakF*last4(s.aiH),inspFine=s=>P.inspF*P.inspBad*(last4(s.covH)+.4*last4(s.aiH)+.1*last4(s.humH)),suitCost=s=>P.suitA+P.suitF*(last4(s.covH)+.4*last4(s.aiH));
+function enter(){const ev=plan(st.seed)[st.q]||[];st.cur=ev;st.pend=[];st.alert=ev.length?{q:st.q,ev,dec:{}}:null;
+ if(ev.some(e=>e[0]==='pand'))st.pandL=2;if(ev.some(e=>e[0]==='clos'))st.closL=2;
+ const law=ev.find(e=>e[0]==='law');st.lawHit=!!(law&&st.C>.1);if(law&&st.C>.1)st.pend.push({k:'law',p:law[1],kind:law[2]});
+ if(ev.some(e=>e[0]==='srv')){if(st.sov)st.alert.srv='sov';else if(st.x>=P.srvMin){st.pend.push({k:'srv'});st.alert.srv='dec'}else{st.outL=2;st.alert.srv='small'}}
+ if(st.alert){st.alert.leak=leakFine(st);st.alert.insp=inspFine(st);st.alert.suit=suitCost(st);st.alert.auto=P.autoR*last4(st.aiH)}}
+const AIK=['price','act','cyber','srv','halluc','paid'];
+const hits=(ev,x,aiH,lawHit,sov,C)=>ev.filter(e=>['leak','auto'].includes(e[0])?last4(aiH)>0:e[0]==='law'?lawHit:e[0]==='srv'?x>0&&!sov:EARLY_F.includes(e[0])?C>.1:!AIK.includes(e[0])||x>0).length;
+const rewriteCost=()=>P.fixA+P.fixB*st.C;
+const vol=q=>Math.round(4000*Math.pow(1.06,q-1));
+function sim(s,xp,ev){
+ const x=xp/100;let V=vol(s.q),law=0,kpi=0,cyber=0,leak=0,insp=0,suit=0,quota=0,auto=0,strike=0,climate=0,fit=0,needs=0,hall=0,act=s.act,N=s.N,pm=s.pm,fixed=0,eAIx=0;
+ for(const e of ev){const k=e[0];if(k==='law'){law=e[1];if(e[2]==='pol')N=Math.min(.5,N+.1)}if(k==='price')pm*=P.priceM;if(k==='cyber')cyber=1;if(k==='kpi')kpi=1;if(k==='novel')N=Math.min(.5,N+.2);if(k==='surge')V*=1.25;if(k==='act')act=1;if(k==='leak')leak=1;
+  if(k==='insp')insp=1;if(k==='suit')suit=1;if(k==='quota')quota=1;if(k==='auto')auto=1;if(k==='strike')strike=1;if(k==='climate')climate=1;if(k==='fit')fit=1;if(k==='needs')needs=1;if(k==='halluc')hall=1;if(k==='paid')pm*=P.paidM}
+ let teamF=1;if(s.pandL>0){V*=.8;teamF*=.75}if(strike)teamF*=.5;if(s.closL>0)teamF*=.7;if(climate)teamF*=.85;
+ V=Math.round(V);const out=s.outL>0?P.outFail:(climate?.5:0),amp=hits(ev,x,s.aiH,s.lawHit,s.sov,s.C)>=2?1.3:1,K=s.K;let C=s.C;const att=s.noForm?0:(1-x)*P.H;
+ const mnt=Math.min(att,C*P.mh);C-=P.dec*C*(1-mnt/(C*P.mh+1e-9));const ext=Math.min(att-mnt,(.85-C)*P.invK*P.ef);C=Math.min(.85,C+ext/P.invK*(.85-C));const hours=mnt+ext;
+ if(law>0&&x>0){fixed+=P.aiUpd;eAIx+=.005}if(act&&x>0)fixed+=P.actFix;if(leak)fixed+=leakFine(s);if(insp)fixed+=inspFine(s);if(suit)fixed+=suitCost(s);fixed+=s.fixNow||0;
+ const covAll=V*(1-N)*C,blocked=covAll*(s.stale||0),bounce=fit?(covAll-blocked)*P.fitR:0,cov=covAll-blocked-bounce,rest=V-covAll,toAI=rest*x,toH=rest-toAI,fail=toAI*out,ai=toAI-fail;
+ const price=P.p0*Math.pow(.95,s.q-1)*pm*(s.sov?P.sovM:1),eAI=.02+(cyber?P.cyberE:0)+(kpi?.02:0)+eAIx+.02*N+(quota?P.quotaE:0)+(hall?P.hallE:0);
+ const review=act?ai*P.actRev*.3:0,cap=Math.max(0,P.team*teamF*(1-P.kTeam+P.kTeam*K)-hours-review)/.6,dem=toH+fail+s.back+blocked+bounce+(auto?P.autoR*last4(s.aiH):0),hum=Math.min(cap,dem),back=Math.round(dem-hum);
+ const eH=.025+(kpi?.02:0)+P.kErr*(1-K)+(quota?P.quotaE*(1-K):0),eR=.003+(quota?P.quotaE:0)+(needs?P.needsE:0),err=(cov*eR+ai*eAI+hum*eH)*amp,proc=cov+ai+hum,good=proc-err;
+ const rev=good*P.rev,cost=hours*P.wh+ai*price+err*P.errC+back*P.backC*amp+fixed;
+ const Kt=1-(1-P.kMin)*Math.max(0,(x-.4)/.6),K2=K+P.kRate*(Kt-K);
+ return{q:s.q,V,C,N,pm,act,K:K2,outL:Math.max(0,s.outL-1),pandL:Math.max(0,s.pandL-1),closL:Math.max(0,s.closL-1),back,hours,cov,ai,hum,good,proc,rev,cost,res:rev-cost,blocked,bn:{r:blocked>0||(s.fixNow||0)>=P.fixA,a:fail>0,t:back>0},poly:amp>1,x:xp,tags:ev.map(e=>e[0]==='law'&&e[2]==='pol'?'pol':e[0])}}
+function step(){if(st.pend.length)return;const ev=st.cur||[],r=sim(st,st.x,ev);st.fixNow=0;
+ Object.assign(st,{C:r.C,N:r.N,pm:r.pm,outL:r.outL,back:r.back,K:r.K,act:r.act,pandL:r.pandL,closL:r.closL});st.aiH.push(r.ai);st.covH.push(r.cov);st.humH.push(r.hum);if(st.hist.length===0)$('defsW').open=false;st.cum+=r.res;st.good+=r.good;st.proc+=r.proc;r.cum=st.cum;st.hist.push(r);
+ st.q++;if(st.q<=12)enter();else st.alert=null;
+ if(st.q>12){st.over=true;const conf=st.good/st.proc,ok=st.cum>=P.GOAL&&conf>=P.CONF&&st.back<=P.BACK;st.tries.push({n:st.tries.length+1,seed:st.seed,sc:st.sc,res:st.cum,conf,back:st.back,ok})}
+ render();if(st.over)showReport()}
+const fmt=(n,d=0)=>n.toLocaleString(L==='fr'?'fr-FR':'it-IT',{maximumFractionDigits:d,minimumFractionDigits:d});
+const ke=n=>(n<0?'−':'')+fmt(Math.abs(n)/1000,1)+' k€',pc=n=>fmt(n*100,1)+' %',pc0=n=>fmt(n*100)+' %';
+const isPend=k=>st.pend.some(p=>p.k===k);
+function alertText(a){const t=tx(),E=t.ev;return a.ev.map(e=>{const k=e[0],ck=k==='law'&&e[2]==='pol'?'pol':k,x=(()=>{
+  if(k==='law'){const d=e[2]==='pol'?E.pol:E.law;return isPend('law')?t.waitDec:d+' '+('law' in a.dec?t.lawDone[a.dec.law]:st.noForm?t.lawAI:st.stale?'':st.x>0?t.lawAIok:t.lawSmall)}
+  if(k==='insp')return E.insp(ke(a.insp));if(k==='suit')return E.suit(ke(a.suit));
+  if(k==='auto')return a.auto>0?E.auto(fmt(a.auto)):t.autoNone;
+  if(k==='srv')return 'srv' in a.dec?t.srvDone[a.dec.srv]:a.srv==='dec'?(isPend('law')?'':t.waitDec):a.srv==='sov'?t.srvSov:st.x===0?t.srvNone:t.srvSmall;
+  if(k==='leak')return a.leak>0?E.leak(ke(a.leak)):t.leakNone;
+  if(['price','act','cyber','halluc','paid'].includes(k)&&st.x===0)return t[k+'N'];if(EARLY_F.includes(k)&&st.C<=.1)return t[k+'N'];return E[k]})();return x?[ck,x]:null}).filter(Boolean).map(([k,x])=>`<p>${x.charAt(0).toUpperCase()+x.slice(1)} <span class="cpt">${t.cpt[k]||''}</span></p>`).join('')+(hits(a.ev,st.x/100,st.aiH,st.lawHit,st.sov,st.C)>=2?`<p class="poly">${E.poly}</p>`:'')}
+const tagCol=k=>AIPOOL.includes(k)||EARLY_AI.includes(k)||k==='srv'||k==='climate'?'var(--ai)':['pand','strike','clos','pol'].includes(k)?'var(--amb)':'var(--blu)';
+function chart(p){const s=$('chart'),W=s.clientWidth,H=s.clientHeight;if(!W)return;const t=tx(),m={l:46,r:8,t:26,b:34},w=W-m.l-m.r,h=H-m.t-m.b;
+ const bars=st.hist.map(x=>({q:x.q,v:x.res,tags:x.tags,bn:x.bn})).concat(p?[{q:p.q,v:p.res,tags:[],ghost:1}]:[]);
+ const hi=Math.max(15000,...bars.map(b=>b.v))*1.1,lo=Math.min(-8000,...bars.map(b=>b.v))*1.1,Y=v=>m.t+(hi-v)/(hi-lo)*h,bw=w/12;
+ let g='';const stepv=hi-lo>40000?10000:5000;for(let v=Math.ceil(lo/stepv)*stepv;v<=hi;v+=stepv)g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${v===0?'var(--ink)':'var(--line)'}" stroke-width="${v===0?1.5:1}"/><text x="${m.l-5}" y="${Y(v)+4}" text-anchor="end">${v===0?'0':fmt(v/1000)+'k'}</text>`;
+ [4,8].forEach(q=>g+=`<line x1="${m.l+q*bw}" x2="${m.l+q*bw}" y1="${m.t-6}" y2="${H-m.b}" stroke="var(--mut)" stroke-dasharray="2 4"/>`);
+ bars.forEach(b=>{const x0=m.l+(b.q-1)*bw+bw*.16,bwid=bw*.68,y0=Y(0),y1=Y(b.v),col=b.ghost?'none':b.v>=0?'var(--grn)':'var(--red)';
+  g+=`<rect x="${x0}" y="${Math.min(y0,y1)}" width="${bwid}" height="${Math.abs(y1-y0)}" fill="${col}" ${b.ghost?'stroke="var(--ink)" stroke-width="2" stroke-dasharray="4 3"':''}/>`;
+  if(W>420||b.ghost)g+=`<text x="${x0+bwid/2}" y="${b.v>=0?y1-4:y1+13}" text-anchor="middle" font-size="12">${fmt(b.v/1000,1)}</text>`;
+  b.tags.forEach((k,j)=>{const cx=x0+bwid/2,yy=m.t-8-j*12;g+=`<path d="M${cx-5} ${yy-8}L${cx+5} ${yy-8}L${cx} ${yy}Z" fill="${tagCol(k)}"/>`;if(W>560&&j===0)g+=`<text x="${cx+7}" y="${yy-1}" font-size="12" style="fill:${tagCol(k)}">${t.tag[k]}</text>`});
+  g+=`<text x="${x0+bwid/2}" y="${H-18}" text-anchor="middle" font-size="12">T${b.q}</text>`;
+  if(b.bn){const yb=H-5,c=x0+bwid/2;if(b.bn.r)g+=`<rect x="${c-13}" y="${yb-8}" width="8" height="8" fill="var(--blu)"><title>${t.bnN[0]}</title></rect>`;if(b.bn.a)g+=`<circle cx="${c}" cy="${yb-4}" r="4.5" fill="var(--ai)"><title>${t.bnN[1]}</title></circle>`;if(b.bn.t)g+=`<path d="M${c+5} ${yb}L${c+14} ${yb}L${c+9.5} ${yb-9}Z" fill="var(--ink)"><title>${t.bnN[2]}</title></path>`}});
+ s.innerHTML=g}
+function render(){const t=tx();document.documentElement.lang=L;
+ $('scenL').textContent=t.scenL;$('scen').innerHTML=SC.map(k=>`<option value="${k}"${k===st.sc?' selected':''}>${S[L][k].name}</option>`).join('');{const lk=st.hist.length>0||st.tries.length>0;$('scen').disabled=lk;$('scen').title=lk?t.scenLock:''}
+ document.querySelectorAll('[data-t]').forEach(e=>{const v=t[e.dataset.t];if(typeof v==='string')e.textContent=v});
+ $('attL').innerHTML=`${t.attL}<small>${t.attS}</small>`;$('ampL').innerHTML=`${t.ampL}<small>${t.ampS}</small>`;
+ $('lang').textContent=L==='fr'?'IT':'FR';$('goal').innerHTML=t.goal;$('defA').innerHTML=t.defA;$('defsS').textContent=t.defsS;if(st.q===1&&!st.hist.length)$('defsW').open=true;$('defB').innerHTML=t.defB;$('x').value=st.x;
+ const si=Math.round(st.x/25);$('ticks').innerHTML=ICONS.map((g,i)=>`<button type="button" data-v="${i*25}" class="${i===si?'on':''}" title="${t.steps[i][0]}" aria-label="${t.steps[i][0]}"><svg viewBox="0 0 24 24">${g}</svg></button>`).join('');
+ const q=Math.min(st.q,12);$('qlabel').textContent='T'+q;$('phase').textContent=t.phases[Math.floor((q-1)/4)];$('stage').style.setProperty('--ph',['var(--ink)','var(--amb)','var(--deep)'][Math.floor((q-1)/4)]);$('qsub').textContent=t.qsub(q,fmt(vol(q)));
+ const al=$('alert');if(st.alert){const hit=st.pend.length>0||hits(st.alert.ev,st.x/100,st.aiH,st.lawHit,st.sov,st.C)>0;al.innerHTML=`<b class="ah">${hit?t.alertT+' T'+st.alert.q:'T'+st.alert.q+' · '+t.alertN}</b> ${alertText(st.alert)}`;al.className='alert';void al.offsetWidth;al.className='alert on'+(hit?'':' calm')}else{al.textContent=t.calm;al.className='alert'}
+ const p=st.over?null:sim(st,st.x,st.cur||[]);$('doingT').textContent=t.doingT;
+ if(p){$('doing').innerHTML=st.noForm?t.doingAI(fmt(p.ai),fmt(p.hum),pc0(st.K)):t.doing(fmt(p.hours),pc(p.C),fmt(p.cov),fmt(p.ai),fmt(p.hum),pc0(st.K));$('nums').innerHTML=[ke(p.rev),ke(p.cost),ke(p.res),ke(st.cum+p.res)].map((v,i)=>`<div>${t.nums[i]}<b class="${i===0?'rev':i===1?'cost':(i===2?p.res:st.cum+p.res)>=0?'good':'bad'}">${v}</b></div>`).join('')}
+ else{$('doing').textContent='';$('nums').innerHTML=''}
+ $('next').textContent=st.over?t.end:t.next(st.q);$('next').disabled=st.pend.length>0;
+ const d=$('dec');if(st.pend.length){const pd=st.pend[0];let html;
+  if(pd.k==='law'){const k=ke(rewriteCost()),n=fmt(vol(st.q)*(1-st.N)*st.C*pd.p);html=t.decLaw(t.decH[pd.kind],fmt(pd.p*100)+' %',n,k)+`<div class="opts">${t.decLawO.map((f,i)=>`<button type="button" data-o="${i}" style="--c:${['var(--blu)','var(--ai)','var(--mut)'][i]}">${f(k)}</button>`).join('')}</div>`}
+  else{const k=ke(P.srvMig),n=fmt(vol(st.q)*(1-(st.noForm?0:st.C)*(1-st.N))*st.x/100);html=t.decSrv(n)+`<div class="opts">${t.decSrvO.map((f,i)=>`<button type="button" data-o="${i}" style="--c:${['var(--ai)','var(--blu)','var(--mut)'][i]}">${f(k)}</button>`).join('')}</div>`}
+  d.innerHTML=html;d.className='dec on'}else d.className='dec';
+ const fb=$('fixBtn');if(st.stale>0&&!st.over){fb.textContent=t.fixB(ke(rewriteCost()));fb.className='fix on'}else fb.className='fix';
+ const H=st.hist;if(!H.length)$('verdict').innerHTML=`<span class="note">${t.first}</span>`;else{const a=H[H.length-1],b=H[H.length-2],better=!b||a.res>=b.res;$('verdict').innerHTML=`<span class="w ${better?'good':'bad'}">${b?(better?t.better:t.worse):'T1'}</span><span>${t.vline(ke(a.res),ke(st.cum))}</span>`}
+ $('score').innerHTML=st.tries.length?`<thead><tr>${t.score.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${(()=>{const best=Math.max(...st.tries.map(r=>r.res));return st.tries.slice().reverse().map(r=>`<tr class="${r.res===best?'best':''}"><td>${r.n}</td><td>#${r.seed} · ${S[L][r.sc||'stages'].name}</td><td>${ke(r.res)}</td><td>${pc(r.conf)}</td><td>${fmt(r.back)}</td><td class="${r.ok?'ok':'ko'}">${r.ok?'✓':'✗'}</td></tr>`).join('')})()}</tbody>`:'';
+ $('bnl').innerHTML=`${t.bnT} <span style="color:var(--blu)">■ ${t.bnN[0]}</span> <span style="color:var(--ai)">● ${t.bnN[1]}</span> <span>▲ ${t.bnN[2]}</span>`;
+ chart(p)}
+function replay(){st=newGame(st.seed,st.tries,st.sc);enter();$('report').classList.remove('on');render()}
+function fresh(){st=newGame(0,st.tries,st.sc);enter();$('report').classList.remove('on');render()}
+function reading(t){const m=new Map(),add=(k,q)=>{if(!m.has(k))m.set(k,[]);m.get(k).push('T'+q)};
+ for(const h of st.hist){h.tags.forEach(k=>add(t.cpt[k],h.q));if(h.poly)add(t.readPoly,h.q);['r','a','t'].forEach((k,i)=>{if(h.bn&&h.bn[k])add(t.readBn[i],h.q)})}
+ const li=[...m].filter(([k])=>k).map(([k,q])=>`<li><b>${k}</b> : ${[...new Set(q)].join(', ')}</li>`).join('');
+ return `<div class="reading"><b>${t.readT}</b>${li?`<ul>${li}</ul>`:`<p>${t.readNone}</p>`}</div>`}
+function showReport(){const t=tx(),r=st.tries[st.tries.length-1],c=[[ke(r.res),r.res>=P.GOAL,'≥ 95 k€'],[pc(r.conf),r.conf>=P.CONF,'≥ 95 %'],[fmt(r.back),r.back<=P.BACK,'≤ 500']];
+ $('card').innerHTML=`<h2>${t.rep} · ${t.name} · #${r.seed}</h2><p class="${r.ok?'good':'bad'}"><b>${r.ok?t.win:t.lose}</b></p><div class="checks">${c.map((x,i)=>`<div>${t.checks[i]}<b class="${x[1]?'ok':'ko'}">${x[0]}</b>${t.target} ${x[2]}</div>`).join('')}</div>${reading(t)}<p class="invite">${t.invite}</p><div class="top"><button id="r2" class="prim" type="button">${t.replay}</button><button id="cp" type="button">${t.copy}</button><button id="cl" type="button">${t.close}</button><button id="f2" class="quiet" type="button">${t.fresh}</button><span class="note" id="cpm"></span></div><h3>${t.qsT}</h3><ol>${t.qs.map(x=>`<li>${x}</li>`).join('')}</ol><details><summary>${t.howS}</summary><p>${t.how}</p></details>`;
+ $('report').classList.add('on');
+ $('r2').onclick=replay;$('f2').onclick=fresh;$('cl').onclick=()=>$('report').classList.remove('on');
+ $('cp').onclick=async()=>{const txt=`${t.rep} · ${t.name} (#${r.seed}) : ${ke(r.res)} · ${pc(r.conf)} · ${fmt(r.back)} · ${r.ok?'✓':'✗'}\n\n`+t.qs.map((x,i)=>`${i+1}. ${x}`).join('\n');try{await navigator.clipboard.writeText(txt);$('cpm').textContent=t.copied}catch(e){$('cpm').textContent=t.nocopy}}}
+function bind(){
+ let tipT=0;const showTip=()=>{const t=tx(),i=Math.round(st.x/25),sl=$('x'),w=sl.clientWidth,tip=$('tip');tip.innerHTML=`<b>${t.steps[i][0]}</b>${t.steps[i][1]}`;tip.style.left=Math.min(w-150,Math.max(150,14+st.x/100*(w-28)))+'px';tip.classList.add('on');clearTimeout(tipT)};
+ const hideTip=()=>{clearTimeout(tipT);tipT=setTimeout(()=>$('tip').classList.remove('on'),1400)};
+ $('x').addEventListener('input',e=>{st.x=+e.target.value;render();showTip();hideTip()});
+ ['pointerup','change','keyup','blur'].forEach(ev=>$('x').addEventListener(ev,hideTip));
+ $('ticks').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||st.over)return;st.x=+b.dataset.v;render();showTip();hideTip()});
+ $('dec').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!st.pend.length)return;const o=+b.dataset.o,pd=st.pend.shift();
+  if(pd.k==='law'){if(o===0){st.fixNow+=rewriteCost();st.stale=0}else if(o===1){st.C=0;st.stale=0;st.noForm=true;st.x=Math.max(st.x,80)}else{st.stale=Math.min(1,st.stale+pd.p)}if(st.alert)st.alert.dec.law=o}
+  else{if(o===0){st.fixNow+=P.srvMig;st.sov=1}else if(o===1){st.outL=2;st.noForm=false;st.x=Math.min(st.x,20)}else st.outL=2;if(st.alert)st.alert.dec.srv=o}
+  render()});
+ $('fixBtn').addEventListener('click',()=>{if(st.stale>0){st.fixNow+=rewriteCost();st.stale=0;render()}});
+ $('next').addEventListener('click',()=>{if(st.over)showReport();else step()});
+ $('replay').addEventListener('click',replay);
+ $('fresh').addEventListener('click',fresh);
+ $('scen').addEventListener('change',e=>{st=newGame(0,st.tries,e.target.value);enter();$('report').classList.remove('on');$('defsW').open=true;render()});
+ $('lang').addEventListener('click',()=>{L=L==='fr'?'it':'fr';render();if(st.over&&$('report').classList.contains('on'))showReport()});
+ const ro=new ResizeObserver(()=>chart(st.over?null:sim(st,st.x,st.cur||[])));ro.observe($('box'))}
+function start(data){st=data&&data.hist&&data.covH&&data.sc?data:newGame();if(!st.cur)enter();if(data&&data.L)L=data.L;bind();render();window.claude?.hot?.snapshot?.(()=>Object.assign({},st,{L}))}
+window.claude?.hot?.ready?window.claude.hot.ready(start):start(window.claude?.hot?.data??{});
+}
+</script>
+</body>
+</html>
