@@ -17,6 +17,11 @@ form{max-width:520px;margin:18vh auto 0;padding:0 20px;text-align:center}
 input{box-sizing:border-box;width:100%;padding:12px;margin:14px 0;background:#111016;color:inherit;border:1px solid #444;font:inherit}
 button{padding:10px 22px;border:0;background:#c9b6ff;color:#000;font:700 15px system-ui,sans-serif;cursor:pointer}
 p.errore{color:#ff5fa2;min-height:1.5em}
+.scheda{position:fixed;inset:0;display:flex;flex-direction:column;background:#000}
+.scheda nav{flex:0 0 36px;display:flex;align-items:center;gap:12px;padding:0 12px}
+.scheda nav button{padding:4px 12px;font-size:13px;border-radius:999px}
+.scheda iframe{flex:1;height:auto;min-height:0}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -25,13 +30,47 @@ p.errore{color:#ff5fa2;min-height:1.5em}
 (function () {
   var CHIAVE = 'house-of-r';
   var valido = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/;
-  function apri(indirizzo) {
+  var casa = null, scheda = null;
+  function cornice(indirizzo, titolo) {
     var f = document.createElement('iframe');
     f.src = indirizzo;
-    f.title = 'House of R';
-    document.body.replaceChildren(f);
-    f.focus();
+    f.title = titolo;
+    return f;
   }
+  function apri(indirizzo) {
+    casa = cornice(indirizzo, 'House of R');
+    document.body.replaceChildren(casa);
+    casa.focus();
+  }
+  // Un'altra web app di Google (per esempio Bolle) aperta sopra la casa, con il ritorno in alto
+  function chiudi() {
+    if (!scheda) return;
+    scheda.remove();
+    scheda = null;
+    casa.hidden = false;
+    casa.src = casa.src; // rilegge: nel frattempo i compiti possono essere cambiati
+    document.title = 'House of R';
+  }
+  window.addEventListener('message', function (e) {
+    var m = e.data;
+    if (!casa || scheda || !m || m.houseOfR !== 'apri') return;
+    if (!/^https:\/\/[a-z0-9-]+\.googleusercontent\.com$/.test(e.origin) || !valido.test(m.indirizzo)) return;
+    var nome = String(m.nome || '').slice(0, 40);
+    scheda = document.createElement('div');
+    scheda.className = 'scheda';
+    var barra = document.createElement('nav'), torna = document.createElement('button'), titolo = document.createElement('span');
+    torna.type = 'button';
+    torna.textContent = '← House of R';
+    torna.addEventListener('click', function () { history.back(); });
+    titolo.textContent = nome;
+    barra.append(torna, titolo);
+    scheda.append(barra, cornice(m.indirizzo, nome));
+    casa.hidden = true;
+    document.body.append(scheda);
+    document.title = nome + ' · House of R';
+    history.pushState({ scheda: true }, '');
+  });
+  window.addEventListener('popstate', chiudi);
   var salvato = null;
   try { salvato = localStorage.getItem(CHIAVE); } catch (e) {}
   if (salvato && valido.test(salvato)) return apri(salvato);
