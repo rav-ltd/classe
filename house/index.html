@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#000000">
+<title>House of R</title>
+<link rel="icon" href="../house-of-r.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+html,body{margin:0;height:100%;background:#000;color:#f4efe4;font:15px/1.5 system-ui,sans-serif;overflow:hidden}
+/* la striscia grigia di Google è alta 45px: la cornice la porta fuori dallo schermo */
+iframe{display:block;border:0;width:100%;height:calc(100% + 45px);margin-top:-45px}
+form{max-width:520px;margin:18vh auto 0;padding:0 20px;text-align:center}
+input{box-sizing:border-box;width:100%;padding:12px;margin:14px 0;background:#111016;color:inherit;border:1px solid #444;font:inherit}
+button{padding:10px 22px;border:0;background:#c9b6ff;color:#000;font:700 15px system-ui,sans-serif;cursor:pointer}
+p.errore{color:#ff5fa2;min-height:1.5em}
+</style>
+</head>
+<body>
+<script>
+// L'indirizzo della web app non sta in questo file pubblico: si incolla una volta e resta in questo browser.
+(function () {
+  var CHIAVE = 'house-of-r';
+  var valido = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/;
+  function apri(indirizzo) {
+    var f = document.createElement('iframe');
+    f.src = indirizzo;
+    f.title = 'House of R';
+    document.body.replaceChildren(f);
+    f.focus();
+  }
+  var salvato = null;
+  try { salvato = localStorage.getItem(CHIAVE); } catch (e) {}
+  if (salvato && valido.test(salvato)) return apri(salvato);
+  var modulo = document.createElement('form');
+  modulo.innerHTML = '<h1>House of R</h1><label for="u">Incolla l’indirizzo della web app (finisce con /exec).</label>' +
+    '<input id="u" type="url" autocomplete="off" required><button>Apri</button><p class="errore" role="alert"></p>';
+  modulo.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var indirizzo = modulo.querySelector('input').value.trim();
+    if (!valido.test(indirizzo)) { modulo.querySelector('.errore').textContent = 'Non è l’indirizzo di una web app di Google.'; return; }
+    try { localStorage.setItem(CHIAVE, indirizzo); } catch (e) {}
+    apri(indirizzo);
+  });
+  document.body.append(modulo);
+})();
+</script>
+</body>
+</html>
